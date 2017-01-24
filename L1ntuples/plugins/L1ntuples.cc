@@ -71,6 +71,7 @@
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
 
+
 class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
    public:
       explicit L1ntuples(const edm::ParameterSet&);
@@ -146,6 +147,7 @@ L1ntuples::~L1ntuples()
 void
 L1ntuples::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 {
+  Initialize();
    using namespace edm;
 
   edm::Handle<BXVector<l1t::Tau>>stage2TauHandle;
@@ -160,7 +162,7 @@ L1ntuples::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   _indexevents = event.id().event();
   _runNumber = event.id().run();
   _lumi=event.luminosityBlock();
-  
+
   stage2objNumber=FillStage2(stage2Tau, stage2Jet, event);
   _stage2_tauN = stage2objNumber[0];
   _stage2_jetN = stage2objNumber[2];
@@ -227,9 +229,11 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
 	{
           if (it->pt() > 0){
             nObj[0]++;
-            _stage2_tauEt .push_back(it->et());
+            _stage2_tauEt.push_back(it->et());
             _stage2_tauEta.push_back(it->eta());
             _stage2_tauPhi.push_back(it->phi());
+	    
+	   
           }
 	}
     }
@@ -239,7 +243,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
         {
           if (it->pt() > 0){
             nObj[2]++;
-            _stage2_jetEt .push_back(it->et());
+            _stage2_jetEt.push_back(it->et());
             _stage2_jetEta.push_back(it->eta());
             _stage2_jetPhi.push_back(it->phi());
           }
