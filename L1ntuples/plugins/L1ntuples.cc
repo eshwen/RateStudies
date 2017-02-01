@@ -223,8 +223,9 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
   for(int ii =0; ii<4; ii++){
     nObj[ii]=0;
   }
-  for (int ibx = taus->getFirstBX(); ibx <= taus->getLastBX(); ++ibx)
-    {
+  //  for (int ibx = taus->getFirstBX(); ibx <= taus->getLastBX(); ++ibx)
+  //  {
+  int ibx = 0;
       for (BXVector<l1t::Tau>::const_iterator it=taus->begin(ibx); it!=taus->end(ibx); it++)
 	{
           if (it->pt() > 0){
@@ -232,13 +233,13 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
             _stage2_tauEt.push_back(it->et());
             _stage2_tauEta.push_back(it->eta());
             _stage2_tauPhi.push_back(it->phi());
-	    
+	    if (ibx != 0) cout<<"argh"<<endl;
 	   
           }
 	}
-    }
-  for (int ibx = jets->getFirstBX(); ibx <= jets->getLastBX(); ++ibx)
-    {
+      // }
+      //for (int ibx = jets->getFirstBX(); ibx <= jets->getLastBX(); ++ibx)
+      //  {
       for (BXVector<l1t::Jet>::const_iterator it=jets->begin(ibx); it!=jets->end(ibx); it++)
         {
           if (it->pt() > 0){
@@ -248,7 +249,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
             _stage2_jetPhi.push_back(it->phi());
           }
         }
-    }
+      //  }
   return nObj;
 }
 //define this as a plug-in

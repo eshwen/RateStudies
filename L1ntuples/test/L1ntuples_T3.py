@@ -3,10 +3,7 @@ import sys,os
 
 PyFilePath = os.environ['CMSSW_BASE']+"/src/RateStudies/L1ntuples/"
 process = cms.Process("Demo")
-#outdir = '/data_CMS/cms/amendola/RateStudiesL1Ntuples/Ntuples22Gen2016/'
-#readme = open(outdir+"readme.txt","w")
-#sourceFile = 'root://polgrid4.in2p3.fr//store/data/Run2016D/ZeroBias/MINIAOD/23Sep2016-v1/100000/047F4BED-BD84-E611-9045-44A842CFD5FF.root'
-#readme.write('Source '+ sourceFile)
+
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
@@ -14,7 +11,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(XXX_MAXEVENT
 
 execfile(PyFilePath+"test/XXX_SAMPLEFILENAME_XXX")
 process.source = cms.Source("PoolSource", 
-#    fileNames = cms.untracked.vstring("root://polgrid4.in2p3.fr//store/data/Run2016D/ZeroBias/MINIAOD/23Sep2016-v1/100000/047F4BED-BD84-E611-9045-44A842CFD5FF.root")
+
                             fileNames = FILELIST
 )
 

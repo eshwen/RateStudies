@@ -35,7 +35,7 @@ if __name__ == "__main__":
     usage = 'usage: %prog [options]'
     parser = optparse.OptionParser(usage)
     parser.add_option('-q', '--queue'         ,    dest='queue'              , help='batch queue'                                        , default='short')
-    parser.add_option('-s', '--sample'        ,    dest='samplefile'         , help='python file names'                                  , default='Data_ZeroBias_2016D23Sept.py')
+    parser.add_option('-s', '--sample'        ,    dest='samplefile'         , help='python file names'                                  , default='none')
     parser.add_option('-n', '--njobs'         ,    dest='njobs'              , help='number of jobs'                                     , default=1,  type=int)
     parser.add_option('-w', '--wholefile'     ,    dest='wholefile'          , help='use whole files [false]'                            , default=False)
     parser.add_option('-m', '--maxev'         ,    dest='maxevents'          , help='max total number of events (-1 for all)'            , default=-1, type=int)
