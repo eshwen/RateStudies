@@ -5,10 +5,8 @@
 // 
 /**\class L1ntuples L1ntuples.cc RateStudies/L1ntuples/plugins/L1ntuples.cc
 
- Description: [one line class summary]
+ Description: Makes ntuples with L1 trigger information out of miniAOD files
 
- Implementation:
-     [Notes on implementation]
 */
 //
 // Original Author:  Chiara Amendola
@@ -65,11 +63,6 @@
 // class declaration
 //
 
-// If the analyzer does not use TFileService, please remove
-// the template argument to the base class so the class inherits
-// from  edm::one::EDAnalyzer<> and also remove the line from
-// constructor "usesResource("TFileService");"
-// This will improve performance in multithreaded jobs.
 
 
 class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {

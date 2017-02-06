@@ -16,9 +16,6 @@ process.source = cms.Source("PoolSource",
 )
 
 
-#process.demo = cms.EDAnalyzer('L1ntuples'
-#     , tracks = cms.untracked.InputTag('ctfWithMaterialTracks')
-#)
 process.L1Tree = cms.EDAnalyzer("L1ntuples",
                                 stage2TauCollection = cms.InputTag("caloStage2Digis","Tau"),
                                 stage2EGammaCollection = cms.InputTag("caloStage2Digis","EGamma"),
