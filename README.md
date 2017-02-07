@@ -23,8 +23,8 @@ cmsRun L1ntuples/python/L1ntuples.py
 To submit on the T3:
 ```
 cd L1ntuples/test
-source MakeFileListDAS.sh -t "<fileListName>" -o <fileListName>.py -p <datasetName>
 voms-proxy-init -voms cms   
+source MakeFileListDAS.sh -t "<fileListName>" -o <fileListName>.py -p <datasetName>
 ./submitOnTier3_L1Ntuplizer.py -o <outputDirectory> -t <tag> -s <fileListName>.py
 ```
 ### Rate studies

@@ -80,7 +80,8 @@ int main(int argc, char** argv){
 
   cout << "Scale factor: " << scale << endl;
   // TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias25Gen2016HighPU_ibx0_100000Events/";
-  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias6Feb2017HighPU_ibx0_-1Events/";
+  //  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias6Feb2017HighPU_ibx0_-1Events/";
+  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias7Feb2017HighPU_ibx0_BunchTrain1-5_2016H9Nov_-1Events/";
 
   //ZeroBias sample L1
   TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
