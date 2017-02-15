@@ -59,6 +59,85 @@
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 
 
+//from htautauntuplizer
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include <FWCore/Framework/interface/ESHandle.h>
+#include <FWCore/Framework/interface/LuminosityBlock.h>
+#include <FWCore/ParameterSet/interface/ParameterSet.h>
+#include <FWCore/Common/interface/TriggerNames.h>
+
+//#include <DataFormats/PatCandidates/interface/Muon.h>
+//#include <DataFormats/PatCandidates/interface/MET.h>
+//#include "DataFormats/PatCandidates/interface/Jet.h"
+//#include <DataFormats/PatCandidates/interface/GenericParticle.h>
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include <DataFormats/Common/interface/View.h>
+#include <DataFormats/Candidate/interface/Candidate.h>
+
+//#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
+//#include <DataFormats/PatCandidates/interface/Electron.h>
+//#include <DataFormats/METReco/interface/PFMET.h>
+//#include <DataFormats/METReco/interface/PFMETCollection.h>
+//#include <DataFormats/JetReco/interface/PFJet.h>
+//#include <DataFormats/JetReco/interface/PFJetCollection.h>
+//#include <DataFormats/PatCandidates/interface/PackedCandidate.h>
+
+
+
+
+#include <DataFormats/Math/interface/LorentzVector.h>
+#include <DataFormats/VertexReco/interface/Vertex.h>
+#include <DataFormats/Common/interface/MergeableCounter.h>
+#include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
+#include <CommonTools/UtilAlgos/interface/TFileService.h>
+
+#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
+
+
+#include "Geometry/Records/interface/HcalParametersRcd.h"
+#include "FWCore/Framework/interface/eventsetuprecord_registration_macro.h"
+#include "FWCore/Framework/interface/ESTransientHandle.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
+#include "CondFormats/GeometryObjects/interface/HcalParameters.h"
+#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/HcalCommonData/interface/HcalParametersFromDD.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
+#include "RecoVertex/AdaptiveVertexFit/interface/AdaptiveVertexFitter.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "RecoVertex/VertexPrimitives/interface/ConvertToFromReco.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalTrajectoryExtrapolatorToLine.h"
+#include "TrackingTools/GeomPropagators/interface/AnalyticalImpactPointExtrapolator.h"
+
 //
 // class declaration
 //
@@ -92,6 +171,7 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<Float_t> _stage2_tauEt;
   std::vector<Float_t> _stage2_tauEta;
   std::vector<Float_t> _stage2_tauPhi;
+    std::vector<int> _stage2_tauIso;
 
   
   Int_t _stage2_jetN;
@@ -180,6 +260,7 @@ L1ntuples::beginJob()
   myTree->Branch("stage2_tauEt",&_stage2_tauEt);
   myTree->Branch("stage2_tauEta",&_stage2_tauEta);
   myTree->Branch("stage2_tauPhi",&_stage2_tauPhi);
+  myTree->Branch("stage2_tauIso",&_stage2_tauIso);
   
   myTree->Branch("stage2_jetN",&_stage2_jetN,"Stage2jetsNumber/I");
   myTree->Branch("stage2_jetEt",&_stage2_jetEt);
@@ -204,6 +285,7 @@ void L1ntuples::Initialize(){
   _stage2_tauEt.clear();
   _stage2_tauEta.clear();
   _stage2_tauPhi.clear();
+  _stage2_tauIso.clear();
   _stage2_jetN = 0;
   _stage2_jetEt.clear();
   _stage2_jetEta.clear();
@@ -216,6 +298,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
   for(int ii =0; ii<4; ii++){
     nObj[ii]=0;
   }
+  Initialize();
   //  for (int ibx = taus->getFirstBX(); ibx <= taus->getLastBX(); ++ibx)
   //  {
   int ibx = 0;
@@ -226,6 +309,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
             _stage2_tauEt.push_back(it->et());
             _stage2_tauEta.push_back(it->eta());
             _stage2_tauPhi.push_back(it->phi());
+	    _stage2_tauIso.push_back(it->hwIso());
 	    if (ibx != 0) cout<<"argh"<<endl;
 	   
           }
