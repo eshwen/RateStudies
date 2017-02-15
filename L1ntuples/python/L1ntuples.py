@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import sys
-process = cms.Process("Demo")
+process = cms.Process("RECO")
 sourceFile = 'root://polgrid4.in2p3.fr//store/data/Run2016H/ZeroBiasBunchTrains0/AOD/09Nov2016-v1/110000/005EAF54-21A8-E611-9D30-0CC47A4D7640.root'
 outdir = '/data_CMS/cms/amendola/RateStudiesL1Ntuples/Ntuples23Gen2016/'
 outFile = 'Data_L1ntuple_ZeroBias_test1000entries.root'
