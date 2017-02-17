@@ -298,7 +298,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::J
   for(int ii =0; ii<4; ii++){
     nObj[ii]=0;
   }
-  Initialize();
+
   //  for (int ibx = taus->getFirstBX(); ibx <= taus->getLastBX(); ++ibx)
   //  {
   int ibx = 0;
