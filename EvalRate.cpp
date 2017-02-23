@@ -238,78 +238,78 @@ int main(int argc, char** argv){
     L1_DoubleIsoTau25er_Jet50= false;
     L1_DoubleIsoTau32er= false;
     for (long int iL1 = 0; iL1 < stage2_tauN; iL1++){ //loop on taus
-       // selections
-       double tauEta  = stage2_tauEta->at(iL1);
-       double tauIso  = stage2_tauIso->at(iL1);
-       if(tauIso>0.5 && fabs(tauEta)<2.1) tau.push_back(object(stage2_tauEt->at(iL1),stage2_tauEta->at(iL1),stage2_tauPhi->at(iL1),stage2_tauIso->at(iL1))) ;
-     }
+      // selections
+      double tauEta  = stage2_tauEta->at(iL1);
+      double tauIso  = stage2_tauIso->at(iL1);
+      if(tauIso>0.5 && fabs(tauEta)<2.1) tau.push_back(object(stage2_tauEt->at(iL1),stage2_tauEta->at(iL1),stage2_tauPhi->at(iL1),stage2_tauIso->at(iL1))) ;
+    }
      
-     for (long int iL1 = 0; iL1 < stage2_jetN; iL1++){ //loop on jets
-       // selections
-       double jetPt  = (*stage2_jetEt)[iL1];
-       ptJet_pass.push_back (jetPt);
-       if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
-     }
+    for (long int iL1 = 0; iL1 < stage2_jetN; iL1++){ //loop on jets
+      // selections
+      double jetPt  = (*stage2_jetEt)[iL1];
+      ptJet_pass.push_back (jetPt);
+      if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+    }
 
-     std::sort (jet30.begin(),jet30.end());
-     std::sort (tau.begin(),tau.end());
+    std::sort (jet30.begin(),jet30.end());
+    std::sort (tau.begin(),tau.end());
 
-     //overap removal
-     tauNoOverlap.push_back(object(tau[0].Et(),tau[0].Eta(),tau[0].Phi(),tau[0].Iso())) ;      
-     tau25noOverlap.push_back(object(tau[0].Et(),tau[0].Eta(),tau[0].Phi(),tau[0].Iso())) ;      
-     for (int iTau =1;iTau<tau.size();iTau++){
-       if (tau[iTau].DeltaR(tau[0])>0.2) tauNoOverlap.push_back(object(tau[iTau].Et(),tau[iTau].Eta(),tau[iTau].Phi(),tau[iTau].Iso())) ;      
-       if (tau[iTau].DeltaR(tau[0])>0.2 && tau[iTau].Et()>25) tau25noOverlap.push_back(object(tau[iTau].Et(),tau[iTau].Eta(),tau[iTau].Phi(),tau[iTau].Iso())) ;      
-     }
-          for (int iJet =0;iJet<jet30.size();iJet++){
-       if ((jet30[iJet].DeltaR(tau[0])>0.2)&&(jet30[iJet].DeltaR(tau[1])>0.2)) jet30noOverlap.push_back(object(jet30[iJet].Et(),jet30[iJet].Eta(),jet30[iJet].Phi(),-999)) ;      
-     }
+    //overap removal
+    tauNoOverlap.push_back(object(tau[0].Et(),tau[0].Eta(),tau[0].Phi(),tau[0].Iso())) ;      
+    tau25noOverlap.push_back(object(tau[0].Et(),tau[0].Eta(),tau[0].Phi(),tau[0].Iso())) ;      
+    for (int iTau =1;iTau<tau.size();iTau++){
+      if (tau[iTau].DeltaR(tau[0])>0.2) tauNoOverlap.push_back(object(tau[iTau].Et(),tau[iTau].Eta(),tau[iTau].Phi(),tau[iTau].Iso())) ;      
+      if (tau[iTau].DeltaR(tau[0])>0.2 && tau[iTau].Et()>25) tau25noOverlap.push_back(object(tau[iTau].Et(),tau[iTau].Eta(),tau[iTau].Phi(),tau[iTau].Iso())) ;      
+    }
+    for (int iJet =0;iJet<jet30.size();iJet++){
+      if ((jet30[iJet].DeltaR(tau[0])>0.2)&&(jet30[iJet].DeltaR(tau[1])>0.2)) jet30noOverlap.push_back(object(jet30[iJet].Et(),jet30[iJet].Eta(),jet30[iJet].Phi(),-999)) ;      
+    }
      
-     std::sort (jet30noOverlap.begin(),jet30noOverlap.end());//not necessary
-     std::sort (tauNoOverlap.begin(),tauNoOverlap.end());//not necessary
-     std::sort (tau25noOverlap.begin(),tau25noOverlap.end());//not necessary
+    std::sort (jet30noOverlap.begin(),jet30noOverlap.end());//not necessary
+    std::sort (tauNoOverlap.begin(),tauNoOverlap.end());//not necessary
+    std::sort (tau25noOverlap.begin(),tau25noOverlap.end());//not necessary
 
 
 
      
-     //DiTau+PtDiTau
+    //DiTau+PtDiTau
 
     if (tau25noOverlap.size() >= 2){
-       int Ntau = tau25noOverlap.size();
-       if (Ntau > 5) Ntau=5; 
-       for (int iTau = 0; iTau <Ntau; iTau++){      
-	 for (int kTau = 0; kTau <Ntau; kTau++){      
-	   if (kTau!=iTau) {
-	     TLorentzVector itau;
-	     itau.SetPtEtaPhiM(
-			       tau25noOverlap[iTau].Et(),
-			       tau25noOverlap[iTau].Eta(),
-			       tau25noOverlap[iTau].Phi(),
-			       0.);
-	     TLorentzVector ktau;
-	     ktau.SetPtEtaPhiM(
-			       tau25noOverlap[kTau].Et(),
-			       tau25noOverlap[kTau].Eta(),
-			       tau25noOverlap[kTau].Phi(),
-			       0.);
-	     TLorentzVector tauPair = itau+ktau;
-	     et_ditau_pass.push_back(make_tuple(tauPair.Et(),iTau,kTau));
-	     m_ditau_pass.push_back(make_tuple(tauPair.M(),iTau,kTau));
+      int Ntau = tau25noOverlap.size();
+      if (Ntau > 5) Ntau=5; 
+      for (int iTau = 0; iTau <Ntau; iTau++){      
+	for (int kTau = 0; kTau <Ntau; kTau++){      
+	  if (kTau!=iTau) {
+	    TLorentzVector itau;
+	    itau.SetPtEtaPhiM(
+			      tau25noOverlap[iTau].Et(),
+			      tau25noOverlap[iTau].Eta(),
+			      tau25noOverlap[iTau].Phi(),
+			      0.);
+	    TLorentzVector ktau;
+	    ktau.SetPtEtaPhiM(
+			      tau25noOverlap[kTau].Et(),
+			      tau25noOverlap[kTau].Eta(),
+			      tau25noOverlap[kTau].Phi(),
+			      0.);
+	    TLorentzVector tauPair = itau+ktau;
+	    et_ditau_pass.push_back(make_tuple(tauPair.Et(),iTau,kTau));
+	    m_ditau_pass.push_back(make_tuple(tauPair.M(),iTau,kTau));
 	     
-	   }
-	 }
-       }
-       std::sort(et_ditau_pass.begin(),et_ditau_pass.end());
-       std::sort(m_ditau_pass.begin(),m_ditau_pass.end());
-       PtTauTau->Fill(std::get<0>(*(et_ditau_pass.rbegin())));
-       MTauTau->Fill(std::get<0>(*(m_ditau_pass.rbegin())));
-       DiTau2D_Pass -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
-     } else{
+	  }
+	}
+      }
+      std::sort(et_ditau_pass.begin(),et_ditau_pass.end());
+      std::sort(m_ditau_pass.begin(),m_ditau_pass.end());
+      PtTauTau->Fill(std::get<0>(*(et_ditau_pass.rbegin())));
+      MTauTau->Fill(std::get<0>(*(m_ditau_pass.rbegin())));
+      DiTau2D_Pass -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
+    } else{
       DiTau2D_Pass -> Fill (-1,-1);
-     }
+    }
        
 
-	  //VBF
+    //VBF
        
     if (jet30.size() >= 2){
       for (int iJet = 0; iJet <jet30.size(); iJet++){      
@@ -357,12 +357,12 @@ int main(int argc, char** argv){
 	      }
 	      if(std::get<0>(*(mjj_pass.rbegin()))>400 &&std::get<0>(*(mjj_pass.rbegin()))<460){
 	      ETA_strip1->Fill(jet30[std::get<2>(*(mjj_pass.rbegin()))].Eta());
-	ETA_strip1->Fill(jet30[std::get<1>(*(mjj_pass.rbegin()))].Eta());
-	}
-	if(std::get<0>(*(mjj_pass.rbegin()))>460 &&std::get<0>(*(mjj_pass.rbegin()))<600){
-	ETA_strip2->Fill(jet30[std::get<2>(*(mjj_pass.rbegin()))].Eta());
-	ETA_strip2->Fill(jet30[std::get<1>(*(mjj_pass.rbegin()))].Eta());
-	}*/
+	      ETA_strip1->Fill(jet30[std::get<1>(*(mjj_pass.rbegin()))].Eta());
+	      }
+	      if(std::get<0>(*(mjj_pass.rbegin()))>460 &&std::get<0>(*(mjj_pass.rbegin()))<600){
+	      ETA_strip2->Fill(jet30[std::get<2>(*(mjj_pass.rbegin()))].Eta());
+	      ETA_strip2->Fill(jet30[std::get<1>(*(mjj_pass.rbegin()))].Eta());
+	      }*/
       
     } else {
       DiJet2D_Pass -> Fill (-1, -1);
@@ -385,36 +385,36 @@ int main(int argc, char** argv){
 	    DiTauJet2D_Pass_jet->Fill( tauNoOverlap[1].Et(),jet30noOverlap[0].Et(),weight);
 	    //  DiTauJet3D_Pass_jet->Fill( tauNoOverlap[0].Et(),tauNoOverlap[1].Et(),jet30noOverlap[0].Et());
 	  }else{
-	  SubleadTauPt_Pass -> Fill(-1);
-	  SubleadTauPt_Pass_jet -> Fill(-1);
-	  DiTauJet2D_Pass->Fill( -1,-1 );
-	  DiTauJet2D_Pass_jet->Fill( -1,-1);
-	  //  DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
-	}
+	    SubleadTauPt_Pass -> Fill(-1);
+	    SubleadTauPt_Pass_jet -> Fill(-1);
+	    DiTauJet2D_Pass->Fill( -1,-1 );
+	    DiTauJet2D_Pass_jet->Fill( -1,-1);
+	    //  DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
+	  }
+	} 
+    
+      else if (tauNoOverlap.size() == 1){
+	LeadTauPt_Pass -> Fill ( tauNoOverlap[0].Et(),weight ); 
+	SingleTauPt_Pass -> Fill ( tauNoOverlap[0].Et(),weight ); 
+	SubleadTauPt_Pass -> Fill ( -1 );
+	SubleadTauPt_Pass_jet -> Fill ( -1 );
+	DiTauPt_Pass -> Fill ( -1); 
+	DiTauJet2D_Pass->Fill( -1,-1 );
+	DiTauJet2D_Pass_jet->Fill( -1,-1 );
+	//      DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
       } 
     
-    else if (tauNoOverlap.size() == 1){
-      LeadTauPt_Pass -> Fill ( tauNoOverlap[0].Et(),weight ); 
-      SingleTauPt_Pass -> Fill ( tauNoOverlap[0].Et(),weight ); 
-      SubleadTauPt_Pass -> Fill ( -1 );
-      SubleadTauPt_Pass_jet -> Fill ( -1 );
-      DiTauPt_Pass -> Fill ( -1); 
-      DiTauJet2D_Pass->Fill( -1,-1 );
-      DiTauJet2D_Pass_jet->Fill( -1,-1 );
-      //      DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
-    } 
-    
-    else
-      {
-	LeadTauPt_Pass -> Fill ( -1 ); 
-	SingleTauPt_Pass -> Fill ( -1 ); 
-	SubleadTauPt_Pass -> Fill ( -1 );        
-	SubleadTauPt_Pass_jet -> Fill ( -1 );
-	DiTauPt_Pass -> Fill ( -1 ); 
-	DiTauJet2D_Pass->Fill( -1,-1 );       
-	DiTauJet2D_Pass_jet->Fill( -1,-1 );
-	DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
-      }       
+      else
+	{
+	  LeadTauPt_Pass -> Fill ( -1 ); 
+	  SingleTauPt_Pass -> Fill ( -1 ); 
+	  SubleadTauPt_Pass -> Fill ( -1 );        
+	  SubleadTauPt_Pass_jet -> Fill ( -1 );
+	  DiTauPt_Pass -> Fill ( -1 ); 
+	  DiTauJet2D_Pass->Fill( -1,-1 );       
+	  DiTauJet2D_Pass_jet->Fill( -1,-1 );
+	  DiTauJet3D_Pass_jet->Fill( -1,-1,-1 );
+	}       
       
     }
 
@@ -451,16 +451,16 @@ int main(int argc, char** argv){
     } 
     
   }
-    if(isOffSel){
-      acceptance_ditau /= nEventsPass;
-      acceptance_ditaujet /= nEventsPass;
-      acceptance_ditauPt /= nEventsPass;
-      acceptance_ditau_ditaujet /= nEventsPass;
-      acceptance_ditau_ditauPt /= nEventsPass;
-    }else{   
+  if(isOffSel){
+    acceptance_ditau /= nEventsPass;
+    acceptance_ditaujet /= nEventsPass;
+    acceptance_ditauPt /= nEventsPass;
+    acceptance_ditau_ditaujet /= nEventsPass;
+    acceptance_ditau_ditauPt /= nEventsPass;
+  }else{   
 
-      pureRate_ditauPt *=scale/nEventsPass; 
-    }
+    pureRate_ditauPt *=scale/nEventsPass; 
+  }
 
 
 
@@ -536,7 +536,7 @@ int main(int argc, char** argv){
 
 
   //diTau+jet
- for (int i = 1; i <=DiTauJet2D_Pass->GetNbinsX(); i++){
+  for (int i = 1; i <=DiTauJet2D_Pass->GetNbinsX(); i++){
     for (int j = 1; j<= DiTauJet2D_Pass->GetNbinsY();j++ ){
       double binDiTauJet2D = 1.*(DiTauJet2D_Pass->Integral(i, DiTauJet2D_Pass->GetNbinsX()+1,j,DiTauJet2D_Pass->GetNbinsY()+1))/nEventsPass;
       Ratio_DiTauJet2D -> SetBinContent (i, j, binDiTauJet2D);        
@@ -548,7 +548,7 @@ int main(int argc, char** argv){
 
 
 
- for (int i = 1; i <=DiTauJet2D_Pass_jet->GetNbinsX(); i++){
+  for (int i = 1; i <=DiTauJet2D_Pass_jet->GetNbinsX(); i++){
     for (int j = 1; j<= DiTauJet2D_Pass_jet->GetNbinsY();j++ ){
       double binDiTauJet2D_jet = 1.*(DiTauJet2D_Pass_jet->Integral(i, DiTauJet2D_Pass_jet->GetNbinsX()+1,j,DiTauJet2D_Pass_jet->GetNbinsY()+1))/nEventsPass;
       Ratio_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);        
@@ -560,23 +560,23 @@ int main(int argc, char** argv){
 
 
   /*   for (int i = 1; i <=DiTauJet3D_Pass_jet->GetNbinsX(); i++){
-   cout<<"looping on i "<<i<<endl;
-    for (int j = 1; j<= DiTauJet3D_Pass_jet->GetNbinsY();j++ ){
-      for (int k = 1; k<= DiTauJet3D_Pass_jet->GetNbinsZ();k++ ){
-	double binDiTauJet3D_jet = 1.*(DiTauJet3D_Pass_jet->Integral(i, DiTauJet3D_Pass_jet->GetNbinsX()+1,j,DiTauJet3D_Pass_jet->GetNbinsY()+1,k,DiTauJet3D_Pass_jet->GetNbinsZ()+1))/nEventsPass;
-	Ratio_DiTauJet3D_jet -> SetBinContent (i, j, k, binDiTauJet3D_jet);        
-	binDiTauJet3D_jet *=scale;
-	Rate_DiTauJet3D_jet -> SetBinContent (i, j, k,binDiTauJet3D_jet);        
-      }
-   }
+       cout<<"looping on i "<<i<<endl;
+       for (int j = 1; j<= DiTauJet3D_Pass_jet->GetNbinsY();j++ ){
+       for (int k = 1; k<= DiTauJet3D_Pass_jet->GetNbinsZ();k++ ){
+       double binDiTauJet3D_jet = 1.*(DiTauJet3D_Pass_jet->Integral(i, DiTauJet3D_Pass_jet->GetNbinsX()+1,j,DiTauJet3D_Pass_jet->GetNbinsY()+1,k,DiTauJet3D_Pass_jet->GetNbinsZ()+1))/nEventsPass;
+       Ratio_DiTauJet3D_jet -> SetBinContent (i, j, k, binDiTauJet3D_jet);        
+       binDiTauJet3D_jet *=scale;
+       Rate_DiTauJet3D_jet -> SetBinContent (i, j, k,binDiTauJet3D_jet);        
+       }
+       }
 
-   }*/
+       }*/
  
  
- if(!isOffSel){
-   fOutTaus -> Write();
-   fOutVBF -> Write();
-   fOutXtrigger -> Write();
- }
+  if(!isOffSel){
+    fOutTaus -> Write();
+    fOutVBF -> Write();
+    fOutXtrigger -> Write();
+  }
 }
 
