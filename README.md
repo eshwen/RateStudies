@@ -23,6 +23,7 @@ cmsRun L1ntuples/python/L1ntuples.py
 To submit on the T3:
 ```
 cd L1ntuples/test
+source /opt/exp_soft/cms/t3/t3setup
 voms-proxy-init -voms cms   
 source MakeFileListDAS.sh -t "<fileListName>" -o <fileListName>.py -p <datasetName>
 ./submitOnTier3_L1Ntuplizer.py -o <outputDirectory> -t <tag> -s <fileListName>.py
@@ -30,6 +31,6 @@ source MakeFileListDAS.sh -t "<fileListName>" -o <fileListName>.py -p <datasetNa
 ### Rate studies
 All the information needs to be modified in the code EvalRate.cpp
 ```
-c++ -lm -o EvalRate EvalRate.cpp `root-config --glibs --cflags`
+make
 ./EvalRate
 ```
