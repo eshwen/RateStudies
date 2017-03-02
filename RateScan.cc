@@ -16,7 +16,7 @@
 
 
 using namespace std;
-void scan(){
+void scan(int targetRate){
 
   TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias14Feb2017HighPU_ibx0_BunchTrain1-5_2016H9Nov_-1Events/";
   
@@ -24,10 +24,10 @@ void scan(){
   //ZeroBias sample L1
   TFile *file = TFile::Open(Form("%srateL1_taus.root", directory.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
-  double targetRate = 14;
+
   int xcut = 0;
   int ycut = 0;
-  ofstream fOut(Form("%srate14kHz_etTaus_ptTauTau.txt",directory.Data()));
+  ofstream fOut(Form("%srate%dkHz_etTaus_ptTauTau.txt",directory.Data(),targetRate));
 
   TH2D * hInput = (TH2D*) file->Get("Rate_DiTau2D");
   if (hInput == NULL) cout<<"Histogram not found"<<endl;
@@ -38,7 +38,7 @@ void scan(){
 	xcut= 0;
 	ycut= 0;
 
-	if(hInput->GetBinContent(i,j)<=targetRate){
+	if(hInput->GetBinContent(i,j)<=(float)targetRate){
 	  xcut= hInput->GetXaxis()->GetBinLowEdge(i);
 	  ycut= hInput->GetYaxis()->GetBinLowEdge(j);
 	  cout<<"pT_tau "<<ycut<<" GeV; pT_tautau "<<xcut<<" GeV; rate "<<hInput->GetBinContent(i,j)<<endl;	 

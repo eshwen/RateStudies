@@ -47,6 +47,29 @@ public:
     return this->Et() > objref.Et();
   }
   
+  class SortByDeltaR{
+  public:
+    SortByDeltaR(float ref_Phi, float ref_Eta){ref_Phi_ = ref_Phi; ref_Eta_= ref_Eta;};
+    bool operator() (const object& obj1,const object& obj2)
+    {
+      float dEta1 = obj1.Eta()-ref_Eta_;
+
+      float dPhi1 = obj1.Phi()-ref_Phi_;
+      if(dPhi1 > 3.14) dPhi1 -= 6.28;
+      if(dPhi1 < -3.14) dPhi1 += 6.28;
+
+      float dEta2 = obj2.Eta()-ref_Eta_;
+
+      float dPhi2 = obj2.Phi()-ref_Phi_;
+      if(dPhi2 > 3.14) dPhi2 -= 6.28;
+      if(dPhi2 < -3.14) dPhi2 += 6.28;
+      return sqrt(dEta1*dEta1 + dPhi1*dPhi1) < sqrt(dEta2*dEta2 + dPhi2*dPhi2);
+    }
+  private:
+    float ref_Phi_, ref_Eta_;
+
+
+  };
   
   friend std::ostream& operator << (std::ostream &out, const object &object);
 private:
