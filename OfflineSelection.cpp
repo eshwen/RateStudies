@@ -34,7 +34,9 @@ int main(int argc, char** argv){
   fPlots->cd() ;  
   TH1D* PtTauTau = new TH1D ("PtTauTau", "", 100, 0, 400);
   TH1D* MTauTau = new TH1D ("MTauTau", "", 100, 0, 400);
-  TH1D* Mjj = new TH1D ("Mjj", "", 100, 0, 800);
+  TH1D* EtaJet1 = new TH1D ("EtaJet1", "", 50, -5, 5);
+  TH1D* EtaJet2 = new TH1D ("EtaJet2", "", 50, -5, 5);
+
   TH2D* Mjj_corr = new TH2D ("Mjj_corr", "", 50, 0, 800,50,0,800);
   TH1D* Mjj_res = new TH1D ("Mjj_res", "", 50, -1, 1);
 
@@ -43,7 +45,9 @@ int main(int argc, char** argv){
   TH1D* Mjj_VBFMatched_pass = new TH1D ("Mjj_VBFMatched_pass", "", 40, 400, 2000);
   TH1D* Mjj_VBF_tot = new TH1D ("Mjj_VBF_tot", "", 40, 400, 2000);
   TH1D* Mjj_ditau = new TH1D ("Mjj_ditau", "",40 ,400, 2000);
+ TH1D* Mjj_ditau_VBF = new TH1D ("Mjj_ditau_VBF", "",40 ,400, 2000);
   TH1D* Mjj_noditau_VBF = new TH1D ("Mjj_noditau_VBF", "",40 ,400, 2000);
+  TH1D* Mjj_noditau_VBFsel = new TH1D ("Mjj_noditau_VBFsel", "",40 ,400, 2000);
   TH1D* Mjj_or = new TH1D ("Mjj_or", "",40 ,400, 2000);
 
   TH1D* PtTauTau_DiTauPt = new TH1D ("PtTauTau_DiTauPt", "", 40, 0, 400); 
@@ -310,9 +314,9 @@ int main(int argc, char** argv){
 	std::sort (tau25noOverlap.begin(),tau25noOverlap.end());//not necessary
 	
 	//matched L1 jets
-	if(jet30_sortByDeltaR.size()>1 && OffJet.size()>1){
-	  object::SortByDeltaR DeltaRL1JetOffJet1(OffJet[0].Phi(),OffJet[0].Eta());
-	  object::SortByDeltaR DeltaRL1JetOffJet2(OffJet[1].Phi(),OffJet[1].Eta());	  
+	if(jet30_sortByDeltaR.size()>1 && OffJetNoOverlap.size()>1){
+	  object::SortByDeltaR DeltaRL1JetOffJet1(OffJetNoOverlap[0].Phi(),OffJetNoOverlap[0].Eta());
+	  object::SortByDeltaR DeltaRL1JetOffJet2(OffJetNoOverlap[1].Phi(),OffJetNoOverlap[1].Eta());	  
 	  
 	  std::sort(jet30_sortByDeltaR.begin(),jet30_sortByDeltaR.end(),DeltaRL1JetOffJet1);
 	  std::sort(jet30_sortByDeltaR.begin()+1,jet30_sortByDeltaR.end(),DeltaRL1JetOffJet2);
@@ -408,17 +412,15 @@ int main(int argc, char** argv){
       TLorentzVector tlv_jetPair;
       TLorentzVector tlv_L1jetPair;
 
-      if(OffJet.size()>=2){     
-	  tlv_jetPair  = OffJet[0]+OffJet[1];	      
+      if(OffJetNoOverlap.size()>=2){     
+	  tlv_jetPair  = OffJetNoOverlap[0]+OffJetNoOverlap[1];	      
 	  //for acceptance L1_DoubleJet_90_30_Mj30j30_620 //VBF
-	  if(OffJet[0].Pt()>100 && OffJet[1].Pt()>30 && OffTau[0].Pt()>20 && OffTau[1].Pt()>20){
+	  if(OffJetNoOverlap[0].Pt()>100 && OffJetNoOverlap[1].Pt()>30 && OffTau[0].Pt()>20 && OffTau[1].Pt()>20){
 	    selVBF = true;
-	    if( L1_DoubleJet_90_30_Mj30j30_620 ){	   
-	      Mjj_VBF ->Fill(tlv_jetPair.M());
-	    }
-	    
+	    if( L1_DoubleJet_90_30_Mj30j30_620 )   Mjj_VBF ->Fill(tlv_jetPair.M());
+   	    if (L1_DoubleIsoTau32er) Mjj_ditau_VBF ->Fill(tlv_jetPair.M());	    
 	  }
-	  if(OffJet[0].Pt()>35 && OffJet[1].Pt()>35 && OffTau[0].Pt()>35 && OffTau[1].Pt()>35){
+	  if(OffJetNoOverlap[0].Pt()>35 && OffJetNoOverlap[1].Pt()>35 && OffTau[0].Pt()>35 && OffTau[1].Pt()>35){
 	    selDiTau_forVBF = true;
 	    if(L1_DoubleIsoTau32er ){ Mjj_ditau ->Fill(tlv_jetPair.M());
 	    }      
@@ -427,20 +429,12 @@ int main(int argc, char** argv){
 	    if(!(selDiTau_forVBF && L1_DoubleIsoTau32er)){
 	      Mjj_noditau_VBF ->Fill(tlv_jetPair.M());
 	    }
+	    if(!L1_DoubleIsoTau32er)      Mjj_noditau_VBFsel ->Fill(tlv_jetPair.M());
 	  }
 	  if((tlv_jetPair.M()>700 && selVBF &&L1_DoubleJet_90_30_Mj30j30_620)||(selDiTau_forVBF && L1_DoubleIsoTau32er)){
 	    Mjj_or->Fill(tlv_jetPair.M());
 	  }	
-           
-	  //VBF selection for turnon 
-      
-	if(OffJet[0].Pt()>120 && OffJet[1].Pt()>40 && OffTau[0].Pt()>20 && OffTau[1].Pt()>20){
-
-	  Mjj_VBF_tot ->Fill(tlv_jetPair.M());
-	  if( L1_DoubleJet_90_30_Mj30j30_620 ){
-	    Mjj_VBF_pass ->Fill(tlv_jetPair.M());
-	  }
-	  if(jet30_sortByDeltaR.size()>1){
+          if(jet30_sortByDeltaR.size()>1){
 	    TLorentzVector MatchL1jet1;
 	    MatchL1jet1.SetPtEtaPhiM(
 				     jet30_sortByDeltaR[0].Et(),
@@ -454,11 +448,22 @@ int main(int argc, char** argv){
 				     jet30_sortByDeltaR[1].Phi(),
 				     0.);
 	    
-	    if(MatchL1jet1.DeltaR(OffJet[0])<0.3 && MatchL1jet2.DeltaR(OffJet[1])<0.3){
+	    if(MatchL1jet1.DeltaR(OffJetNoOverlap[0])<0.3 && MatchL1jet2.DeltaR(OffJetNoOverlap[1])<0.3){
 	      tlv_L1jetPair = MatchL1jet1+MatchL1jet2;
 	      
 	      Mjj_corr->Fill(tlv_L1jetPair.M(),tlv_jetPair.M());	  
-	      Mjj_res->Fill((tlv_jetPair.M()-tlv_L1jetPair.M())/tlv_jetPair.M());	  
+	      Mjj_res->Fill((tlv_jetPair.M()-tlv_L1jetPair.M())/tlv_jetPair.M());	   
+	      EtaJet1->Fill(OffJetNoOverlap[0].Eta());
+	      EtaJet2->Fill(OffJetNoOverlap[1].Eta());
+	  //VBF selection for turnon 
+      
+	if(OffJetNoOverlap[0].Pt()>120 && OffJetNoOverlap[1].Pt()>40 && OffTau[0].Pt()>20 && OffTau[1].Pt()>20){
+
+	  Mjj_VBF_tot ->Fill(tlv_jetPair.M());
+	  if( L1_DoubleJet_90_30_Mj30j30_620 ){
+	    Mjj_VBF_pass ->Fill(tlv_jetPair.M());
+	  }
+	  
 	      if(MatchL1jet1.Et()>90 && tlv_L1jetPair.M()>620)  Mjj_VBFMatched_pass ->Fill(tlv_jetPair.M());	     
 	    }
 	    }
@@ -502,29 +507,29 @@ int main(int argc, char** argv){
   } 
 
 
- 
-    fPlots->cd();
-    Mjj_TurnOn->BayesDivide(Mjj_VBF_pass, Mjj_VBF_tot);
-    Mjj_TurnOn->Write();
-    Mjj_TurnOnMatched->BayesDivide(Mjj_VBFMatched_pass, Mjj_VBF_tot);
-    Mjj_TurnOnMatched->Write();
-
-
-    fPlots->Write();
-    fPlots->Close();
-    cout<<"Acceptance L1_DoubleIsoTau32er                                  "<<N_seedDiTau/N_selDiTau<<endl;
-    cout<<"Events passing L1_DoubleIsoTau32er and selection                "<<N_seedDiTau<<endl;  
-    cout<<"Acceptance L1_DoubleIsoTau25er_Jet50                            "<<N_seedXtrigger/N_selXtrigger<<endl;
-    cout<<"Events passing L1_DoubleIsoTau25er_Jet50 and selection          "<<N_seedXtrigger<<endl;  
-    cout<<"Gain                                                            "<<(N_seedXtrigger_noseedDiTau/N_selXtrigger)/(N_seedDiTau/N_selDiTau)<<endl;
-
-    cout<<"Acceptance L1_DoubleIsoTau32er                                  "<<N_seedDiTau/N_selDiTau<<endl;
-    cout<<"Events passing L1_DoubleIsoTau32er and selection                "<<N_seedDiTau<<endl;  
-    cout<<"Acceptance L1_DoubleIsoTau25er_PtTauTau70                       "<<N_seedDiTauPt/N_selDiTauPt<<endl;
-    cout<<"Events passing L1_DoubleIsoTau25er_PtTauTau70 and selection     "<<N_seedDiTauPt<<endl;  
-    cout<<"Gain                                                            "<<(N_seedDiTauPt_noseedDiTau/N_selDiTauPt)/(N_seedDiTau/N_selDiTau)<<endl;
-
-  }
+  
+  fPlots->cd();
+  Mjj_TurnOn->BayesDivide(Mjj_VBF_pass, Mjj_VBF_tot);
+  Mjj_TurnOn->Write();
+  Mjj_TurnOnMatched->BayesDivide(Mjj_VBFMatched_pass, Mjj_VBF_tot);
+  Mjj_TurnOnMatched->Write();
+  
+  
+  fPlots->Write();
+  fPlots->Close();
+  cout<<"Acceptance L1_DoubleIsoTau32er                                  "<<N_seedDiTau/N_selDiTau<<endl;
+  cout<<"Events passing L1_DoubleIsoTau32er and selection                "<<N_seedDiTau<<endl;  
+  cout<<"Acceptance L1_DoubleIsoTau25er_Jet50                            "<<N_seedXtrigger/N_selXtrigger<<endl;
+  cout<<"Events passing L1_DoubleIsoTau25er_Jet50 and selection          "<<N_seedXtrigger<<endl;  
+  cout<<"Gain                                                            "<<(N_seedXtrigger_noseedDiTau/N_selXtrigger)/(N_seedDiTau/N_selDiTau)<<endl;
+  
+  cout<<"Acceptance L1_DoubleIsoTau32er                                  "<<N_seedDiTau/N_selDiTau<<endl;
+  cout<<"Events passing L1_DoubleIsoTau32er and selection                "<<N_seedDiTau<<endl;  
+  cout<<"Acceptance L1_DoubleIsoTau25er_PtTauTau70                       "<<N_seedDiTauPt/N_selDiTauPt<<endl;
+  cout<<"Events passing L1_DoubleIsoTau25er_PtTauTau70 and selection     "<<N_seedDiTauPt<<endl;  
+  cout<<"Gain                                                            "<<(N_seedDiTauPt_noseedDiTau/N_selDiTauPt)/(N_seedDiTau/N_selDiTau)<<endl;
+  
+}
 
 
 
