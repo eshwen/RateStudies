@@ -66,11 +66,20 @@ int main(int argc, char** argv){
   Mjj_TurnOnMatched->SetName("Mjj_TurnOn_VBFMatched");
 
   TFile *fPlotsDiTauPt = TFile::Open(Form("%sVBFHTauTauSignal_DiTauPtseed.root", LLRdir.Data()),"recreate");
-  TH1D* PtTauTau_DiTauPt = new TH1D ("PtTauTau_DiTauPt", "", 40, 0, 400); 
-  TH1D* PtTauTau_DiTau = new TH1D ("PtTauTau_DiTau", "",40 ,0, 400);
-  TH1D* PtTauTau_noDiTau_DiTauPt = new TH1D ("PtTauTau_noDiTau_DiTauPt", "",40 ,0, 400);
-  
-  
+  TH1D* PtTauPair_DiTauPt = new TH1D ("PtTauPair_DiTauPt", "", 40, 0, 400); 
+  TH1D* PtTauPair_DiTau = new TH1D ("PtTauPair_DiTau", "",40 ,0, 400);
+  TH1D* PtTauPair_noDiTau_DiTauPt = new TH1D ("PtTauPair_noDiTau_DiTauPt", "",40 ,0, 400);
+  TH1D* PtTauPair_or = new TH1D ("PtTauPair_or", "",40, 0, 400);
+  TH1D* PtTauPair_DiTau_noDiTauPt = new TH1D ("PtTauPair_DiTau_noDiTauPt", "",40, 0, 400);
+  TH1D* PtTauPair_noDiTau_BoostbySeed = new TH1D ("PtTauPair_noDiTau_BoostbySeed", "",40,0 ,400);
+  TH1D* PtTauPair_noDiTau_BoostbySel = new TH1D ("PtTauPair_noDiTau_BoostbySel", "",40,0 ,400);
+  TH1D* PtTauPair_noDiTau_BoostbyBoth = new TH1D ("PtTauPair_noDiTau_BoostbyBoth", "",40,0 ,400);
+
+  TH1D* BPtTau_DiTauPair = new TH1D ("BPtTau_DiTauPair", "", 40, 20, 120);
+  TH1D* BPtTau_DiTau = new TH1D ("BPtTau_DiTau", "", 40, 20, 120);
+  TH1D* BPtTau_or = new TH1D ("BPtTau_or", "",40, 20, 120);
+  TH1D* BPtTau_DiTau_noDiTauPair = new TH1D ("BPtTau_DiTau_noDiTauPair", "",40, 20, 120);
+  TH1D* BPtTau_noDiTau_DiTauPair = new TH1D ("BPtTau_noDiTau_DiTauPair", "",40, 20, 120);
 
   file->cd();
   TTree * tInput = (TTree*) file->Get("HTauTauTree/HTauTauTree");
@@ -171,6 +180,7 @@ int main(int argc, char** argv){
   std::vector< std::tuple<double,int,int> > mjj_pass; //VBF
   std::vector< std::tuple<double,int,int> > mjj_off_passditau; //VBF
   std::vector< std::tuple<double,int,int> > mjj_off_passVBF; //VBF
+  std::vector< std::tuple<double,int,int> > ptpair_off; //ditauPt
   bool MatchingTau = false; 
   bool MatchingJet = false; 
   bool L1_DoubleIsoTau25er_Jet50= false;
@@ -190,6 +200,9 @@ int main(int argc, char** argv){
   double N_selDiTau_noVBF = 0;
   double N_selDiTau_VBF = 0;
   double N_noDiTau_VBF = 0;
+  double N_DiTau_noDiTauPair = 0;
+  double N_noDiTau_DiTauPair = 0;
+  double N_DiTau_DiTauPair = 0;
 
 
   long int nEvents = tInput->GetEntries(); 
@@ -209,6 +222,7 @@ int main(int argc, char** argv){
     mjj_off_passVBF.clear();
     et_ditau_pass.clear();
     m_ditau_pass.clear();
+    ptpair_off.clear();
     tau.clear(); 
     MatchingTau = false;
     MatchingJet = false;
@@ -520,11 +534,10 @@ int main(int argc, char** argv){
 	      
 	      Mjj_corr->Fill(tlv_L1jetPair.M(),tlv_jetPair.M());	  
 	      Mjj_res->Fill((tlv_jetPair.M()-tlv_L1jetPair.M())/tlv_jetPair.M());	   
-	      EtaJet1->Fill(OffJetNoOverlap[0].Eta());
-	      EtaJet2->Fill(OffJetNoOverlap[1].Eta());
+
 	      //VBF selection for turnon 
 	      
-	      if(OffJetNoOverlap[0].Pt()>120 && OffJetNoOverlap[1].Pt()>40 && OffTau[0].Pt()>20 && OffTau[1].Pt()>20){
+	       if(((OffJet[0].Pt()>120)||(OffTau[0].Pt()>120)) && OffJet[1].Pt()>40 && OffTau[1].Pt()>20){
 		
 		Mjj_VBF_tot ->Fill(tlv_jetPair.M());
 		if( L1_DoubleJet_90_30_Mj30j30_620 ){
@@ -536,17 +549,12 @@ int main(int argc, char** argv){
 	    }
 	  }
 	}
-	  
+        
       if(OffJetNoOverlap.size()>0){	  
+
+
 	//for acceptance L1_DoubleIsoTau25er_Jet50 //Xtrigger 
-	
-	if(OffJetNoOverlap[0].Pt()>30 && OffTau[0].Pt()>35 && OffTau[1].Pt()>35){
-	  selDiTau = true;
-	  N_selDiTau+=1;
-	  if(L1_DoubleIsoTau32er) N_seedDiTau +=1;
-	  //  PtTauTau_DiTau->Fill(tlv_tauPair.Pt());	 
-	}      
-	
+		
 	if(OffJetNoOverlap[0].Pt()>60 && OffTau[0].Pt()>28 && OffTau[1].Pt()>28){
 	  selXtrigger = true;
 	  if (L1_DoubleIsoTau25er_Jet50) N_seedXtrigger +=1;		
@@ -555,35 +563,101 @@ int main(int argc, char** argv){
 	if(selXtrigger &&L1_DoubleIsoTau25er_Jet50){
 	  if(!(selDiTau &&L1_DoubleIsoTau32er)) N_seedXtrigger_noseedDiTau +=1;
 	}
-	
+	int Ntau1 = 0;
+	int Ntau2 = 0;
 	//for acceptance L1_DoubleIsoTau25er_PtTauTau70 //DiTauPt 
+	for (int iTau = 0; iTau <OffTau.size(); iTau++){ 
+	  if(OffTau[iTau].Pt()<28) continue;
+	  Ntau1++;
+	  if(Ntau1>5) continue;
+	  for (int kTau = 0; kTau <OffTau.size(); kTau++){      
+	    if(OffTau[kTau].Pt()<28) continue; 
+	    Ntau2++;
+	    if(Ntau2>5) continue;
+	    if (OffTau[kTau].Pt()<28 ||OffTau[iTau].Pt()<28) cout<<"argh"<<endl;
+	    if (kTau!=iTau) {
+	      
+	      TLorentzVector itau;
+	      itau.SetPtEtaPhiM(
+				OffTau[iTau].Et(),
+				OffTau[iTau].Eta(),
+				OffTau[iTau].Phi(),
+				0.);
+	      TLorentzVector ktau;
+	      ktau.SetPtEtaPhiM(
+				OffTau[kTau].Et(),
+				OffTau[kTau].Eta(),
+				OffTau[kTau].Phi(),
+				0.);
+	      TLorentzVector tauPair = itau+ktau;
+	      ptpair_off.push_back(make_tuple(tauPair.Pt(),iTau,kTau));
+	    }    
+	  }
+	}
+	std::sort(ptpair_off.begin(),ptpair_off.end());
+	if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>35){
+	  if(std::get<0>(*(ptpair_off.rbegin()))>100){
+	  selDiTau = true;
+	  N_selDiTau+=1;
+	  if(L1_DoubleIsoTau32er){ 
+	    N_seedDiTau +=1;
+
+	  }	 
+	  }     
+	}
+	if(selDiTau && L1_DoubleIsoTau32er){
+	  PtTauPair_DiTau->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  BPtTau_DiTau->Fill(OffTau[1].Pt());
+	}
 	if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>28){
-	  PtTauTau_DiTauPt->Fill(tlv_tauPair.Pt());
-	   if(tlv_tauPair.Pt()>80){
+	  PtTauPair_DiTauPt->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  BPtTau_DiTauPair->Fill(OffTau[1].Pt());
+	  if(std::get<0>(*(ptpair_off.rbegin()))>100){
 	    selDiTauPt = true;
 	    if (L1_DoubleIsoTau25er_PtTauTau70) N_seedDiTauPt +=1;
 	    N_selDiTauPt+=1;
-	    }
+	  }
 	}
+	if((selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70)||(selDiTau &&L1_DoubleIsoTau32er)) {
+	  PtTauPair_or->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  BPtTau_or->Fill(OffTau[1].Pt());
+	}
+	if((selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70)&&(selDiTau &&L1_DoubleIsoTau32er)) N_DiTau_DiTauPair+=1;
 	if(selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70){
-	    if(!(selDiTau &&L1_DoubleIsoTau32er)) N_seedDiTauPt_noseedDiTau +=1;
-	    PtTauTau_noDiTau_DiTauPt->Fill(tlv_tauPair.Pt());
-	  }	     
-      }       
+	  if(!(selDiTau && L1_DoubleIsoTau32er)){
+	    N_seedDiTauPt_noseedDiTau +=1;
+	    N_noDiTau_DiTauPair+=1;
+	    PtTauPair_noDiTau_DiTauPt->Fill(std::get<0>(*(ptpair_off.rbegin())));	   
+	    BPtTau_noDiTau_DiTauPair->Fill(OffTau[1].Pt());
+	  }
+	  if(!(selDiTau)&&L1_DoubleIsoTau32er)  PtTauPair_noDiTau_BoostbySel->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  if((selDiTau)&&!(L1_DoubleIsoTau32er))  PtTauPair_noDiTau_BoostbySeed->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  if(!(selDiTau)&&!(L1_DoubleIsoTau32er))  PtTauPair_noDiTau_BoostbyBoth->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	}
+		     
+	if((selDiTau &&L1_DoubleIsoTau32er)&&!(selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70))  {
+	  PtTauPair_DiTau_noDiTauPt->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	  BPtTau_DiTau_noDiTauPair->Fill(OffTau[1].Pt());
+	  N_DiTau_noDiTauPair+=1;
+	  
+	}       
+	}      
+      }
       }
     }
-  }
-  
-  
-  fPlotsVBF->cd();
+   
+    fPlotsVBF->cd();
   Mjj_TurnOn->BayesDivide(Mjj_VBF_pass, Mjj_VBF_tot);
   Mjj_TurnOn->Write();
   Mjj_TurnOnMatched->BayesDivide(Mjj_VBFMatched_pass, Mjj_VBF_tot);
   Mjj_TurnOnMatched->Write();
   
-  
-  fPlotsVBF->Write();
+ 
+   fPlotsVBF->Write();
   fPlotsVBF->Close();
+  fPlotsDiTauPt->cd();
+  fPlotsDiTauPt->Write();
+  fPlotsDiTauPt->Close();
   cout<<"Acceptance L1_DoubleIsoTau32er                                  "<<N_seedDiTau/N_selDiTau<<endl;
   cout<<"Events passing L1_DoubleIsoTau32er and selection                "<<N_seedDiTau<<endl;  
   cout<<"Acceptance L1_DoubleIsoTau25er_Jet50                            "<<N_seedXtrigger/N_selXtrigger<<endl;
@@ -600,6 +674,11 @@ int main(int argc, char** argv){
   cout<<"Only DiTau "<<N_selDiTau_noVBF<<endl;
   cout<<"DiTau and VFB "<<N_selDiTau_VBF<<endl;
   cout<<"Only VBF "<<N_noDiTau_VBF<<endl;
+
+  cout<<"DiTauPair"<<endl;
+  cout<<"Only DiTau "<<N_DiTau_noDiTauPair<<endl;
+  cout<<"DiTau and DiTauPair "<<N_DiTau_DiTauPair<<endl;
+  cout<<"Only DiTauPair"<<N_noDiTau_DiTauPair<<endl;
   }
 
 
