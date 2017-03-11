@@ -33,7 +33,7 @@ int main(int argc, char** argv){
   TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_VBFHToTauTau_-1Events_0Skipped_1487239220.05/";
   TFile *file = TFile::Open(Form("%sHTauTauAnalysis_total.root", LLRdir.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
-  TFile *fPlotsVBF = TFile::Open(Form("%sVBFHTauTauSignal_VBFseed_%lf_%lf.root", LLRdir.Data(),Boost_OnlinePTtaucut,Boost_OffPTpaircut),"recreate");
+  TFile *fPlotsVBF = TFile::Open(Form("%sVBFHTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
 
   fPlotsVBF->cd() ;  
   TH1D* PtTauTau = new TH1D ("PtTauTau", "", 100, 0, 400);
@@ -69,7 +69,7 @@ int main(int argc, char** argv){
   TGraphAsymmErrors* Mjj_TurnOnMatched = new  TGraphAsymmErrors();  
   Mjj_TurnOnMatched->SetName("Mjj_TurnOn_VBFMatched");
 
-  TFile *fPlotsDiTauPt = TFile::Open(Form("%sVBFHTauTauSignal_DiTauPtseed.root", LLRdir.Data()),"recreate");
+  TFile *fPlotsDiTauPt = TFile::Open(Form("%sVBFHTauTauSignal_DiTauPtseed_%.0lf_%.0lf.root", LLRdir.Data(),Boost_OnlinePTtaucut,Boost_OnlinePTpaircut),"recreate");
   TH1D* PtTauPair_DiTauPt = new TH1D ("PtTauPair_DiTauPt", "", 40, 0, 400); 
   TH1D* PtTauPair_DiTau = new TH1D ("PtTauPair_DiTau", "",40 ,0, 400);
   TH1D* PtTauPair_noDiTau_DiTauPt = new TH1D ("PtTauPair_noDiTau_DiTauPt", "",40 ,0, 400);
@@ -79,11 +79,11 @@ int main(int argc, char** argv){
   TH1D* PtTauPair_noDiTau_BoostbySel = new TH1D ("PtTauPair_noDiTau_BoostbySel", "",40,0 ,400);
   TH1D* PtTauPair_noDiTau_BoostbyBoth = new TH1D ("PtTauPair_noDiTau_BoostbyBoth", "",40,0 ,400);
 
-  TH1D* BPtTau_DiTauPair = new TH1D ("BPtTau_DiTauPair", "", 40, 20, 120);
-  TH1D* BPtTau_DiTau = new TH1D ("BPtTau_DiTau", "", 40, 20, 120);
-  TH1D* BPtTau_or = new TH1D ("BPtTau_or", "",40, 20, 120);
-  TH1D* BPtTau_DiTau_noDiTauPair = new TH1D ("BPtTau_DiTau_noDiTauPair", "",40, 20, 120);
-  TH1D* BPtTau_noDiTau_DiTauPair = new TH1D ("BPtTau_noDiTau_DiTauPair", "",40, 20, 120);
+  TH1D* Boost_PtTau_DiTauPair = new TH1D ("Boost_PtTau_DiTauPt", "", 40, 20, 120);
+  TH1D* Boost_PtTau_DiTau = new TH1D ("Boost_PtTau_DiTau", "", 40, 20, 120);
+  TH1D* Boost_PtTau_or = new TH1D ("Boost_PtTau_or", "",40, 20, 120);
+  TH1D* Boost_PtTau_DiTau_noDiTauPair = new TH1D ("Boost_PtTau_DiTau_noDiTauPt", "",40, 20, 120);
+  TH1D* Boost_PtTau_noDiTau_DiTauPair = new TH1D ("Boost_PtTau_noDiTau_DiTauPt", "",40, 20, 120);
 
   file->cd();
   TTree * tInput = (TTree*) file->Get("HTauTauTree/HTauTauTree");
@@ -616,11 +616,11 @@ int main(int argc, char** argv){
 	}
 	if(selDiTau && L1_DoubleIsoTau32er){
 	  PtTauPair_DiTau->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
-	  BPtTau_DiTau->Fill(OffTau[1].Pt());
+	  Boost_PtTau_DiTau->Fill(OffTau[1].Pt());
 	}
 	if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>Boost_OffPTtaucut){
 	  PtTauPair_DiTauPt->Fill(std::get<0>(*(ptpair_off.rbegin())));
-	  BPtTau_DiTauPair->Fill(OffTau[1].Pt());
+	  Boost_PtTau_DiTauPair->Fill(OffTau[1].Pt());
 	  if(std::get<0>(*(ptpair_off.rbegin()))>Boost_OffPTpaircut){
 	    selDiTauPt = true;
 	    if (L1_DoubleIsoTau25er_PtTauTau70) N_seedDiTauPt +=1;
@@ -633,7 +633,7 @@ int main(int argc, char** argv){
 	  }else{
 	    PtTauPair_or->Fill(std::get<0>(*(ptpair_off.rbegin())));
 	  }
-	  BPtTau_or->Fill(OffTau[1].Pt());
+	  Boost_PtTau_or->Fill(OffTau[1].Pt());
 	}
 	if((selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70)&&(selDiTau &&L1_DoubleIsoTau32er)) N_DiTau_DiTauPair+=1;
 	if(selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70){
@@ -641,7 +641,7 @@ int main(int argc, char** argv){
 	    N_seedDiTauPt_noseedDiTau +=1;
 	    N_noDiTau_DiTauPair+=1;
 	    PtTauPair_noDiTau_DiTauPt->Fill(std::get<0>(*(ptpair_off.rbegin())));	   
-	    BPtTau_noDiTau_DiTauPair->Fill(OffTau[1].Pt());
+	    Boost_PtTau_noDiTau_DiTauPair->Fill(OffTau[1].Pt());
 	  }
 	  if(!(selDiTau)&&L1_DoubleIsoTau32er)  PtTauPair_noDiTau_BoostbySel->Fill(std::get<0>(*(ptpair_off.rbegin())));
 	  if((selDiTau)&&!(L1_DoubleIsoTau32er))  PtTauPair_noDiTau_BoostbySeed->Fill(std::get<0>(*(ptpair_off.rbegin())));
@@ -654,7 +654,7 @@ int main(int argc, char** argv){
 		     
 	if((selDiTau &&L1_DoubleIsoTau32er)&&!(selDiTauPt &&L1_DoubleIsoTau25er_PtTauTau70))  {
 	  PtTauPair_DiTau_noDiTauPt->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
-	  BPtTau_DiTau_noDiTauPair->Fill(OffTau[1].Pt());
+	  Boost_PtTau_DiTau_noDiTauPair->Fill(OffTau[1].Pt());
 	  N_DiTau_noDiTauPair+=1;
 	  //    cout<<"only ditau passed"<<endl;
 	  //   cout<<"tau 2 pt = "<< OffTau[1].Pt()<<"; ditaupt35 = "<<std::get<0>(*(ptpair_off_passditau.rbegin()))<<"; ditaupt28 = "<<std::get<0>(*(ptpair_off.rbegin()))<<endl;
