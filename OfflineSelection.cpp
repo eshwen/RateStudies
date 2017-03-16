@@ -23,21 +23,23 @@ bool SortByPt(TLorentzVector a, TLorentzVector b) { return a.Pt() > b.Pt(); }
 
 int main(int argc, char** argv){
   double Boost_OnlinePTtaucut = 28;
-  double Boost_OnlinePTpaircut = 16;
+  double Boost_OnlinePTpaircut = 24;
   double Boost_OffPTtaucut = 31;
-  double Boost_OffPTpaircut = 22;
+  double Boost_OffPTpaircut = 32;
 
   int pt_tautau_cut = 0;
   int pt_tau_cut = 20;
   int pt_jet_cut = 30;
-  TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_VBFHToTauTau_-1Events_0Skipped_1487239220.05/";
+  //     TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_VBFHToTauTau_-1Events_0Skipped/";
+    TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggHToTauTau_-1Events_0Skipped/";
+  //  TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggRadionToHHTo2b2Tau_250_-1Events_0Skipped/";
+  //  TString LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_DYJetsToLL_1500000Events_0Skipped/";
   TFile *file = TFile::Open(Form("%sHTauTauAnalysis_total.root", LLRdir.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
-  TFile *fPlotsVBF = TFile::Open(Form("%sVBFHTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
+  TFile *fPlotsVBF = TFile::Open(Form("%sggHTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
 
   fPlotsVBF->cd() ;  
-  TH1D* PtTauTau = new TH1D ("PtTauTau", "", 100, 0, 400);
-  TH1D* MTauTau = new TH1D ("MTauTau", "", 100, 0, 400);
+
   TH1D* EtaJet1 = new TH1D ("EtaJet1", "", 50, -5, 5);
   TH1D* EtaJet2 = new TH1D ("EtaJet2", "", 50, -5, 5);
 
@@ -69,7 +71,7 @@ int main(int argc, char** argv){
   TGraphAsymmErrors* Mjj_TurnOnMatched = new  TGraphAsymmErrors();  
   Mjj_TurnOnMatched->SetName("Mjj_TurnOn_VBFMatched");
 
-  TFile *fPlotsDiTauPt = TFile::Open(Form("%sVBFHTauTauSignal_DiTauPtseed_%.0lf_%.0lf.root", LLRdir.Data(),Boost_OnlinePTtaucut,Boost_OnlinePTpaircut),"recreate");
+  TFile *fPlotsDiTauPt = TFile::Open(Form("%sggHTauTauSignal_DiTauPtseed_%.0lf_%.0lf.root", LLRdir.Data(),Boost_OnlinePTtaucut,Boost_OnlinePTpaircut),"recreate");
   TH1D* PtTauPair_DiTauPt = new TH1D ("PtTauPair_DiTauPt", "", 40, 0, 400); 
   TH1D* PtTauPair_DiTau = new TH1D ("PtTauPair_DiTau", "",40 ,0, 400);
   TH1D* PtTauPair_noDiTau_DiTauPt = new TH1D ("PtTauPair_noDiTau_DiTauPt", "",40 ,0, 400);
@@ -385,7 +387,7 @@ int main(int argc, char** argv){
 	  std::sort(m_ditau_pass.begin(),m_ditau_pass.end());	       
 	}
    
-	     
+
       //VBF seed
       if (jet30.size() >= 2){
 	for (int iJet = 0; iJet <jet30.size(); iJet++){      
@@ -474,6 +476,7 @@ int main(int argc, char** argv){
 	std::sort(mjj_off_passditau.begin(),mjj_off_passditau.end());
 	std::sort(mjj_off_passVBF.begin(),mjj_off_passVBF.end());
 	//for acceptance L1_DoubleJet_90_30_Mj30j30_620 //VBF
+
 	if(OffJet.size()>1){
 	  if(((OffJet[0].Pt()>100)||(OffTau[0].Pt()>100)) && OffJet[1].Pt()>30 &&  OffTau[1].Pt()>20){
 	    selVBF = true;
@@ -483,18 +486,23 @@ int main(int argc, char** argv){
 	    }
 	    if (L1_DoubleIsoTau32er) Mjj_ditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	    
 	  }
-	  if(OffJet[1].Pt()>35 && OffTau[1].Pt()>35 && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
-	    selDiTau_forVBF = true;
+	  
+	  if(mjj_off_passditau.size()>0){ 
+	    if(OffJet[1].Pt()>35 && OffTau[1].Pt()>35 && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
+	      selDiTau_forVBF = true;
 	    if(L1_DoubleIsoTau32er ){
 	      PtTau_ditau->Fill(OffTau[1].Pt());
+	      
 	      Mjj_ditau ->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
 	      if(!(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_90_30_Mj30j30_620 )){
 		N_selDiTau_noVBF += 1;	     
 		Mjj_ditau_noVBF->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
 		PtTau_ditau_noVBF->Fill(OffTau[1].Pt());
+		
 	      }
 	    }	            
-	  }
+	    }
+	}
 	  if(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_90_30_Mj30j30_620){
 	    if(!(selDiTau_forVBF && L1_DoubleIsoTau32er)){
 	      Mjj_noditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));
@@ -519,7 +527,8 @@ int main(int argc, char** argv){
 	    }
 	    PtTau_or->Fill(OffTau[1].Pt());
 	  }
-          if(jet30_sortByDeltaR.size()>1){
+
+          if(jet30_sortByDeltaR.size()>1 && OffJetNoOverlap.size()>1){
 	    TLorentzVector MatchL1jet1;
 	    MatchL1jet1.SetPtEtaPhiM(
 				     jet30_sortByDeltaR[0].Et(),
@@ -553,7 +562,7 @@ int main(int argc, char** argv){
 	    }
 	  }
 	}
-        
+
       if(OffJetNoOverlap.size()>0){	  
 
 
@@ -602,16 +611,16 @@ int main(int argc, char** argv){
 
 	std::sort(ptpair_off.begin(),ptpair_off.end());
 	std::sort(ptpair_off_passditau.begin(),ptpair_off_passditau.end());
-
+	
 	if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>35){
-	  //	  if(std::get<0>(*(ptpair_off_passditau.rbegin()))>100){
-	  if(std::get<0>(*(ptpair_off_passditau.rbegin()))>0){
+	  //            if(std::get<0>(*(ptpair_off_passditau.rbegin()))>100){
+	   	   	  if(std::get<0>(*(ptpair_off_passditau.rbegin()))>0){
 	    selDiTau = true;
 	    N_selDiTau+=1;
 	    if(L1_DoubleIsoTau32er){ 
 	      N_seedDiTau +=1;
-
-	  }	 
+	      
+	    }	 
 	  }     
 	}
 	if(selDiTau && L1_DoubleIsoTau32er){
@@ -702,7 +711,11 @@ int main(int argc, char** argv){
   cout<<"DiTau and DiTauPair "<<N_DiTau_DiTauPair<<endl;
   cout<<"Only DiTauPair"<<N_noDiTau_DiTauPair<<endl;
   cout<<"Gain "<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<endl;  
+  cout<<endl;
+  cout<<N_seedDiTau<<"\t"<<N_DiTau_noDiTauPair<<"\t"<<N_DiTau_DiTauPair<<"\t"<<N_noDiTau_DiTauPair<<"\t"<<N_seedDiTauPt<<"\t"<<N_seedDiTauPt/N_seedDiTau<<endl; 
+
 }
+
 
 
 
