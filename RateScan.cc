@@ -22,12 +22,12 @@ void scan(int targetRate){
   
 
   //ZeroBias sample L1
-  TFile *file = TFile::Open(Form("%srateL1_taus.root", directory.Data()),"read");
+  TFile *file = TFile::Open(Form("%srateL1_tausscaleToLumi20E33.root", directory.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
 
   int xcut = 0;
   int ycut = 0;
-  ofstream fOut(Form("%srate%dkHz_etTaus_ptTauTau.txt",directory.Data(),targetRate));
+  ofstream fOut(Form("%srate%dkHz_etTaus_etTauTau_2E34.txt",directory.Data(),targetRate));
 
   TH2D * hInput = (TH2D*) file->Get("Rate_DiTau2D");
   if (hInput == NULL) cout<<"Histogram not found"<<endl;
