@@ -29,32 +29,32 @@ int main(int argc, char** argv){
   bool DYJetsToLLSignal= false;
   bool HHbbTauTauSignal= false;
 
-
-  HHbbTauTauSignal= true;
-  //    DYJetsToLLSignal = true;
-  //     VBFHSignal = true;
-  //   ggHSignal = true;
   
+  if(atoi(argv[4])==1) VBFHSignal = true;
+  if(atoi(argv[5])==1) ggHSignal = true;
+  if(atoi(argv[6])==1) DYJetsToLLSignal = true;
+  if(atoi(argv[7])==1) HHbbTauTauSignal= true; 
+     
+     
   int lowbin = 0;
   double Boost_OnlinePTtaucut = atof(argv[1]);
   double Boost_OnlinePTpaircut = atof(argv[2]);
-  double Boost_OffPTtaucut = atof(argv[3]);
-  double Boost_OffPTpaircut = atof(argv[4]);
-  double Boost_OffMjjcut = 0;
-  double Boost_OffDeltaEtajjcut = 0;
+  double Boost_OffPTtaucut = Boost_OnlinePTtaucut+3;
+  double Boost_OffPTpaircut = Boost_OnlinePTpaircut+6;
+  if(atoi(argv[10])==1) Boost_OffPTpaircut = 100;
+  double Boost_OffMjjcut = atof(argv[8]);
+  double Boost_OffDeltaEtajjcut = atof(argv[9]);
   int Boost_OffjetsN = 1;
   if(Boost_OffMjjcut>1) Boost_OffjetsN = 2;
   
-  double DiTau_OnlinePTtaucut = 31;
-  double DiTau_OffPTtaucut = 34;
+  double DiTau_OnlinePTtaucut = atof(argv[3]);
+  double DiTau_OffPTtaucut = DiTau_OnlinePTtaucut+3;
   double DiTau_OffPTpaircut = 0;
+  if(atoi(argv[10])==1) DiTau_OffPTpaircut = Boost_OffPTpaircut;
   double DiTau_OffMjjcut = Boost_OffMjjcut;
   double DiTau_OffDeltaEtajjcut = Boost_OffDeltaEtajjcut;
   int DiTau_OffjetsN = Boost_OffjetsN;
   
-
-
-    
   int pt_tautau_cut = 0;
   int pt_tau_cut = 20;
   int pt_jet_cut = 30;
@@ -96,7 +96,7 @@ int main(int argc, char** argv){
   if(DYJetsToLLSignal) fPlotsVBF = TFile::Open(Form("%sDYJetsToLL_VBFseed.root", LLRdir.Data()),"recreate");
   if(HHbbTauTauSignal) fPlotsVBF = TFile::Open(Form("%sHbbTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
   fPlotsVBF->cd() ;  
-     
+
   TH1D* EtaJet1 = new TH1D ("EtaJet1", "", 50, -5, 5);
   TH1D* EtaJet2 = new TH1D ("EtaJet2", "", 50, -5, 5);
   TH1D* DeltaEta_VBF = new TH1D ("DeltaEta_VBF", "", 50, 0, 5);

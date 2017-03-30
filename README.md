@@ -31,6 +31,34 @@ source MakeFileListDAS.sh -t "<fileListName>" -o <fileListName>.py -p <datasetNa
 ### Rate studies
 All the information needs to be modified in the code EvalRate.cpp
 ```
-make
+make eval
 ./EvalRate
+```
+
+### Acceptance studies
+All the information needs to be modified in the code OfflineSelection.cpp
+```
+#compile
+make off
+#launch through AcceptanceTest.py script
+python AcceptanceTest.py <ptTauL1BoostedDiSeed> <ptTauPairL1BoostedDiSeed> % options
+```
+
+usage:
+```
+positional arguments:
+ ptSingleL1            pt_tau L1 cut for boosted ditau seed
+ ptPairL1              pt_tautau L1 cut for boosted ditau seed
+
+optional arguments:
+  -h, --help                 show this help message and exit
+  --ditaupt PTSINGLEL1DITAU  pt_tau L1 cut for ditau seed
+  signal sample (mandatory argument; exclusive group)
+    --VBF                      VBF signal sample
+    --ggH                      ggH signal sample
+    --Ztt                      Ztt signal sample
+    --HHbbtt                   HHbbtt signal sample
+  offline analyis selections (optional argument; exclusive group)
+    --VBFtag                   offline selection: VBF-tag
+    --boosted                  offline selection: 1jet boosted category
 ```
