@@ -10,6 +10,7 @@ if __name__ == "__main__":
     parser.add_argument ('ptSingleL1', type=int, help ='pt_tau L1 cut for boosted ditau seed')
     parser.add_argument ('ptPairL1', type=int, help ='pt_tautau L1 cut for boosted ditau seed')
     parser.add_argument ('--ditaupt', dest='ptSingleL1ditau', type=int, help ='pt_tau L1 cut for ditau seed', default = 30)
+    parser.add_argument ('--offptpair', dest='ptPairOffBoost', type=int, help ='pt_tautau offline cut for boosted ditau seed', default = 0)
     signal = parser.add_mutually_exclusive_group(required=True)
     signal.add_argument ('--VBF' , dest='VBFSignal' , help='VBF signal sample' , default=False, action="store_true")
     signal.add_argument ('--ggH' , dest='ggHSignal' , help='ggH signal sample' , default=False, action="store_true")
@@ -58,6 +59,7 @@ if (args.boosted==True or args.VBFtag==True):
 else:
     line+=' 0'
 
+line+=' '+str(args.ptPairOffBoost)
     
 print '{0}'.format(line)
 

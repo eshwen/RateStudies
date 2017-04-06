@@ -28,9 +28,9 @@ int main(int argc, char** argv){
 
   float nbStudiedRun = 96;
   float thisLumiRun = 7.6E32;
-  float scaleToLumi = 1.8E34;
+  float scaleToLumi = 2E34;
   float scale = 0.001*(nbStudiedRun*11245.6)*scaleToLumi/thisLumiRun;  
-  TString LumiTarget = "scaleToLumi18E33";
+  TString LumiTarget = "scaleToLumi20E33";
   
 
   cout << "Scale factor: " << scale << endl;
@@ -100,11 +100,11 @@ int main(int argc, char** argv){
   tInput ->SetBranchAddress("stage2_tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
   tInput ->SetBranchAddress("stage2_tauEt", &stage2_tauEt, &b_stage2_tauEt);
   tInput ->SetBranchAddress("stage2_tauIso", &stage2_tauIso, &b_stage2_tauIso);
-  tInput ->SetBranchAddress("stage2_muonN", &stage2_muonN , &b_stage2_muonN );
+  /*tInput ->SetBranchAddress("stage2_muonN", &stage2_muonN , &b_stage2_muonN );
   tInput ->SetBranchAddress("stage2_muonEta", &stage2_muonEta, &b_stage2_muonEta);
   tInput ->SetBranchAddress("stage2_muonPhi", &stage2_muonPhi, &b_stage2_muonPhi);
   tInput ->SetBranchAddress("stage2_muonEt", &stage2_muonEt, &b_stage2_muonEt);
-  tInput ->SetBranchAddress("stage2_muonIso", &stage2_muonIso, &b_stage2_muonIso);
+  tInput ->SetBranchAddress("stage2_muonIso", &stage2_muonIso, &b_stage2_muonIso);*/
   tInput ->SetBranchAddress("stage2_jetN", &stage2_jetN , &b_stage2_jetN);
   tInput ->SetBranchAddress("stage2_jetEta", &stage2_jetEta, &b_stage2_jetEta);
   tInput ->SetBranchAddress("stage2_jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
@@ -123,21 +123,39 @@ int main(int argc, char** argv){
   //taus 
 
   TH1D* SubleadTauPt_Pass = new TH1D ("SubleadTauPt_Pass", "SubleadTauPt_Pass", 100, 0, 100);
-  TH1D* SubleadTauPt_Pass_jet = new TH1D ("SubleadTauPt_Pass_jet", "SubleadTauPt_Pass", 100, 0, 100);
-  TH1D* DiTauPt_Pass = new TH1D ("DiTauPt_Pass", "DiTauPt_Pass", 100, 0, 100);
+  TH1D* SubleadTauPt_Boost20_Pass = new TH1D ("SubleadTauPt_Boost20_Pass", "SubleadTauPt_Boost20_Pass", 100, 0, 100);
+  TH1D* SubleadTauPt_Boost30_Pass = new TH1D ("SubleadTauPt_Boost30_Pass", "SubleadTauPt_Boost30_Pass", 100, 0, 100);
+  TH1D* SubleadTauPt_Boost40_Pass = new TH1D ("SubleadTauPt_Boost40_Pass", "SubleadTauPt_Boost40_Pass", 100, 0, 100);
+  TH1D* SubleadTauPt_Boost50_Pass = new TH1D ("SubleadTauPt_Boost50_Pass", "SubleadTauPt_Boost50_Pass", 100, 0, 100);
+  //  TH1D* SubleadTauPt_Pass_jet = new TH1D ("SubleadTauPt_Pass_jet", "SubleadTauPt_Pass", 100, 0, 100);
+  //  TH1D* DiTauPt_Pass = new TH1D ("DiTauPt_Pass", "DiTauPt_Pass", 100, 0, 100);
   TH1D* Rate_diTauSublead = new TH1D ("Rate_diTauSublead", "rate - double tau", 100, 0, 100);
+  TH1D* Rate_diTauSublead_Boost20 = new TH1D ("Rate_diTauSublead_Boost20", "Rate_diTauSublead_Boost20", 100, 0, 100);
+  TH1D* Rate_diTauSublead_Boost30 = new TH1D ("Rate_diTauSublead_Boost30", "Rate_diTauSublead_Boost30", 100, 0, 100);
+  TH1D* Rate_diTauSublead_Boost40 = new TH1D ("Rate_diTauSublead_Boost40", "Rate_diTauSublead_Boost40", 100, 0, 100);
+  TH1D* Rate_diTauSublead_Boost50 = new TH1D ("Rate_diTauSublead_Boost50", "Rate_diTauSublead_Boost50", 100, 0, 100);
   TH1D* Ratio_diTauSublead = new TH1D ("Ratio_diTauSublead", "ratio - double tau", 100, 0, 100);
-  TH1D* Rate_diTauSublead_jet = new TH1D ("Rate_diTauSublead_jet", "rate - double tau", 100, 0, 100);
-  TH1D* Ratio_diTauSublead_jet = new TH1D ("Ratio_diTauSublead_jet", "ratio - double tau", 100, 0, 100);
-  TH2D* DiTau2D_Pass = new TH2D ("DiTau2D_Pass", "double tau",  100, 0,400, 100, 25,125); 
-  TH2D* Ratio_DiTau2D = new TH2D ("Ratio_DiTau2D", "Ratio - 2 taus", 100, 0,400, 100, 25,125); 
-  TH2D* Rate_DiTau2D = new TH2D ("Rate_DiTau2D", "Rate - 2 taus", 100, 0,400, 100, 25,125); 
-  TH2D* PureDiTau2D_Pass_wrt30 = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  100, 0,400, 100, 25,125); 
-  TH2D* PureRatio_DiTau2D_wrt30 = new TH2D ("PureRatio_DiTau2D_wrt30", "Ratio - 2 taus", 100, 0,400, 100, 25,125); 
-  TH2D* PureRate_DiTau2D_wrt30 = new TH2D ("PureRate_DiTau2D_wrt30", "Rate - 2 taus", 100, 0,400, 100, 25,125);
-   TH2D* PureDiTau2D_Pass_wrt31 = new TH2D ("PureDiTau2D_Pass_wrt31", "double tau",  100, 0,400, 100, 25,125); 
-  TH2D* PureRatio_DiTau2D_wrt31 = new TH2D ("PureRatio_DiTau2D_wrt31", "Ratio - 2 taus", 100, 0,400, 100, 25,125); 
-  TH2D* PureRate_DiTau2D_wrt31 = new TH2D ("PureRate_DiTau2D_wrt31", "Rate - 2 taus", 100, 0,400, 100, 25,125); 
+  TH1D* Ratio_diTauSublead_Boost20 = new TH1D ("Ratio_diTauSublead_Boost20", "Ratio_diTauSublead_Boost20", 100, 0, 100);
+  TH1D* Ratio_diTauSublead_Boost30 = new TH1D ("Ratio_diTauSublead_Boost30", "Ratio_diTauSublead_Boost30", 100, 0, 100);
+  TH1D* Ratio_diTauSublead_Boost40 = new TH1D ("Ratio_diTauSublead_Boost40", "Ratio_diTauSublead_Boost40", 100, 0, 100);
+  TH1D* Ratio_diTauSublead_Boost50 = new TH1D ("Ratio_diTauSublead_Boost50", "Ratio_diTauSublead_Boost50", 100, 0, 100);
+  //  TH1D* Rate_diTauSublead_jet = new TH1D ("Rate_diTauSublead_jet", "rate - double tau", 100, 0, 100);
+  //  TH1D* Ratio_diTauSublead_jet = new TH1D ("Ratio_diTauSublead_jet", "ratio - double tau", 100, 0, 100);
+  TH2D* DiTau2D_Pass = new TH2D ("DiTau2D_Pass", "double tau",  400, 0,400, 100, 25,125); 
+  TH2D* Ratio_DiTau2D = new TH2D ("Ratio_DiTau2D", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
+  TH2D* Rate_DiTau2D = new TH2D ("Rate_DiTau2D", "Rate - 2 taus", 400, 0,400, 100, 25,125); 
+    TH2D* PureDiTau2D_Pass_wrt30 = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  400, 0,400, 100, 25,125); 
+  TH2D* PureRatio_DiTau2D_wrt30 = new TH2D ("PureRatio_DiTau2D_wrt30", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
+  TH2D* PureRate_DiTau2D_wrt30 = new TH2D ("PureRate_DiTau2D_wrt30", "Rate - 2 taus", 400, 0,400, 100, 25,125);
+  TH2D* PureDiTau2D_Pass_wrt31 = new TH2D ("PureDiTau2D_Pass_wrt31", "double tau",  400, 0,400, 100, 25,125); 
+  TH2D* PureRatio_DiTau2D_wrt31 = new TH2D ("PureRatio_DiTau2D_wrt31", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
+  TH2D* PureRate_DiTau2D_wrt31 = new TH2D ("PureRate_DiTau2D_wrt31", "Rate - 2 taus", 400, 0,400, 100, 25,125); 
+  
+
+  // TH2D* PureDiTau2D_Pass_wrt[] = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  400, 0,400, 100, 25,125); 
+  //TH2D* PureRatio_DiTau2D_wrt[] = new TH2D ("PureRatio_DiTau2D_wrt30", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
+  //TH2D* PureRate_DiTau2D_wrt[] = new TH2D ("PureRate_DiTau2D_wrt30", "Rate - 2 taus", 400, 0,400, 100, 25,125);
+  
   TH1D* PtTauTau = new TH1D ("PtTauTau", "", 100, 0, 400);
   TH1D* MTauTau = new TH1D ("MTauTau", "", 100, 0, 400);
   
@@ -205,51 +223,51 @@ int main(int argc, char** argv){
   std::vector<object> jet30;   
   std::vector<object> jet30noOverlap;   
 
-  std::vector< std::tuple<double,int,int> > et_ditau_pass; //et of tau pair  
+  std::vector< std::tuple<double,int,int> > et_ditau_pass; //et of tau pair
+    std::vector< std::tuple<double,int,int> > et_ditau_all; //et of tau pair  
   std::vector< std::tuple<double,int,int> > m_ditau_pass; //m of tau pair  
   std::vector< std::tuple<double,int,int> > mjj_pass; //VBF
 
 
   double singletau = 0;
-  double ditau20 = 0;  
+  double ditau25 = 0;  
   double ditaujet = 0;  
   double ditau = 0;  
-  double ditau20jet = 0;  
+  double ditau25jet = 0;  
 
   bool L1_DoubleIsoTau25er_Jet50= false;
   bool L1_DoubleIsoTau30er= false;
-    bool L1_DoubleIsoTau31er= false;
+  bool L1_DoubleIsoTau31er= false;
   bool L1_DoubleIsoTau25er_PtTauTau70 = false;
   
   
   
   
-
+  
   for (long int iEv = 0; iEv < nEvents; iEv++){
 
     tInput->GetEntry(iEv);   
     if (iEv%1000 == 0) cout << iEv << " / " << nEvents << endl;
-
+    
     jet30.clear();
     jet30noOverlap.clear();
     tauNoOverlap.clear();
     tau25noOverlap.clear();
     mjj_pass.clear();
     et_ditau_pass.clear();
+        et_ditau_all.clear();
     m_ditau_pass.clear();
     tau.clear(); 
     
-  
     if(lumi<48 || lumi>221) continue;
     if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
-  
     Float_t weight = PU_per_LS[48]/PU_per_LS[lumi];
-
+    
     nEventsPass ++;
     L1_DoubleIsoTau25er_PtTauTau70 = false;
     L1_DoubleIsoTau25er_Jet50= false;
     L1_DoubleIsoTau30er= false;
-        L1_DoubleIsoTau31er= false;
+    L1_DoubleIsoTau31er= false;
     for (long int iL1 = 0; iL1 < stage2_tauN; iL1++){ //loop on taus
       // selections
       double tauEta  = stage2_tauEta->at(iL1);
@@ -286,9 +304,35 @@ int main(int argc, char** argv){
 
      
     //DiTau+PtDiTau
+    if (tauNoOverlap.size() >= 2){
+      int Ntau = tauNoOverlap.size();
+      if (Ntau > 5) Ntau=5; 
+      for (int iTau = 0; iTau <Ntau; iTau++){      
+	for (int kTau = 0; kTau <Ntau; kTau++){      
+	  if (kTau!=iTau) {
+	    TLorentzVector itau;
+	    itau.SetPtEtaPhiM(
+			      tauNoOverlap[iTau].Et(),
+			      tauNoOverlap[iTau].Eta(),
+			      tauNoOverlap[iTau].Phi(),
+			      0.);
+	    TLorentzVector ktau;
+	    ktau.SetPtEtaPhiM(
+			      tauNoOverlap[kTau].Et(),
+			      tauNoOverlap[kTau].Eta(),
+			      tauNoOverlap[kTau].Phi(),
+			      0.);
+	    TLorentzVector tauPair = itau+ktau;
+	    et_ditau_all.push_back(make_tuple(tauPair.Et(),iTau,kTau));
 
-    if (tau25noOverlap.size() >= 2){
-      int Ntau = tau25noOverlap.size();
+	     
+	  }
+	}
+      }
+      std::sort(et_ditau_all.begin(),et_ditau_all.end());
+    }
+      if (tau25noOverlap.size() >= 2){
+     int Ntau = tau25noOverlap.size();
       if (Ntau > 5) Ntau=5; 
       for (int iTau = 0; iTau <Ntau; iTau++){      
 	for (int kTau = 0; kTau <Ntau; kTau++){      
@@ -316,7 +360,7 @@ int main(int argc, char** argv){
       std::sort(m_ditau_pass.begin(),m_ditau_pass.end());
       PtTauTau->Fill(std::get<0>(*(et_ditau_pass.rbegin())));
       MTauTau->Fill(std::get<0>(*(m_ditau_pass.rbegin())));
-
+     
       if (tauNoOverlap[1].Et()>30) L1_DoubleIsoTau30er = true;
       if (tauNoOverlap[1].Et()>31) L1_DoubleIsoTau31er = true;
       
@@ -390,12 +434,39 @@ int main(int argc, char** argv){
     //Taus and ditau+jet
     if (tauNoOverlap.size() >= 2 )
       {
-
 	SubleadTauPt_Pass -> Fill(tauNoOverlap[1].Et(),weight);
+	if(et_ditau_all.size()>0){
+	  if(std::get<0>(*(et_ditau_all.rbegin()))>20){
+	    SubleadTauPt_Boost20_Pass-> Fill(tauNoOverlap[1].Et(),weight);
+	  }else{
+	    SubleadTauPt_Boost20_Pass-> Fill(-1);
+	  }
+	  if(std::get<0>(*(et_ditau_all.rbegin()))>30){
+	    SubleadTauPt_Boost30_Pass-> Fill(tauNoOverlap[1].Et(),weight);
+	  }else{
+	    SubleadTauPt_Boost30_Pass-> Fill(-1);
+	  }
+	  if(std::get<0>(*(et_ditau_all.rbegin()))>40) {
+	    SubleadTauPt_Boost40_Pass-> Fill(tauNoOverlap[1].Et(),weight);
+	  }else{
+	    SubleadTauPt_Boost40_Pass-> Fill(-1);
+	  }
+	  
+	  if(std::get<0>(*(et_ditau_all.rbegin()))>50) {
+	    SubleadTauPt_Boost50_Pass-> Fill(tauNoOverlap[1].Et(),weight);
+	  }else{
+	    SubleadTauPt_Boost50_Pass-> Fill(-1);
+	  }
+	}else{
+	  SubleadTauPt_Boost20_Pass-> Fill(-1);
+	  SubleadTauPt_Boost30_Pass-> Fill(-1);
+	  SubleadTauPt_Boost40_Pass-> Fill(-1);
+	  SubleadTauPt_Boost50_Pass-> Fill(-1);
+	}
 	IsoTau -> Fill(tauNoOverlap[0].Iso());
-	DiTauPt_Pass -> Fill (tauNoOverlap[0].Et()+tauNoOverlap[1].Et(),weight);
+
 	if (jet30noOverlap.size()>0){
-	  SubleadTauPt_Pass_jet -> Fill(tauNoOverlap[1].Et(),weight);
+
 	  DiTauJet2D_Pass->Fill( tauNoOverlap[0].Et(),tauNoOverlap[1].Et(),weight );
 	  
 	  DiTauJet2D_Pass_jet->Fill( tauNoOverlap[1].Et(),jet30noOverlap[0].Et(),weight);
@@ -406,22 +477,30 @@ int main(int argc, char** argv){
 	  }
 	}else{
 	  SubleadTauPt_Pass -> Fill(-1);
-	  SubleadTauPt_Pass_jet -> Fill(-1);
+	  SubleadTauPt_Boost20_Pass-> Fill(-1);
+	  SubleadTauPt_Boost30_Pass-> Fill(-1);
+	  SubleadTauPt_Boost40_Pass-> Fill(-1);
+	  SubleadTauPt_Boost50_Pass-> Fill(-1);
 	  DiTauJet2D_Pass->Fill( -1,-1 );
 	  DiTauJet2D_Pass_jet->Fill( -1,-1);
 	  
 	}
       }else if(tauNoOverlap.size() == 1){
       SubleadTauPt_Pass -> Fill ( -1 );
-      SubleadTauPt_Pass_jet -> Fill ( -1 );
-      DiTauPt_Pass -> Fill ( -1); 
+      SubleadTauPt_Boost20_Pass-> Fill(-1);
+      SubleadTauPt_Boost30_Pass-> Fill(-1);
+      SubleadTauPt_Boost40_Pass-> Fill(-1);
+      SubleadTauPt_Boost50_Pass-> Fill(-1);
+      
       DiTauJet2D_Pass->Fill( -1,-1 );
       DiTauJet2D_Pass_jet->Fill( -1,-1 );
       
     }else{
       SubleadTauPt_Pass -> Fill ( -1 );        
-      SubleadTauPt_Pass_jet -> Fill ( -1 );
-      DiTauPt_Pass -> Fill ( -1 ); 
+      SubleadTauPt_Boost20_Pass-> Fill(-1);
+      SubleadTauPt_Boost30_Pass-> Fill(-1);
+      SubleadTauPt_Boost40_Pass-> Fill(-1);
+      SubleadTauPt_Boost50_Pass-> Fill(-1);
       DiTauJet2D_Pass->Fill( -1,-1 );       
       DiTauJet2D_Pass_jet->Fill( -1,-1 );
       
@@ -445,17 +524,28 @@ int main(int argc, char** argv){
   cout << "Computing rates..." << endl; 
   //taus rates
   for (int i = 1; i <= SubleadTauPt_Pass->GetNbinsX(); i++){
-
     double binDiTauSublead = 1.*(SubleadTauPt_Pass->Integral(i,SubleadTauPt_Pass->GetNbinsX()+1))/nEventsPass;
-    double binDiTauSublead_jet = 1.*(SubleadTauPt_Pass_jet->Integral(i, SubleadTauPt_Pass->GetNbinsX()+1))/nEventsPass;
-
-    Ratio_diTauSublead -> SetBinContent (i, binDiTauSublead);        
+    Ratio_diTauSublead -> SetBinContent (i, binDiTauSublead);
     binDiTauSublead *=scale;
-    Rate_diTauSublead -> SetBinContent (i, binDiTauSublead);        
-
-    Ratio_diTauSublead_jet -> SetBinContent (i, binDiTauSublead_jet);        
-    binDiTauSublead_jet *=scale;
-    Rate_diTauSublead_jet -> SetBinContent (i, binDiTauSublead_jet);        
+    Rate_diTauSublead -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead = 1.*(SubleadTauPt_Boost20_Pass->Integral(i,SubleadTauPt_Boost20_Pass->GetNbinsX()+1))/nEventsPass;
+    Ratio_diTauSublead_Boost20 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead *=scale;
+    Rate_diTauSublead_Boost20 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead = 1.*(SubleadTauPt_Boost30_Pass->Integral(i,SubleadTauPt_Boost30_Pass->GetNbinsX()+1))/nEventsPass;
+    Ratio_diTauSublead_Boost30 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead *=scale;
+    Rate_diTauSublead_Boost30 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead = 1.*(SubleadTauPt_Boost40_Pass->Integral(i,SubleadTauPt_Boost40_Pass->GetNbinsX()+1))/nEventsPass;
+    Ratio_diTauSublead_Boost40 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead *=scale;
+    Rate_diTauSublead_Boost40 -> SetBinContent (i, binDiTauSublead);
+    binDiTauSublead = 1.*(SubleadTauPt_Boost50_Pass->Integral(i,SubleadTauPt_Boost50_Pass->GetNbinsX()+1))/nEventsPass;
+    Ratio_diTauSublead_Boost50 -> SetBinContent (i, binDiTauSublead);        
+    binDiTauSublead *=scale;
+    Rate_diTauSublead_Boost50 -> SetBinContent (i, binDiTauSublead);        
+    
+    
 
   }
 
@@ -516,6 +606,7 @@ int main(int argc, char** argv){
     }
   }
   
+  
   int xbin = Rate_DiTau2D->GetXaxis()->FindBin(70.0);
   int ybin = Rate_DiTau2D->GetYaxis()->FindBin(25.0);
   cout<<"Rate L1_DoubleIsoTau25er_PtTauTau70   "<<Rate_DiTau2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
@@ -529,6 +620,12 @@ int main(int argc, char** argv){
   xbin = PureRate_DiTauJet2D_jet->GetXaxis()->FindBin(25.0);
   ybin = PureRate_DiTauJet2D_jet->GetYaxis()->FindBin(50.0);
   cout<<"Pure Rate L1_DoubleIsoTau25er_Jet50   "<<PureRate_DiTauJet2D_jet->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+
+  xbin = Rate_DiJet2D->GetXaxis()->FindBin(620.0);
+  ybin = Rate_DiJet2D->GetYaxis()->FindBin(90.0);
+  cout<<" Rate VBFseed   "<<Rate_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+
+
   
   fOutTaus -> Write();
   fOutVBF -> Write();

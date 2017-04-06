@@ -41,6 +41,7 @@ int main(int argc, char** argv){
   double Boost_OnlinePTpaircut = atof(argv[2]);
   double Boost_OffPTtaucut = Boost_OnlinePTtaucut+3;
   double Boost_OffPTpaircut = Boost_OnlinePTpaircut+6;
+  if(atof(argv[11])>1) Boost_OffPTpaircut = atof(argv[11]);
   if(atoi(argv[10])==1) Boost_OffPTpaircut = 100;
   double Boost_OffMjjcut = atof(argv[8]);
   double Boost_OffDeltaEtajjcut = atof(argv[9]);
@@ -767,7 +768,7 @@ int main(int argc, char** argv){
 	  }
 	  if((selDiTauPt &&L1_DoubleIsoTauXXer_PtTauTauYY)&&(selDiTau &&L1_DoubleIsoTauXXer)){
 	    Boost_PtTau_and->Fill(OffTau[1].Pt());
-	    PtTauPair_and->Fill(std::get<0>(*(ptpair_off.rbegin())));
+	    PtTauPair_and->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
 	    N_DiTau_DiTauPair+=1;
 	  }
 	  if(selDiTauPt &&L1_DoubleIsoTauXXer_PtTauTauYY){
@@ -780,8 +781,7 @@ int main(int argc, char** argv){
 	    if(!(selDiTau)&&L1_DoubleIsoTauXXer)  PtTauPair_noDiTau_BoostbySel->Fill(std::get<0>(*(ptpair_off.rbegin())));
 	    if((selDiTau)&&!(L1_DoubleIsoTauXXer))  PtTauPair_noDiTau_BoostbySeed->Fill(std::get<0>(*(ptpair_off.rbegin())));
 	    if(!(selDiTau)&&!(L1_DoubleIsoTauXXer))  PtTauPair_noDiTau_BoostbyBoth->Fill(std::get<0>(*(ptpair_off.rbegin())));
-	    //	cout<<"only boostditau passed"<<endl;
-	    //  cout<<"tau 2 pt = "<< OffTau[1].Pt()<<"; ditaupt35 = "<<std::get<0>(*(ptpair_off_passditau.rbegin()))<<"; ditaupt28 = "<<std::get<0>(*(ptpair_off.rbegin()))<<endl;
+
 
 
 	  }
@@ -790,8 +790,6 @@ int main(int argc, char** argv){
 	    if(ptpair_off_passditau.size()>0) PtTauPair_DiTau_noDiTauPt->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
 	    Boost_PtTau_DiTau_noDiTauPair->Fill(OffTau[1].Pt());
 	    N_DiTau_noDiTauPair+=1;
-	    //    cout<<"only ditau passed"<<endl;
-	    //   cout<<"tau 2 pt = "<< OffTau[1].Pt()<<"; ditaupt35 = "<<std::get<0>(*(ptpair_off_passditau.rbegin()))<<"; ditaupt28 = "<<std::get<0>(*(ptpair_off.rbegin()))<<endl;
 
 	    
 	    
@@ -837,8 +835,8 @@ int main(int argc, char** argv){
   cout<<"Only DiTauPair"<<N_noDiTau_DiTauPair<<endl;
   cout<<"Gain "<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<endl;  
   cout<<endl;
-  cout<<"N_seedDiTau\tN_DiTau_noDiTauPair\tN_DiTau_DiTauPair\tN_noDiTau_DiTauPair\tN_seedDiTauPt\tN_seedDiTauPt/N_seedDiTau"<<endl; 
-  cout<<N_seedDiTau<<"\t"<<N_DiTau_noDiTauPair<<"\t"<<N_DiTau_DiTauPair<<"\t"<<N_noDiTau_DiTauPair<<"\t"<<N_seedDiTauPt<<"\t"<<N_seedDiTauPt/N_seedDiTau<<endl; 
+  cout<<"N_seedDiTau\tN_DiTau_noDiTauPair\tN_DiTau_DiTauPair\tN_noDiTau_DiTauPair\tN_seedDiTauPt\tGain"<<endl; 
+  cout<<N_seedDiTau<<"\t"<<N_DiTau_noDiTauPair<<"\t"<<N_DiTau_DiTauPair<<"\t"<<N_noDiTau_DiTauPair<<"\t"<<N_seedDiTauPt<<"\t"<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<endl; 
 
 }
 
