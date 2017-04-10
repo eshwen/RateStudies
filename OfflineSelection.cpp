@@ -55,6 +55,14 @@ int main(int argc, char** argv){
   double DiTau_OffMjjcut = Boost_OffMjjcut;
   double DiTau_OffDeltaEtajjcut = Boost_OffDeltaEtajjcut;
   int DiTau_OffjetsN = Boost_OffjetsN;
+
+  double DiTauOR_OnlinePTtaucut = atof(argv[12]);
+  double DiTauOR_OffPTtaucut = DiTauOR_OnlinePTtaucut+3;
+  double DiTauOR_OffPTpaircut = 0;
+  if(atoi(argv[10])==1) DiTauOR_OffPTpaircut = Boost_OffPTpaircut;
+  double DiTauOR_OffMjjcut = Boost_OffMjjcut;
+  double DiTauOR_OffDeltaEtajjcut = Boost_OffDeltaEtajjcut;
+  int DiTauOR_OffjetsN = Boost_OffjetsN;
   
   int pt_tautau_cut = 0;
   int pt_tau_cut = 20;
@@ -71,6 +79,9 @@ int main(int argc, char** argv){
   
   cout<<"DiTau Seed: DoubleIsoTau"<<fixed << setprecision(0)<<DiTau_OnlinePTtaucut<<"er"<<endl;
   cout<<"BoostedDiTau Seed: DoubleIsoTau"<<fixed << setprecision(0)<<Boost_OnlinePTtaucut<<"er_PtTauTau"<<fixed << setprecision(0)<<Boost_OnlinePTpaircut<<endl;
+
+  cout<<"Test OR of: DoubleIsoTau"<<fixed <<setprecision(0)<<DiTauOR_OnlinePTtaucut<<"er + DoubleIsoTau"<<Boost_OnlinePTtaucut<<"er_PtTauTau"<<fixed << setprecision(0)<<Boost_OnlinePTpaircut<<endl;
+
   cout<<endl;
   cout<<"DiTau OfflineSelection:"<<endl;
   cout<<"subleading tau PT>"<<fixed << setprecision(0)<<DiTau_OffPTtaucut<<" GeV"<<endl;
@@ -88,7 +99,13 @@ int main(int argc, char** argv){
   cout<<endl;
 
   
-
+  cout<<endl;
+  cout<<"DiTau (in OR with boost) OfflineSelection:"<<endl;
+  cout<<"subleading tau PT>"<<fixed << setprecision(0)<<DiTauOR_OffPTtaucut<<" GeV"<<endl;
+  cout<<"tau pair PT>"<<fixed << setprecision(0)<<DiTauOR_OffPTpaircut<<" GeV"<<endl;
+  cout<<"at least "<<fixed << setprecision(0)<<DiTauOR_OffjetsN<<" jets with PT>30 GeV";
+  if (DiTauOR_OffjetsN>1) cout<<" with mjj>"<<fixed << setprecision(0)<<DiTauOR_OffMjjcut<<" GeV, |DeltaEta(j1,j2)|>"<<fixed << setprecision(1)<<DiTauOR_OffDeltaEtajjcut;
+  cout<<endl;
 
 
   TFile *fPlotsVBF;
@@ -141,7 +158,7 @@ int main(int argc, char** argv){
   TH1D* PtTauPair_DiTau = new TH1D ("PtTauPair_DiTau", "",40 ,lowbin, 400);
   TH1D* PtTauPair_noDiTau_DiTauPt = new TH1D ("PtTauPair_noDiTau_DiTauPt", "",40 ,lowbin, 400);
   TH1D* PtTauPair_or = new TH1D ("PtTauPair_or", "",40,lowbin, 400);
-   TH1D* PtTauPair_and = new TH1D ("PtTauPair_and", "",40,lowbin, 400);
+  TH1D* PtTauPair_and = new TH1D ("PtTauPair_and", "",40,lowbin, 400);
   TH1D* PtTauPair_DiTau_noDiTauPt = new TH1D ("PtTauPair_DiTau_noDiTauPt", "",40, lowbin, 400);
   TH1D* PtTauPair_noDiTau_BoostbySeed = new TH1D ("PtTauPair_noDiTau_NewbySeed", "",40,lowbin ,400);
   TH1D* PtTauPair_noDiTau_BoostbySel = new TH1D ("PtTauPair_noDiTau_NewbySel", "",40,lowbin ,400);
@@ -255,9 +272,11 @@ int main(int argc, char** argv){
   std::vector< std::tuple<double,int,int> > mjj_off_passVBF; //VBF
   std::vector< std::tuple<double,int,int> > ptpair_off; //ditauPt
   std::vector< std::tuple<double,int,int> > ptpair_off_passditau; //ditauPt
+  std::vector< std::tuple<double,int,int> > ptpair_off_passditauOR; //ditauPt
   bool MatchingTau = false; 
   bool MatchingJet = false; 
   bool L1_DoubleIsoTau25er_Jet50= false;
+  bool L1_DoubleIsoTauYYer= false;
   bool L1_DoubleIsoTauXXer= false;
   bool L1_DoubleIsoTauXXer_PtTauTauYY = false;
   bool L1_DoubleJet_90_30_Mj30j30_620 = false;
@@ -266,9 +285,11 @@ int main(int argc, char** argv){
   double N_selXtrigger = 0;
   double N_seedXtrigger = 0;
   double N_selDiTauPt = 0;
-  double N_seedDiTauPt = 0;
+  double N_seedOR = 0;
   double N_selDiTau = 0;
+  double N_selOR = 0;
   double N_seedDiTau = 0;
+  double N_seedDiTauPt = 0;
   double N_seedXtrigger_noseedDiTau = 0;
   double N_seedDiTauPt_noseedDiTau = 0;
   double N_selDiTau_noVBF = 0;
@@ -277,6 +298,9 @@ int main(int argc, char** argv){
   double N_DiTau_noDiTauPair = 0;
   double N_noDiTau_DiTauPair = 0;
   double N_DiTau_DiTauPair = 0;
+  double N_DiTau_noOR = 0;
+  double N_noDiTau_OR = 0;
+  double N_DiTau_OR = 0;
 
 
   long int nEvents = tInput->GetEntries(); 
@@ -298,12 +322,14 @@ int main(int argc, char** argv){
     m_ditau_pass.clear();
     ptpair_off.clear();
     ptpair_off_passditau.clear();
+    ptpair_off_passditauOR.clear();
     tau.clear(); 
     MatchingTau = false;
     MatchingJet = false;
     L1_DoubleIsoTauXXer_PtTauTauYY =false;
     L1_DoubleIsoTau25er_Jet50= false;
     L1_DoubleIsoTauXXer= false;
+    L1_DoubleIsoTauYYer= false;
     L1_DoubleJet_90_30_Mj30j30_620 = false;
 
 
@@ -488,9 +514,11 @@ int main(int argc, char** argv){
       //// all the L1 objects are filled
 
       if(tauNoOverlap.size()>=2){
-	//DiTau seed
+	//DiTau seeds
 
 	if (tauNoOverlap[1].Et()>DiTau_OnlinePTtaucut) L1_DoubleIsoTauXXer = true;
+	if (tauNoOverlap[1].Et()>DiTauOR_OnlinePTtaucut) L1_DoubleIsoTauYYer = true;
+
 	//Xtrigger seed	       
 	if(jet30noOverlap.size()>0){
 	  if (tauNoOverlap[1].Et()>25 && jet30noOverlap[0].Et()>50) L1_DoubleIsoTau25er_Jet50 = true;
@@ -506,6 +534,8 @@ int main(int argc, char** argv){
       
       //acceptance       
       bool selDiTau = false;
+      bool selOR = false;
+      bool DiTauORBoost = false;
       bool selXtrigger = false;
       bool selDiTauPt = false;
       bool selVBF = false;
@@ -652,17 +682,18 @@ int main(int argc, char** argv){
 	  if(selXtrigger &&L1_DoubleIsoTau25er_Jet50){
 	    if(!(selDiTau &&L1_DoubleIsoTauXXer)) N_seedXtrigger_noseedDiTau +=1;
 	  }
-	  int Ntau1 = 0;
-	  int Ntau2 = 0;
+	  int Ntau = OffTau.size();
+	  if (OffTau.size()> 5) Ntau = 5;
 	  //for acceptance L1_DoubleIsoTau25er_PtTauTau70 //DiTauPt 
-	  for (int iTau = 0; iTau <OffTau.size(); iTau++){ 
+	  for (int iTau = 0; iTau <Ntau; iTau++){ 
+
 	    if(OffTau[iTau].Pt()<Boost_OffPTtaucut) continue;
-	    // Ntau1++;
-	    // if(Ntau1>5) continue;
+	    // if(OffTau[iTau].Pt()<28) continue;
+	    
 	    for (int kTau = 0; kTau <OffTau.size(); kTau++){      
-	      if(OffTau[kTau].Pt()<Boost_OffPTtaucut) continue; 
-	      // Ntau2++;
-	      // if(Ntau2>5) continue;
+	      if(OffTau[kTau].Pt()<Boost_OffPTtaucut) continue;
+	      // if(OffTau[kTau].Pt()<28) continue; 
+	      
 	      if (OffTau[kTau].Pt()<Boost_OffPTtaucut ||OffTau[iTau].Pt()<Boost_OffPTtaucut) cout<<"argh"<<endl;
 	      if (kTau!=iTau) {
 	      
@@ -683,43 +714,79 @@ int main(int argc, char** argv){
 		TLorentzVector tauPair = itau+ktau;
 		ptpair_off.push_back(make_tuple(tauPair.Pt(),iTau,kTau));
 		if (OffTau[kTau].Pt()>DiTau_OffPTtaucut && OffTau[iTau].Pt()>DiTau_OffPTtaucut) ptpair_off_passditau.push_back(make_tuple(tauPair.Pt(),iTau,kTau));
+		if (OffTau[kTau].Pt()>DiTauOR_OffPTtaucut && OffTau[iTau].Pt()>DiTauOR_OffPTtaucut) ptpair_off_passditauOR.push_back(make_tuple(tauPair.Pt(),iTau,kTau));
+		
 	      }    
 	    }
 	  }
 
 	  std::sort(ptpair_off.begin(),ptpair_off.end());
 	  std::sort(ptpair_off_passditau.begin(),ptpair_off_passditau.end());
+	  std::sort(ptpair_off_passditauOR.begin(),ptpair_off_passditauOR.end());
       
 	  if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>DiTau_OffPTtaucut){
-	    if(ptpair_off_passditau.size()>0){
-	      if(std::get<0>(*(ptpair_off_passditau.rbegin()))>DiTau_OffPTpaircut){
-		if(DiTau_OffjetsN==2){
-		  if(OffJetNoOverlap.size()>=DiTau_OffjetsN){
-		    if(OffJetNoOverlap[1].Pt()>30){
-		      double DeltaEtajjOff = fabs(OffJetNoOverlap[1].Eta() -OffJetNoOverlap[0].Eta());
-		      double MjjOff = (OffJetNoOverlap[1] + OffJetNoOverlap[0]).M();
-		      if(MjjOff>DiTau_OffMjjcut && DeltaEtajjOff>DiTau_OffDeltaEtajjcut){
-			selDiTau = true;
-			N_selDiTau+=1;
-			if(L1_DoubleIsoTauXXer){ 
-			  N_seedDiTau +=1;
-			}
+	    //if(ptpair_off_passditau.size()>0){
+	    if(std::get<0>(*(ptpair_off_passditau.rbegin()))>DiTau_OffPTpaircut){
+	      if(DiTau_OffjetsN==2){
+		if(OffJetNoOverlap.size()>=DiTau_OffjetsN){
+		  if(OffJetNoOverlap[1].Pt()>30){
+		    double DeltaEtajjOff = fabs(OffJetNoOverlap[1].Eta() -OffJetNoOverlap[0].Eta());
+		    double MjjOff = (OffJetNoOverlap[1] + OffJetNoOverlap[0]).M();
+		    if(MjjOff>DiTau_OffMjjcut && DeltaEtajjOff>DiTau_OffDeltaEtajjcut){
+		      selDiTau = true;
+		      N_selDiTau+=1;
+		      if(L1_DoubleIsoTauXXer){ 
+			N_seedDiTau +=1;
 		      }
 		    }
 		  }
-		}else{
-		  selDiTau = true;
-		  N_selDiTau+=1;
-		  if(L1_DoubleIsoTauXXer){ 
-		    N_seedDiTau +=1;
-		  }	 
 		}
+	      }else{
+		selDiTau = true;
+		N_selDiTau+=1;
+		if(L1_DoubleIsoTauXXer){ 
+		  N_seedDiTau +=1;
+		}	 
 	      }
 	    }
+	    //  }
 	    
 	  }
+
+	  if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>DiTauOR_OffPTtaucut){
+	    //if(ptpair_off_passditau.size()>0){
+	    if(std::get<0>(*(ptpair_off_passditauOR.rbegin()))>DiTauOR_OffPTpaircut){
+	      if(DiTauOR_OffjetsN==2){
+		if(OffJetNoOverlap.size()>=DiTauOR_OffjetsN){
+		  if(OffJetNoOverlap[1].Pt()>30){
+		    double DeltaEtajjOff = fabs(OffJetNoOverlap[1].Eta() -OffJetNoOverlap[0].Eta());
+		    double MjjOff = (OffJetNoOverlap[1] + OffJetNoOverlap[0]).M();
+		    if(MjjOff>DiTauOR_OffMjjcut && DeltaEtajjOff>DiTauOR_OffDeltaEtajjcut){
+		      selOR = true;
+		      N_selOR+=1;
+		      if(L1_DoubleIsoTauYYer){ 
+			//  N_seedOR +=1;
+		      }
+		    }
+		  }
+		}
+	      }else{
+		selOR = true;
+		N_selOR+=1;
+		if(L1_DoubleIsoTauYYer){ 
+		  // N_seedOR +=1;
+		}	 
+	      }
+	    }
+	    //  }
+	    
+	  }
+
+
+	  
 	  if(selDiTau && L1_DoubleIsoTauXXer){
-	    if(ptpair_off_passditau.size()>0) PtTauPair_DiTau->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
+	    // if(ptpair_off_passditau.size()>0)
+	    PtTauPair_DiTau->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
 	    Boost_PtTau_DiTau->Fill(OffTau[1].Pt());
 	  }
 	  if(OffJetNoOverlap[0].Pt()>30 && OffTau[1].Pt()>Boost_OffPTtaucut){
@@ -759,6 +826,7 @@ int main(int argc, char** argv){
 	   
 	
 	  if((selDiTauPt &&L1_DoubleIsoTauXXer_PtTauTauYY)||(selDiTau &&L1_DoubleIsoTauXXer)) {
+
 	    if(!(selDiTauPt &&L1_DoubleIsoTauXXer_PtTauTauYY)&&(selDiTau &&L1_DoubleIsoTauXXer)) {
 	      if(ptpair_off_passditau.size()>0)	PtTauPair_or->Fill(std::get<0>(*(ptpair_off_passditau.rbegin())));
 	    }else{
@@ -793,13 +861,37 @@ int main(int argc, char** argv){
 
 	    
 	    
-	  
+	    
+	  }
+	  ///////////////// OR
+	  if ((selDiTauPt &&L1_DoubleIsoTauXXer_PtTauTauYY)||(selOR &&L1_DoubleIsoTauYYer)) {
+	    DiTauORBoost = true;
+	    N_seedOR+=1;
+	  }
+	  if((DiTauORBoost)||(selDiTau &&L1_DoubleIsoTauXXer)) {
+	    
+	    if((DiTauORBoost)&&(selDiTau &&L1_DoubleIsoTauXXer)){
+	      N_DiTau_OR+=1;
+	    }
+	    if(DiTauORBoost){
+	      if(!(selDiTau && L1_DoubleIsoTauXXer)){
+		
+		N_noDiTau_OR+=1;
+	      }
+	    }
+	    
+	    if((selDiTau &&L1_DoubleIsoTauXXer)&&!(DiTauORBoost))  {
+	      N_DiTau_noOR+=1;
+	    }    
+	    
+	    
+	    
 	  }       
 	}      
       }
     }
   }
-
+  
   fPlotsVBF->cd();
   Mjj_TurnOn->BayesDivide(Mjj_VBF_pass, Mjj_VBF_tot);
   Mjj_TurnOn->Write();
@@ -812,32 +904,25 @@ int main(int argc, char** argv){
   fPlotsDiTauPt->Close();
   std::cout.unsetf ( std::ios::floatfield ); 
   std::cout.precision(5);
-  cout<<"Acceptance L1_DoubleIsoTauXXer                                  "<<N_seedDiTau/N_selDiTau<<endl;
-  cout<<"Events passing L1_DoubleIsoTauXXer and selection                "<<N_seedDiTau<<endl;  
-  cout<<"Acceptance L1_DoubleIsoTau25er_Jet50                            "<<N_seedXtrigger/N_selXtrigger<<endl;
-  cout<<"Events passing L1_DoubleIsoTau25er_Jet50 and selection          "<<N_seedXtrigger<<endl;  
-  cout<<"Gain                                                            "<<(N_seedXtrigger_noseedDiTau/N_selXtrigger)/(N_seedDiTau/N_selDiTau)<<endl;
-  
-  cout<<"Acceptance L1_DoubleIsoTauXXer                                  "<<N_seedDiTau/N_selDiTau<<endl;
-  cout<<"Events passing L1_DoubleIsoTauXXer and selection                "<<N_seedDiTau<<endl;  
-  cout<<"Acceptance L1_DoubleIsoTauXXer_PtTauTauYY                       "<<N_seedDiTauPt/N_selDiTauPt<<endl;
-  cout<<"Events passing L1_DoubleIsoTauXXer_PtTauTauYY and selection     "<<N_seedDiTauPt<<endl;  
-  cout<<"Gain                                                            "<<(N_seedDiTauPt_noseedDiTau/N_selDiTauPt)/(N_seedDiTau/N_selDiTau)<<endl;
+
   cout<<endl;
   cout<<"VBF"<<endl;
   cout<<"Only DiTau "<<N_selDiTau_noVBF<<endl;
   cout<<"DiTau and VFB "<<N_selDiTau_VBF<<endl;
   cout<<"Only VBF "<<N_noDiTau_VBF<<endl;
-
+  cout<<endl;
   cout<<"DiTauPair"<<endl;
   cout<<"Only DiTau "<<N_DiTau_noDiTauPair<<endl;
   cout<<"DiTau and DiTauPair "<<N_DiTau_DiTauPair<<endl;
   cout<<"Only DiTauPair"<<N_noDiTau_DiTauPair<<endl;
   cout<<"Gain "<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<endl;  
   cout<<endl;
-  cout<<"N_seedDiTau\tN_DiTau_noDiTauPair\tN_DiTau_DiTauPair\tN_noDiTau_DiTauPair\tN_seedDiTauPt\tGain"<<endl; 
-  cout<<N_seedDiTau<<"\t"<<N_DiTau_noDiTauPair<<"\t"<<N_DiTau_DiTauPair<<"\t"<<N_noDiTau_DiTauPair<<"\t"<<N_seedDiTauPt<<"\t"<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<endl; 
-
+  cout<<"N_seedDiTau\tN_DiTau_noDiTauPair\tN_DiTau_DiTauPair\tN_noDiTau_DiTauPair\tN_seedDiTauPt\tGain\tRatio"<<endl; 
+  cout<<N_seedDiTau<<"\t"<<N_DiTau_noDiTauPair<<"\t"<<N_DiTau_DiTauPair<<"\t"<<N_noDiTau_DiTauPair<<"\t"<<N_seedDiTauPt<<"\t"<<N_noDiTau_DiTauPair/(N_DiTau_noDiTauPair+N_DiTau_DiTauPair)<<"\t"<<N_seedDiTauPt/N_seedDiTau<<endl; 
+  cout<<endl;
+  cout<<"DoubleIsoTau"<<DiTauOR_OnlinePTtaucut<<"er OR DoubleIsoTau"<<Boost_OnlinePTtaucut<<"er_PtTauTau"<<Boost_OnlinePTpaircut<<" wrt DoubleIsoTau"<<DiTau_OnlinePTtaucut<<"er"<<endl;
+  cout<<"N_seedDiTau\tN_DiTau_noOR\tN_DiTau_OR\tN_noDiTau_OR\tN_seedOR\tGain\tRatio"<<endl;
+  cout<<N_seedDiTau<<"\t"<<N_DiTau_noOR<<"\t"<<N_DiTau_OR<<"\t"<<N_noDiTau_OR<<"\t"<<N_seedOR<<"\t"<<N_noDiTau_OR/(N_DiTau_noOR+N_DiTau_OR)<<"\t"<<N_seedOR/N_seedDiTau<<endl; 
 }
 
 
