@@ -144,18 +144,22 @@ int main(int argc, char** argv){
   TH2D* DiTau2D_Pass = new TH2D ("DiTau2D_Pass", "double tau",  400, 0,400, 100, 25,125); 
   TH2D* Ratio_DiTau2D = new TH2D ("Ratio_DiTau2D", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
   TH2D* Rate_DiTau2D = new TH2D ("Rate_DiTau2D", "Rate - 2 taus", 400, 0,400, 100, 25,125); 
-    TH2D* PureDiTau2D_Pass_wrt30 = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  400, 0,400, 100, 25,125); 
+  /*    TH2D* PureDiTau2D_Pass_wrt30 = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  400, 0,400, 100, 25,125); 
   TH2D* PureRatio_DiTau2D_wrt30 = new TH2D ("PureRatio_DiTau2D_wrt30", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
   TH2D* PureRate_DiTau2D_wrt30 = new TH2D ("PureRate_DiTau2D_wrt30", "Rate - 2 taus", 400, 0,400, 100, 25,125);
   TH2D* PureDiTau2D_Pass_wrt31 = new TH2D ("PureDiTau2D_Pass_wrt31", "double tau",  400, 0,400, 100, 25,125); 
   TH2D* PureRatio_DiTau2D_wrt31 = new TH2D ("PureRatio_DiTau2D_wrt31", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
   TH2D* PureRate_DiTau2D_wrt31 = new TH2D ("PureRate_DiTau2D_wrt31", "Rate - 2 taus", 400, 0,400, 100, 25,125); 
-  
+  */
 
-  // TH2D* PureDiTau2D_Pass_wrt[] = new TH2D ("PureDiTau2D_Pass_wrt30", "double tau",  400, 0,400, 100, 25,125); 
-  //TH2D* PureRatio_DiTau2D_wrt[] = new TH2D ("PureRatio_DiTau2D_wrt30", "Ratio - 2 taus", 400, 0,400, 100, 25,125); 
-  //TH2D* PureRate_DiTau2D_wrt[] = new TH2D ("PureRate_DiTau2D_wrt30", "Rate - 2 taus", 400, 0,400, 100, 25,125);
-  
+  TH2D* PureDiTau2D_Pass[8] ;
+  TH2D* PureRatio_DiTau2D[8];
+  TH2D* PureRate_DiTau2D[8] ;
+  for (int xx=0; xx<8; xx++){
+    PureDiTau2D_Pass[xx]  = new TH2D ("PureDiTau2D_Pass", "pass pure rate",  400, 0,400, 100, 25,125); 
+    PureRatio_DiTau2D[xx] = new TH2D ("PureRatio_DiTau2D", "Ratio - 2 taus pass pure rate", 400, 0,400, 100, 25,125); 
+    PureRate_DiTau2D[xx] = new TH2D ("PureRate_DiTau2D", "Rate - 2 taus pass pure rate", 400, 0,400, 100, 25,125);
+  }
   TH1D* PtTauTau = new TH1D ("PtTauTau", "", 100, 0, 400);
   TH1D* MTauTau = new TH1D ("MTauTau", "", 100, 0, 400);
   
@@ -236,8 +240,7 @@ int main(int argc, char** argv){
   double ditau25jet = 0;  
 
   bool L1_DoubleIsoTau25er_Jet50= false;
-  bool L1_DoubleIsoTau30er= false;
-  bool L1_DoubleIsoTau31er= false;
+  bool L1_DoubleIsoTauXXer[4];
   bool L1_DoubleIsoTau25er_PtTauTau70 = false;
   
   
@@ -255,7 +258,7 @@ int main(int argc, char** argv){
     tau25noOverlap.clear();
     mjj_pass.clear();
     et_ditau_pass.clear();
-        et_ditau_all.clear();
+    et_ditau_all.clear();
     m_ditau_pass.clear();
     tau.clear(); 
     
@@ -266,8 +269,9 @@ int main(int argc, char** argv){
     nEventsPass ++;
     L1_DoubleIsoTau25er_PtTauTau70 = false;
     L1_DoubleIsoTau25er_Jet50= false;
-    L1_DoubleIsoTau30er= false;
-    L1_DoubleIsoTau31er= false;
+    for (int xx= 0; xx<8; xx++){
+      L1_DoubleIsoTauXXer[xx]= false;
+    }
     for (long int iL1 = 0; iL1 < stage2_tauN; iL1++){ //loop on taus
       // selections
       double tauEta  = stage2_tauEta->at(iL1);
@@ -360,33 +364,37 @@ int main(int argc, char** argv){
       std::sort(m_ditau_pass.begin(),m_ditau_pass.end());
       PtTauTau->Fill(std::get<0>(*(et_ditau_pass.rbegin())));
       MTauTau->Fill(std::get<0>(*(m_ditau_pass.rbegin())));
-     
-      if (tauNoOverlap[1].Et()>30) L1_DoubleIsoTau30er = true;
-      if (tauNoOverlap[1].Et()>31) L1_DoubleIsoTau31er = true;
+
+
+      for (int xx=0; xx<8; xx++){	
+	if (tauNoOverlap[1].Et()>(float)(30+xx)) L1_DoubleIsoTauXXer[xx] = true;
+      }
       
       if (tau25noOverlap[1].Et()>25){
 	if(std::get<0>(*(et_ditau_pass.rbegin()))>70) L1_DoubleIsoTau25er_PtTauTau70 = true;
 
       }
       DiTau2D_Pass -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
-      if(!L1_DoubleIsoTau30er) {
-	PureDiTau2D_Pass_wrt30 -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
-      }else{
-	PureDiTau2D_Pass_wrt30 -> Fill ( -1,-1);
+      for (int xx=0; xx<8; xx++){
+	if(!L1_DoubleIsoTauXXer[xx]) {
+	  PureDiTau2D_Pass[xx] -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
+	  if(tau25noOverlap[1].Et()>33){
+	    cout<<"plot "<<xx<<"; pass wrt"<<xx +30<<endl;
+	  }
+
+	}else{
+	  PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
+	  
+	}
+      }
       
-      }
-      if(!L1_DoubleIsoTau31er) {
-	PureDiTau2D_Pass_wrt31 -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
       }else{
-	PureDiTau2D_Pass_wrt31 -> Fill ( -1,-1);
-	
+	DiTau2D_Pass -> Fill (-1,-1);
+	for (int xx=0; xx<8; xx++){
+	  PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
+	}
       }
-    } else{
-      DiTau2D_Pass -> Fill (-1,-1);
-      PureDiTau2D_Pass_wrt30 -> Fill ( -1,-1);
-            PureDiTau2D_Pass_wrt31 -> Fill ( -1,-1);
-    }
-       
+      
 
     //VBF
        
@@ -470,11 +478,11 @@ int main(int argc, char** argv){
 	  DiTauJet2D_Pass->Fill( tauNoOverlap[0].Et(),tauNoOverlap[1].Et(),weight );
 	  
 	  DiTauJet2D_Pass_jet->Fill( tauNoOverlap[1].Et(),jet30noOverlap[0].Et(),weight);
-	  if(!L1_DoubleIsoTau30er) {
+	  /*	  if(!L1_DoubleIsoTau30er) {
 	    PureDiTauJet2D_Pass_jet -> Fill (tauNoOverlap[1].Et(),jet30noOverlap[0].Et(),weight );
 	  }else{
 	    PureDiTauJet2D_Pass_jet -> Fill ( -1,-1);	  
-	  }
+	    }*/
 	}else{
 	  SubleadTauPt_Pass -> Fill(-1);
 	  SubleadTauPt_Boost20_Pass-> Fill(-1);
@@ -568,14 +576,14 @@ int main(int argc, char** argv){
       Ratio_DiTau2D -> SetBinContent (i, j, binDiTau2D);        
       binDiTau2D *=scale;
       Rate_DiTau2D -> SetBinContent (i, j, binDiTau2D);        
-      binDiTau2D = 1.*(PureDiTau2D_Pass_wrt30->Integral(i, PureDiTau2D_Pass_wrt30->GetNbinsX()+1,j,PureDiTau2D_Pass_wrt30->GetNbinsY()+1))/nEventsPass;
-      PureRatio_DiTau2D_wrt30 -> SetBinContent (i, j, binDiTau2D);        
-      binDiTau2D *=scale;
-      PureRate_DiTau2D_wrt30 -> SetBinContent (i, j, binDiTau2D);
-      binDiTau2D = 1.*(PureDiTau2D_Pass_wrt31->Integral(i, PureDiTau2D_Pass_wrt31->GetNbinsX()+1,j,PureDiTau2D_Pass_wrt31->GetNbinsY()+1))/nEventsPass;
-      PureRatio_DiTau2D_wrt31 -> SetBinContent (i, j, binDiTau2D);        
-      binDiTau2D *=scale;
-      PureRate_DiTau2D_wrt31 -> SetBinContent (i, j, binDiTau2D);        
+      for (int xx=0; xx<8; xx++){
+	PureRatio_DiTau2D[xx]->SetName(Form("PureRatio_DiTau2D_wrt%d",30+xx));
+	PureRate_DiTau2D[xx]->SetName(Form("PureRate_DiTau2D_wrt%d",30+xx));
+	binDiTau2D = 1.*(PureDiTau2D_Pass[xx]->Integral(i, PureDiTau2D_Pass[xx]->GetNbinsX()+1,j,PureDiTau2D_Pass[xx]->GetNbinsY()+1))/nEventsPass;
+	PureRatio_DiTau2D[xx] -> SetBinContent (i, j, binDiTau2D);        
+	binDiTau2D *=scale;
+	PureRate_DiTau2D[xx] -> SetBinContent (i, j, binDiTau2D);
+      }
     }
   }
     
@@ -599,10 +607,10 @@ int main(int argc, char** argv){
       Ratio_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);        
       binDiTauJet2D_jet *=scale;
       Rate_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);        
-      binDiTauJet2D_jet = 1.*(PureDiTauJet2D_Pass_jet->Integral(i, PureDiTauJet2D_Pass_jet->GetNbinsX()+1,j,PureDiTauJet2D_Pass_jet->GetNbinsY()+1))/nEventsPass;
-      PureRatio_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);        
-      binDiTauJet2D_jet *=scale;
-      PureRate_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);              
+      //      binDiTauJet2D_jet = 1.*(PureDiTauJet2D_Pass_jet->Integral(i, PureDiTauJet2D_Pass_jet->GetNbinsX()+1,j,PureDiTauJet2D_Pass_jet->GetNbinsY()+1))/nEventsPass;
+      // PureRatio_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);        
+      // binDiTauJet2D_jet *=scale;
+      //PureRate_DiTauJet2D_jet -> SetBinContent (i, j, binDiTauJet2D_jet);              
     }
   }
   
@@ -610,25 +618,27 @@ int main(int argc, char** argv){
   int xbin = Rate_DiTau2D->GetXaxis()->FindBin(70.0);
   int ybin = Rate_DiTau2D->GetYaxis()->FindBin(25.0);
   cout<<"Rate L1_DoubleIsoTau25er_PtTauTau70   "<<Rate_DiTau2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
-  xbin = Rate_DiTauJet2D_jet->GetXaxis()->FindBin(25.0);
-  ybin = Rate_DiTauJet2D_jet->GetYaxis()->FindBin(50.0);
-  cout<<"Rate L1_DoubleIsoTau25er_Jet50   "<<Rate_DiTauJet2D_jet->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+
   
-  xbin = PureRate_DiTau2D_wrt30->GetXaxis()->FindBin(70.0);
-  ybin = PureRate_DiTau2D_wrt30->GetYaxis()->FindBin(25.0);
-  cout<<"Pure Rate L1_DoubleIsoTau25er_PtTauTau70   "<<PureRate_DiTau2D_wrt30->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
-  xbin = PureRate_DiTauJet2D_jet->GetXaxis()->FindBin(25.0);
-  ybin = PureRate_DiTauJet2D_jet->GetYaxis()->FindBin(50.0);
-  cout<<"Pure Rate L1_DoubleIsoTau25er_Jet50   "<<PureRate_DiTauJet2D_jet->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+  xbin = PureRate_DiTau2D[0]->GetXaxis()->FindBin(70.0);
+  ybin = PureRate_DiTau2D[0]->GetYaxis()->FindBin(25.0);
+  cout<<"Pure Rate L1_DoubleIsoTau25er_PtTauTau70  wrt 30 "<<PureRate_DiTau2D[0]->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+
 
   xbin = Rate_DiJet2D->GetXaxis()->FindBin(620.0);
   ybin = Rate_DiJet2D->GetYaxis()->FindBin(90.0);
   cout<<" Rate VBFseed   "<<Rate_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
 
 
-  
+  fOutTaus->cd();
+       for (int xx=0; xx<8; xx++){	
+	 PureRate_DiTau2D[xx]->Write();
+      }
+       
   fOutTaus -> Write();
+    fOutVBF->cd();
   fOutVBF -> Write();
+    fOutXtrigger->cd();
   fOutXtrigger -> Write();
 }
 

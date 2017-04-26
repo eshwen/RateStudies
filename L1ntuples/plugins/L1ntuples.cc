@@ -73,24 +73,10 @@
 #include <FWCore/ParameterSet/interface/ParameterSet.h>
 #include <FWCore/Common/interface/TriggerNames.h>
 
-//#include <DataFormats/PatCandidates/interface/Muon.h>
-//#include <DataFormats/PatCandidates/interface/MET.h>
-//#include "DataFormats/PatCandidates/interface/Jet.h"
-//#include <DataFormats/PatCandidates/interface/GenericParticle.h>
+
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include <DataFormats/Common/interface/View.h>
 #include <DataFormats/Candidate/interface/Candidate.h>
-
-//#include <DataFormats/PatCandidates/interface/CompositeCandidate.h>
-//#include <DataFormats/PatCandidates/interface/Electron.h>
-//#include <DataFormats/METReco/interface/PFMET.h>
-//#include <DataFormats/METReco/interface/PFMETCollection.h>
-//#include <DataFormats/JetReco/interface/PFJet.h>
-//#include <DataFormats/JetReco/interface/PFJetCollection.h>
-//#include <DataFormats/PatCandidates/interface/PackedCandidate.h>
-
-
-
 
 #include <DataFormats/Math/interface/LorentzVector.h>
 #include <DataFormats/VertexReco/interface/Vertex.h>
@@ -153,13 +139,14 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob();
   void Initialize();
-  int* FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Jet>* jets, const edm::Event& event);
+  int* FillStage2(const BXVector<l1t::Tau>* taus,const BXVector<l1t::Muon>* muons, const BXVector<l1t::Jet>* jets, const edm::Event& event);
   // ----------member data ---------------------------
   edm::InputTag trackTags_; //used to select what tracks to read from configuration file
   
   TTree *myTree;
   
   edm::EDGetTokenT<BXVector<l1t::Tau> > theStage2TauTag;
+  edm::EDGetTokenT<BXVector<l1t::Muons> > theStage2MuonTag;
   edm::EDGetTokenT<BXVector<l1t::Jet> > theStage2JetTag;
   
   Int_t *stage2objNumber; //0 = taus, 1 = eg, 2 = jets, 3 = muons  
@@ -171,7 +158,13 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<Float_t> _stage2_tauEt;
   std::vector<Float_t> _stage2_tauEta;
   std::vector<Float_t> _stage2_tauPhi;
-    std::vector<int> _stage2_tauIso;
+  std::vector<int> _stage2_tauIso;
+
+Int_t _stage2_muonN;
+  std::vector<Float_t> _stage2_muonEt;
+  std::vector<Float_t> _stage2_muonEta;
+  std::vector<Float_t> _stage2_muonPhi;
+  std::vector<int> _stage2_muonIso;
 
   
   Int_t _stage2_jetN;
@@ -195,6 +188,7 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 L1ntuples::L1ntuples(const edm::ParameterSet& pset) : 
   theStage2TauTag      (consumes<BXVector<l1t::Tau>>                     (pset.getParameter<edm::InputTag>("stage2TauCollection"))),
+  theStage2MuonTag      (consumes<BXVector<l1t::Muon>>                     (pset.getParameter<edm::InputTag>("stage2MuonCollection"))),
   theStage2JetTag      (consumes<BXVector<l1t::Jet>>                     (pset.getParameter<edm::InputTag>("stage2JetCollection")))
 {
    //now do what ever initialization is needed
@@ -224,20 +218,24 @@ L1ntuples::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    using namespace edm;
 
   edm::Handle<BXVector<l1t::Tau>>stage2TauHandle;
+  edm::Handle<BXVector<l1t::Muon>>stage2MuonHandle;
   edm::Handle<BXVector<l1t::Jet>>stage2JetHandle; 
 
   event.getByToken(theStage2TauTag,stage2TauHandle);
+  event.getByToken(theStage2MuonTag,stage2MuonHandle);
   event.getByToken(theStage2JetTag,stage2JetHandle);
 
   const BXVector<l1t::Tau>* stage2Tau = stage2TauHandle.product();
+  const BXVector<l1t::Muon>* stage2Muon = stage2MuonHandle.product();
   const BXVector<l1t::Jet>* stage2Jet = stage2JetHandle.product(); 
   
   _indexevents = event.id().event();
   _runNumber = event.id().run();
   _lumi=event.luminosityBlock();
 
-  stage2objNumber=FillStage2(stage2Tau, stage2Jet, event);
+  stage2objNumber=FillStage2(stage2Tau, stage2Muon, stage2Jet, event);
   _stage2_tauN = stage2objNumber[0];
+  _stage2_muonN = stage2objNumber[3];
   _stage2_jetN = stage2objNumber[2];
   myTree->Fill();  
    
@@ -261,6 +259,12 @@ L1ntuples::beginJob()
   myTree->Branch("stage2_tauEta",&_stage2_tauEta);
   myTree->Branch("stage2_tauPhi",&_stage2_tauPhi);
   myTree->Branch("stage2_tauIso",&_stage2_tauIso);
+
+  myTree->Branch("stage2_muonN",&_stage2_muonN,"Stage2muonsNumber/I");
+  myTree->Branch("stage2_muonEt",&_stage2_muonEt);
+  myTree->Branch("stage2_muonEta",&_stage2_muonEta);
+  myTree->Branch("stage2_muonPhi",&_stage2_muonPhi);
+  myTree->Branch("stage2_muonIso",&_stage2_muonIso);
   
   myTree->Branch("stage2_jetN",&_stage2_jetN,"Stage2jetsNumber/I");
   myTree->Branch("stage2_jetEt",&_stage2_jetEt);
@@ -286,6 +290,11 @@ void L1ntuples::Initialize(){
   _stage2_tauEta.clear();
   _stage2_tauPhi.clear();
   _stage2_tauIso.clear();
+  _stage2_muonN = 0;
+  _stage2_muonEt.clear();
+  _stage2_muonEta.clear();
+  _stage2_muonPhi.clear();
+  _stage2_muonIso.clear();
   _stage2_jetN = 0;
   _stage2_jetEt.clear();
   _stage2_jetEta.clear();
@@ -293,40 +302,46 @@ void L1ntuples::Initialize(){
   
 }
 
-int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Jet>* jets, const edm::Event& event){
+int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Muon>* muons, const BXVector<l1t::Jet>* jets, const edm::Event& event){
   static Int_t nObj[4];
   for(int ii =0; ii<4; ii++){
     nObj[ii]=0;
   }
-
-  //  for (int ibx = taus->getFirstBX(); ibx <= taus->getLastBX(); ++ibx)
-  //  {
   int ibx = 0;
-      for (BXVector<l1t::Tau>::const_iterator it=taus->begin(ibx); it!=taus->end(ibx); it++)
-	{
-          if (it->pt() > 0){
-            nObj[0]++;
-            _stage2_tauEt.push_back(it->et());
-            _stage2_tauEta.push_back(it->eta());
-            _stage2_tauPhi.push_back(it->phi());
-	    _stage2_tauIso.push_back(it->hwIso());
-	    if (ibx != 0) cout<<"argh"<<endl;
-	   
-          }
-	}
-      // }
-      //for (int ibx = jets->getFirstBX(); ibx <= jets->getLastBX(); ++ibx)
-      //  {
-      for (BXVector<l1t::Jet>::const_iterator it=jets->begin(ibx); it!=jets->end(ibx); it++)
-        {
-          if (it->pt() > 0){
-            nObj[2]++;
-            _stage2_jetEt.push_back(it->et());
-            _stage2_jetEta.push_back(it->eta());
-            _stage2_jetPhi.push_back(it->phi());
-          }
-        }
-      //  }
+  for (BXVector<l1t::Tau>::const_iterator it=taus->begin(ibx); it!=taus->end(ibx); it++)
+    {
+      if (it->pt() > 0){
+	nObj[0]++;
+	_stage2_tauEt.push_back(it->et());
+	_stage2_tauEta.push_back(it->eta());
+	_stage2_tauPhi.push_back(it->phi());
+	_stage2_tauIso.push_back(it->hwIso());
+	if (ibx != 0) cout<<"argh"<<endl;
+	
+      }
+    }
+  for (BXVector<l1t::Muon>::const_iterator it=muons->begin(ibx); it!=muons->end(ibx); it++)
+    {
+      if (it->pt() > 0){
+	nObj[3]++;
+	_stage2_muonEt.push_back(it->et());
+	_stage2_muonEta.push_back(it->eta());
+	_stage2_muonPhi.push_back(it->phi());
+	_stage2_muonIso.push_back(it->hwIso());
+	if (ibx != 0) cout<<"argh"<<endl;
+	
+      }
+    }
+  
+  for (BXVector<l1t::Jet>::const_iterator it=jets->begin(ibx); it!=jets->end(ibx); it++)
+    {
+      if (it->pt() > 0){
+	nObj[2]++;
+	_stage2_jetEt.push_back(it->et());
+	_stage2_jetEta.push_back(it->eta());
+	_stage2_jetPhi.push_back(it->phi());
+      }
+    }
   return nObj;
 }
 //define this as a plug-in

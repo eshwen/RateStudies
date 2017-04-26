@@ -19,7 +19,7 @@ if __name__ == "__main__":
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument ('--VBFtag', dest='VBFtag' , help='offline selection: VBF-tag' , default=False,action="store_true" )
     selection.add_argument ('--boosted', dest='boosted' , help='offline selection: 1jet boosted category' , default=False,action="store_true")
-
+    parser.add_argument ('--ditauptOR', dest='ptSingleL1ditauOR', type=int, help ='pt_tau L1 cut for ditau seed complementary to boosted', default = 30)
     args = parser.parse_args()
     
 
@@ -59,7 +59,7 @@ if (args.boosted==True or args.VBFtag==True):
 else:
     line+=' 0'
 
-line+=' '+str(args.ptPairOffBoost)
+line+=' '+str(args.ptPairOffBoost)+' '+str(args.ptSingleL1ditauOR)
     
 print '{0}'.format(line)
 
