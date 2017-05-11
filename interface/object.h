@@ -72,6 +72,7 @@ public:
   };
   
   friend std::ostream& operator << (std::ostream &out, const object &object);
+
 private:
   float Et_, Eta_, Phi_, Iso_;
 };
@@ -81,4 +82,29 @@ std::ostream & operator << (std::ostream &out, const object &object)
 {
   out<<object.Et();
   return out;
+}
+
+
+
+/*
+bool SortMjjByJetThreshold(const std::tuple<double,int,int> &mjj_a, const std::tuple<double,int,int> &mjj_b, std::vector<object> jet){
+  float min_a = std::min(jet[std::get<1>(mjj_a)].Et(),jet[std::get<2>(mjj_a)].Et());
+  float min_b = std::min(jet[std::get<1>(mjj_b)].Et(),jet[std::get<2>(mjj_b)].Et());
+  if (min_a>min_b) return true;
+  else
+    return false;
+}
+
+*/
+
+
+bool SortMjjByJetThreshold(const std::tuple<double,int,int,double,double> &mjj_a, const std::tuple<double,int,int,double,double> &mjj_b){
+    float min_a = std::min(std::get<3>(mjj_a),std::get<4>(mjj_a));
+    float min_b = std::min(std::get<3>(mjj_b),std::get<4>(mjj_b));
+    /* if (min_a>min_b){
+      return true;
+    }else{
+    return false;
+    }*/
+    return min_a<min_b;
 }
