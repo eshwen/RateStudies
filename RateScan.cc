@@ -18,18 +18,19 @@
 using namespace std;
 void scan(int targetRate){
 
-  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias14Feb2017HighPU_ibx0_BunchTrain1-5_2016H9Nov_-1Events/";
   
+  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias14Feb2017HighPU_ibx0_BunchTrain1-5_2016H9Nov_-1Events/";
+  //TString directory = "/eos/user/c/camendol/local/";
 
   //ZeroBias sample L1
-  TFile *file = TFile::Open(Form("%srateL1_tausscaleToLumi18E33.root", directory.Data()),"read");
+  TFile *file = TFile::Open(Form("%sEmu_rateL1_VBF_scaleToLumi20E33_tak.root", directory.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
 
   int xcut = 0;
   int ycut = 0;
-  ofstream fOut(Form("%srate%dkHz_etTaus_etTauTau_1d8E34.txt",directory.Data(),targetRate));
+  ofstream fOut(Form("%srate%dkHz_etJet_etSub_2E34_rej.txt",directory.Data(),targetRate));
 
-  TH2D * hInput = (TH2D*) file->Get("Rate_DiTau2D");
+  TH2D * hInput = (TH2D*) file->Get("Rate_Sub_DiJet2D_rej");
   if (hInput == NULL) cout<<"Histogram not found"<<endl;
   for(int j = 1 ; j <= hInput->GetNbinsY() ; ++j){
 
@@ -41,7 +42,7 @@ void scan(int targetRate){
 	if(hInput->GetBinContent(i,j)<=(float)targetRate){
 	  xcut= hInput->GetXaxis()->GetBinLowEdge(i);
 	  ycut= hInput->GetYaxis()->GetBinLowEdge(j);
-	  cout<<"pT_tau "<<ycut<<" GeV; pT_tautau "<<xcut<<" GeV; rate "<<hInput->GetBinContent(i,j)<<endl;	 
+	  cout<<"pT_lead "<<ycut<<" GeV; pT_sub "<<xcut<<" GeV; rate "<<hInput->GetBinContent(i,j)<<endl;	 
 	  fOut<<ycut<<"\t"<<xcut<<"\t"<<hInput->GetBinContent(i,j)<<endl;	 
 	  break;
 	}

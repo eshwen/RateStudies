@@ -56,8 +56,9 @@ int main(int argc, char** argv){
 
   cout << "Scale factor: " << scale << endl;
   //ZeroBias sample L1
-  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
-  TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
+    TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
+  //  TString directory = "/eos/user/c/camendol/local/";
+    //  TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
   //Takashi's emulated
   TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasBunchTrainsX.txt";
    
@@ -74,7 +75,7 @@ int main(int argc, char** argv){
     lInput = new TChain ("l1EventTree/L1EventTree");
     appendFromFileList(lInput, fileList);
   }else{
-    tInput = (TTree*) file->Get("L1Tree/L1Tree");
+    //    tInput = (TTree*) file->Get("L1Tree/L1Tree");
   }
 
   TString fOutNameVBF;
@@ -180,21 +181,7 @@ int main(int argc, char** argv){
     cInput ->SetBranchAddress("jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
     cInput ->SetBranchAddress("jetEt", &stage2_jetEt, &b_stage2_jetEt);
   }else{
-    tInput ->SetBranchAddress("lumi", &lumi , &b_lumi );
-    tInput ->SetBranchAddress("stage2_tauN", &stage2_tauN , &b_stage2_tauN );
-    tInput ->SetBranchAddress("stage2_tauEta", &stage2_tauEta, &b_stage2_tauEta);
-    tInput ->SetBranchAddress("stage2_tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
-    tInput ->SetBranchAddress("stage2_tauEt", &stage2_tauEt, &b_stage2_tauEt);
-    tInput ->SetBranchAddress("stage2_tauIso", &stage2_tauIso, &b_stage2_tauIso);
-    tInput ->SetBranchAddress("stage2_muonN", &stage2_muonN , &b_stage2_muonN );
-    tInput ->SetBranchAddress("stage2_muonEta", &stage2_muonEta, &b_stage2_muonEta);
-    tInput ->SetBranchAddress("stage2_muonPhi", &stage2_muonPhi, &b_stage2_muonPhi);
-    tInput ->SetBranchAddress("stage2_muonEt", &stage2_muonEt, &b_stage2_muonEt);
-    tInput ->SetBranchAddress("stage2_muonIso", &stage2_muonIso, &b_stage2_muonIso);
-    tInput ->SetBranchAddress("stage2_jetN", &stage2_jetN , &b_stage2_jetN);
-    tInput ->SetBranchAddress("stage2_jetEta", &stage2_jetEta, &b_stage2_jetEta);
-    tInput ->SetBranchAddress("stage2_jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
-    tInput ->SetBranchAddress("stage2_jetEt", &stage2_jetEt, &b_stage2_jetEt);
+    
   }
   
   ///////////////
@@ -250,17 +237,31 @@ int main(int argc, char** argv){
   
   fOutVBF->cd(); 
   //VBF
-  //TH2D* DiJet2D_Pass = new TH2D ("DiJet2D", "double jet const", 100, 0, 800, 100,30, 130);
-  // TH2D* Ratio_DiJet2D = new TH2D ("Ratio_DiJet2D", "Ratio - 2 jets, E_{T} > 30 GeV ", 100, 0, 800, 100, 30, 130);
-  //TH2D* Rate_DiJet2D = new TH2D ("Rate_DiJet2D", "Rate - 2 jets, E_{T} > 30 GeV ", 100, 0, 800, 100, 30, 130);
-  TH2D* DiJet2D_Pass = new TH2D ("DiJet2D", "double jet const", 100, 0, 800, 100,30, 130);
-  TH2D* Ratio_DiJet2D = new TH2D ("Ratio_DiJet2D", "Ratio - 2 jets, E_{T} > 30 GeV ", 100, 0, 800, 100, 30, 130);
-  TH2D* Rate_DiJet2D = new TH2D ("Rate_DiJet2D", "Rate - 2 jets, E_{T} > 30 GeV ", 100, 0, 800, 100, 30, 130);
+
+  TH2D* DiJet2D_Pass = new TH2D ("DiJet2D", "double jet const", 800, 0, 800, 100,30, 130);
+  TH2D* Ratio_DiJet2D = new TH2D ("Ratio_DiJet2D", "Ratio - 2 jets, E_{T} > 30 GeV ", 800, 0, 800, 100, 30, 130);
+  TH2D* Rate_DiJet2D = new TH2D ("Rate_DiJet2D", "Rate - 2 jets, E_{T} > 30 GeV ", 800, 0, 800, 100, 30, 130);
 
   TH2D* DiJet2D_Sub_Pass = new TH2D ("DiJet2D_Sub", "double jet const", 30, 30, 60, 100,30, 130);
   TH2D* Ratio_Sub_DiJet2D = new TH2D ("Ratio_Sub_DiJet2D", "Ratio - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130);
   TH2D* Rate_Sub_DiJet2D = new TH2D ("Rate_Sub_DiJet2D", "Rate - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130); 
+
+  TH2D* DiJet2D_Pass_rej = new TH2D ("DiJet2D_rej", "double jet const", 800, 0, 800, 100,30, 130);
+  TH2D* Ratio_DiJet2D_rej = new TH2D ("Ratio_DiJet2D_rej", "Ratio - 2 jets, E_{T} > 30 GeV ", 800, 0, 800, 100, 30, 130);
+  TH2D* Rate_DiJet2D_rej = new TH2D ("Rate_DiJet2D_rej", "Rate - 2 jets, E_{T} > 30 GeV ", 800, 0, 800, 100, 30, 130);
+
+  TH2D* DiJet2D_Sub_Pass_rej = new TH2D ("DiJet2D_Sub_rej", "double jet const", 30, 30, 60, 100,30, 130);
+  TH2D* Ratio_Sub_DiJet2D_rej = new TH2D ("Ratio_Sub_DiJet2D_rej", "Ratio - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130);
+  TH2D* Rate_Sub_DiJet2D_rej = new TH2D ("Rate_Sub_DiJet2D_rej", "Rate - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130); 
   
+
+  TH1D* Mjj30 = new TH1D ("Mjj30", "", 100, 0, 800);
+  TH1D* Mjj35 = new TH1D ("Mjj35", "", 100, 0, 800);
+  TH1D* Mjj40 = new TH1D ("Mjj40", "", 100, 0, 800);
+  TH1D* Mjj45 = new TH1D ("Mjj45", "", 100, 0, 800);
+  TH1D* Mjj50 = new TH1D ("Mjj50", "", 100, 0, 800);
+  TH1D* Mjj55 = new TH1D ("Mjj55", "", 100, 0, 800);
+
   /* TH1D* ETA = new TH1D ("ETA", "", 1000, -4, 4);
   TH1D* ETA_strip1 = new TH1D ("ETA_strip400", "", 1000, -4, 4);
   TH1D* ETA_strip2 = new TH1D ("ETA_strip467", "", 1000, -4, 4);
@@ -317,7 +318,7 @@ int main(int argc, char** argv){
     }
   // analyze data    
   long int nEvents = 0;
-  if(!emulated)  nEvents =  tInput->GetEntries(); 
+
   int nEventsPass = 0;
 
 
@@ -326,6 +327,7 @@ int main(int argc, char** argv){
   std::vector<object> tauNoOverlap;
   std::vector<object> tau25noOverlap;
   std::vector<object> jet30;   
+  std::vector<object> jet30rej;   
   std::vector<object> jet30noOverlap;   
 
   std::vector< std::tuple<double,int,int> > et_ditau_pass; //et of tau pair
@@ -333,6 +335,8 @@ int main(int argc, char** argv){
   std::vector< std::tuple<double,int,int> > m_ditau_pass; //m of tau pair  
   std::vector< std::tuple<double,int,int> > mjj_pass; //VBF
   std::vector< std::tuple<double,int,int,double, double> > mjj_pass_sortPt; //VBF
+  std::vector< std::tuple<double,int,int> > mjj_rej; //VBF
+  std::vector< std::tuple<double,int,int,double, double> > mjj_rej_sortPt; //VBF
 
 
   double singletau = 0;
@@ -349,7 +353,7 @@ int main(int argc, char** argv){
   
   int Nfill = 0;  
   
-  for (Long64_t iEv =  112000 ;iEv<200000; ++iEv){
+  for (Long64_t iEv =  112000 ;true; ++iEv){
     lumi =0;			   
     stage2_tauN=0;		   
     stage2_tauEt.clear(); 
@@ -373,7 +377,7 @@ int main(int argc, char** argv){
       lInput->GetEntry(iEv);
       got = cInput->GetEntry(iEv);
     }else{
-      got = tInput->GetEntry(iEv);
+
     }
     if (got == 0) break;
     
@@ -386,11 +390,14 @@ int main(int argc, char** argv){
 
     
     jet30.clear();
+    jet30rej.clear();
     jet30noOverlap.clear();
     tauNoOverlap.clear();
     tau25noOverlap.clear();
     mjj_pass.clear();
     mjj_pass_sortPt.clear();
+    mjj_rej.clear();
+    mjj_rej_sortPt.clear();
     et_ditau_pass.clear();
     et_ditau_all.clear();
     m_ditau_pass.clear();
@@ -423,13 +430,20 @@ int main(int argc, char** argv){
      
     }
 
-    //    for (long int iL1 = 0; iL1 < stage2_jetN; iL1++){ //loop on jets
+
     for (long int iL1 = 0; iL1 < stage2_jetEt.size(); iL1++){ //loop on jets
       // selections
       double jetPt  = stage2_jetEt.at(iL1);
+      double jetEta  = fabs(stage2_jetEta.at(iL1));
 
-      if(jetPt>30.) jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-
+      if(jetPt>30.) {
+	jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	if(jetEta>2.7 && jetEta<3.0){
+	  if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	}else{
+	  jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	}
+      }
 
     }
 
@@ -439,6 +453,7 @@ int main(int argc, char** argv){
     // }
 
     std::sort (jet30.begin(),jet30.end());
+    std::sort (jet30rej.begin(),jet30rej.end());
     std::sort (tau.begin(),tau.end());
     std::sort (muon.begin(),muon.end());
 
@@ -532,13 +547,13 @@ int main(int argc, char** argv){
       DiTau2D_Pass -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
       for (int xx=0; xx<8; xx++){
 	if(!L1_DoubleIsoTauXXer[xx]) {
-	  PureDiTau2D_Pass[xx] -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
+	  	  PureDiTau2D_Pass[xx] -> Fill ( std::get<0>(*(et_ditau_pass.rbegin())),tau25noOverlap[1].Et(),weight);
 	  if(tau25noOverlap[1].Et()>33){
-	    cout<<"plot "<<xx<<"; pass wrt"<<xx +30<<endl;
+	    // cout<<"plot "<<xx<<"; pass wrt"<<xx +30<<endl;
 	  }
 
 	}else{
-	  PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
+	    PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
 	  
 	}
       }
@@ -546,12 +561,13 @@ int main(int argc, char** argv){
     }else{
       DiTau2D_Pass -> Fill (-1,-1);
       for (int xx=0; xx<8; xx++){
-	PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
+       PureDiTau2D_Pass[xx] -> Fill ( -1,-1);
       }
     }
       
 
     //VBF
+
        
     if (jet30.size() >= 2){
       for (int iJet = 0; iJet <jet30.size(); iJet++){      
@@ -572,63 +588,83 @@ int main(int argc, char** argv){
 			      0.);
 	    TLorentzVector jetPair = ijet+kjet;
 	    mjj_pass.push_back(make_tuple(jetPair.M(),iJet,kJet));
-	    if(jetPair.M()>620) mjj_pass_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30[iJet].Et(),jet30[kJet].Et()));
+          if(jetPair.M()>=620) mjj_pass_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30[iJet].Et(),jet30[kJet].Et()));
+	  Mjj30->Fill(jetPair.M());
+	  if(jet30[kJet].Et()>35) Mjj35->Fill(jetPair.M());
+	  if(jet30[kJet].Et()>40) Mjj40->Fill(jetPair.M());
+	  if(jet30[kJet].Et()>45) Mjj45->Fill(jetPair.M());
+	  if(jet30[kJet].Et()>50) Mjj50->Fill(jetPair.M());
+	  if(jet30[kJet].Et()>55) Mjj55->Fill(jetPair.M());
+
 	  }
 	  
 	}
 	
       }
-      //      cout<<"before sorting"<<endl;
-      // for(int im = 0; im<mjj_pass_sortPt.size(); im++){
-      //	cout<<"mjj "<<std::get<0>(*(mjj_pass_sortPt.begin() + im))<<" jet1 "<<jet30[std::get<1>(*(mjj_pass_sortPt.begin() + im))].Et()<<" jet2 "<<jet30[std::get<2>(*(mjj_pass_sortPt.begin() + im))].Et()<<endl;
-      // }
       std::sort(mjj_pass.begin(),mjj_pass.end());
-      
       std::sort(mjj_pass_sortPt.begin(),mjj_pass_sortPt.end(),SortMjjByJetThreshold);
-            cout<<"after sorting"<<endl;
-        for(int im = 0; im<mjj_pass_sortPt.size(); im++){
-      	cout<<"mjj "<<std::get<0>(*(mjj_pass_sortPt.begin() + im))<<" jet1 "<<jet30[std::get<1>(*(mjj_pass_sortPt.begin() + im))].Et()<<" jet2 "<<jet30[std::get<2>(*(mjj_pass_sortPt.begin() + im))].Et()<<" jet1 "<<std::get<3>(*(mjj_pass_sortPt.begin() + im))<<" jet2 "<<std::get<4>(*(mjj_pass_sortPt.begin() + im))<<endl;
-
-          }
-
-	cout<<"FILLING"<<endl;
-
-	/*int ijmin=-1;
-	for(int ij = 0; ij<mjj_pass_sortPt.size(); ij++)
-	  {
-	    if(std::get<2>(*(mjj_pass_sortPt.begin() + ij)) ==ijmin) continue;
-	    for(int im = ij; im<mjj_pass_sortPt.size(); im++){
-	      cout<<"mjj "<<std::get<0>(*(mjj_pass_sortPt.begin() + im))<<" jet1 "<<jet30[std::get<1>(*(mjj_pass_sortPt.begin() + im))].Et()<<" jet2 "<<jet30[std::get<2>(*(mjj_pass_sortPt.begin() + im))].Et()<<endl;
-	      if(std::get<0>(*(mjj_pass_sortPt.begin() + im))>620) {
-		cout<<""<<jet30[std::get<2>(*(mjj_pass_sortPt.begin() + ij))].Et()<<" im"<<im<<endl;
-		Nfill ++;
-		  DiJet2D_Sub_Pass -> Fill ( jet30[std::get<2>(*(mjj_pass_sortPt.begin() + ij))].Et(),jet30[0].Et(),weight);  
-		break;
-	      }else{
-		DiJet2D_Sub_Pass->Fill(-1,-1);
-	      }
-	      
-	      
-	      ijmin = std::get<2>(*(mjj_pass_sortPt.begin() + ij));
-	     
-	    }
-	    cout<<endl;
-	    
-	  }
-	*/
-
+     
+      DiJet2D_Pass -> Fill ( std::get<0>(*(mjj_pass.rbegin())),jet30[0].Et(),weight);  
+      
+      if(mjj_pass_sortPt.size()>0) {
+	DiJet2D_Sub_Pass -> Fill ( std::get<4>(*(mjj_pass_sortPt.rbegin())),jet30[0].Et(),weight);  
 	
-	DiJet2D_Sub_Pass -> Fill ( jet30[std::get<2>(*(mjj_pass_sortPt.rbegin()))].Et(),jet30[0].Et(),weight);  
-	DiJet2D_Pass -> Fill ( std::get<0>(*(mjj_pass.rbegin())),jet30[0].Et(),weight);  
-	
+      }else{
+       DiJet2D_Sub_Pass->Fill(-1,-1);
+      }
+
+      
     } else {
       DiJet2D_Pass -> Fill (-1, -1);
       DiJet2D_Sub_Pass->Fill(-1,-1);
-    }
-    
-    
-    
+   }
+    //VBF rejecting TT28
 
+if (jet30rej.size() >= 2){
+      for (int iJet = 0; iJet <jet30rej.size(); iJet++){      
+	for (int kJet = iJet+1; kJet <jet30rej.size(); kJet++){      
+	  if (kJet!=iJet) {
+	    
+	    TLorentzVector ijet;
+	    ijet.SetPtEtaPhiM(
+			      jet30rej[iJet].Et(),
+			      jet30rej[iJet].Eta(),
+			      jet30rej[iJet].Phi(),
+			      0.);
+	    TLorentzVector kjet;
+	    kjet.SetPtEtaPhiM(
+			      jet30rej[kJet].Et(),
+			      jet30rej[kJet].Eta(),
+			      jet30rej[kJet].Phi(),
+			      0.);
+	    TLorentzVector jetPair = ijet+kjet;
+	    mjj_rej.push_back(make_tuple(jetPair.M(),iJet,kJet));
+          if(jetPair.M()>=620) mjj_rej_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30rej[iJet].Et(),jet30rej[kJet].Et()));
+
+
+	  }
+	  
+	}
+	
+      }
+      std::sort(mjj_rej.begin(),mjj_rej.end());
+      std::sort(mjj_rej_sortPt.begin(),mjj_rej_sortPt.end(),SortMjjByJetThreshold);
+     
+      DiJet2D_Pass_rej -> Fill ( std::get<0>(*(mjj_rej.rbegin())),jet30rej[0].Et(),weight);  
+      
+      if(mjj_rej_sortPt.size()>0) {
+	DiJet2D_Sub_Pass_rej -> Fill ( std::get<4>(*(mjj_rej_sortPt.rbegin())),jet30rej[0].Et(),weight);  
+	
+      }else{
+       DiJet2D_Sub_Pass_rej->Fill(-1,-1);
+      }
+
+      
+    } else {
+      DiJet2D_Pass_rej -> Fill (-1, -1);
+      DiJet2D_Sub_Pass_rej->Fill(-1,-1);
+    }  
+    
 
     //Taus and ditau+jet
     if (tauNoOverlap.size() >= 2 )
@@ -758,6 +794,11 @@ int main(int argc, char** argv){
       Ratio_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
       binDiJet2D *=scale;
       Rate_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
+      //rej
+      binDiJet2D = 1.*(DiJet2D_Pass_rej->Integral(i, DiJet2D_Pass_rej->GetNbinsX()+1,j,DiJet2D_Pass_rej->GetNbinsY()+1))/nEventsPass;
+      Ratio_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
+      binDiJet2D *=scale;
+      Rate_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
     }
   }
 
@@ -767,6 +808,11 @@ int main(int argc, char** argv){
       Ratio_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
       binDiJet2D *=scale;
       Rate_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
+      //rej
+binDiJet2D = 1.*(DiJet2D_Sub_Pass_rej->Integral(i, DiJet2D_Sub_Pass_rej->GetNbinsX()+1,j,DiJet2D_Sub_Pass_rej->GetNbinsY()+1))/nEventsPass;
+      Ratio_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
+      binDiJet2D *=scale;
+      Rate_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
     }
   }
 
@@ -784,7 +830,7 @@ int main(int argc, char** argv){
 	PureRatio_DiTau2D[xx] -> SetBinContent (i, j, binDiTau2D);        
 	binDiTau2D *=scale;
 	PureRate_DiTau2D[xx] -> SetBinContent (i, j, binDiTau2D);
-      }
+	}
     }
   }
     
@@ -841,19 +887,16 @@ int main(int argc, char** argv){
 
   
   cout<<"new "<<endl;
-    xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(35.0);
+  xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(35.0);
   ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(100.0);
   cout<<" Rate VBFseed 100 35 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
-    xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(30.0);
+  xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(30.0);
   ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(90.0);
   cout<<" Rate VBFseed 90 30 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
-  cout<<"N "<<Nfill<<endl; 
+ 
 
   fOutTaus->cd();
-  for (int xx=0; xx<8; xx++){	
-    PureRate_DiTau2D[xx]->Write();
-  }
-  
+   
   fOutTaus -> Write();
   fOutVBF->cd();
   fOutVBF -> Write();
