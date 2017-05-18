@@ -28,13 +28,21 @@ int main(int argc, char** argv){
   bool ggHSignal= false;
   bool DYJetsToLLSignal= false;
   bool HHbbTauTauSignal= false;
-
+  bool emu = false;
   
   if(atoi(argv[4])==1) VBFHSignal = true;
   if(atoi(argv[5])==1) ggHSignal = true;
   if(atoi(argv[6])==1) DYJetsToLLSignal = true;
   if(atoi(argv[7])==1) HHbbTauTauSignal= true; 
+  if(atoi(argv[13])==1) emu= true; 
      
+  double VBF_OnlineETsubjetcut = atof(argv[14]);
+  double VBF_OnlineETleadjetcut = atof(argv[15]);
+  double VBF_OnlineMjjcut = atof(argv[16]);
+
+  double VBF_OffETsubjetcut = VBF_OnlineETsubjetcut+10;
+  double VBF_OffETleadjetcut = VBF_OnlineETleadjetcut +10;
+  double VBF_OffMjjcut = 700;
      
   int lowbin = 0;
   double Boost_OnlinePTtaucut = atof(argv[1]);
@@ -68,18 +76,18 @@ int main(int argc, char** argv){
   int pt_tau_cut = 20;
   int pt_jet_cut = 30;
   TString LLRdir;
-  if(VBFHSignal)          LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_VBFHToTauTau_-1Events_0Skipped/";
+  if(VBFHSignal)          LLRdir = "/afs/cern.ch/work/c/camendol/private/EmuL1NTuples/VBFSignal/";
   if(ggHSignal)           LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggHToTauTau_-1Events_0Skipped/";
   if(HHbbTauTauSignal)    LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggRadionToHHTo2b2Tau_500_-1Events_0Skipped/";
   if(DYJetsToLLSignal)    LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_DYJetsToLL_1500000Events_0Skipped/";
-  TFile *file = TFile::Open(Form("%sHTauTauAnalysis_total.root", LLRdir.Data()),"read");
+  TFile *file = TFile::Open(Form("%sNtuple_VBF_L1_RECO_WithMay2017_Jets_MultipleTaus_16_05_17_0.root", LLRdir.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
-
+  
   cout<<"Signal sample: "<<LLRdir<<endl;
   
   cout<<"DiTau Seed: DoubleIsoTau"<<fixed << setprecision(0)<<DiTau_OnlinePTtaucut<<"er"<<endl;
   cout<<"BoostedDiTau Seed: DoubleIsoTau"<<fixed << setprecision(0)<<Boost_OnlinePTtaucut<<"er_PtTauTau"<<fixed << setprecision(0)<<Boost_OnlinePTpaircut<<endl;
-
+  
   cout<<"Test OR of: DoubleIsoTau"<<fixed <<setprecision(0)<<DiTauOR_OnlinePTtaucut<<"er + DoubleIsoTau"<<Boost_OnlinePTtaucut<<"er_PtTauTau"<<fixed << setprecision(0)<<Boost_OnlinePTpaircut<<endl;
 
   cout<<endl;
@@ -107,14 +115,18 @@ int main(int argc, char** argv){
   if (DiTauOR_OffjetsN>1) cout<<" with mjj>"<<fixed << setprecision(0)<<DiTauOR_OffMjjcut<<" GeV, |DeltaEta(j1,j2)|>"<<fixed << setprecision(1)<<DiTauOR_OffDeltaEtajjcut;
   cout<<endl;
 
-
+  TString fOut;
   TFile *fPlotsVBF;
-  if(VBFHSignal)       fPlotsVBF = TFile::Open(Form("%sVBFHTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
-  if(ggHSignal)        fPlotsVBF = TFile::Open(Form("%sggHTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
-  if(DYJetsToLLSignal) fPlotsVBF = TFile::Open(Form("%sDYJetsToLL_VBFseed.root", LLRdir.Data()),"recreate");
-  if(HHbbTauTauSignal) fPlotsVBF = TFile::Open(Form("%sHbbTauTauSignal_VBFseed.root", LLRdir.Data()),"recreate");
+  if(VBFHSignal)       fOut= LLRdir+'VBFHTauTauSignal_VBFseed';
+  if(ggHSignal)        fOut= LLRdir+'ggHTauTauSignal_VBFseed';
+  if(DYJetsToLLSignal) fOut= LLRdir+'DYJetsToLL_VBFseed';
+  if(HHbbTauTauSignal) fOut= LLRdir+'HbbTauTauSignal_VBFseed';
+ 
+  if(emu) fOut += '_emu';
+  fOut +='.root';
+    fPlotsVBF = TFile::Open(Form("%s", fOut.Data()),"recreate");
   fPlotsVBF->cd() ;  
-
+  
   TH1D* EtaJet1 = new TH1D ("EtaJet1", "", 50, -5, 5);
   TH1D* EtaJet2 = new TH1D ("EtaJet2", "", 50, -5, 5);
   TH1D* DeltaEta_VBF = new TH1D ("DeltaEta_VBF", "", 50, 0, 5);
@@ -172,18 +184,17 @@ int main(int argc, char** argv){
   TH1D* Boost_PtTau_noDiTau_DiTauPair = new TH1D ("Boost_PtTau_noDiTau_DiTauPt", "",40, 20, 120);
 
   file->cd();
-  TTree * tInput = (TTree*) file->Get("HTauTauTree/HTauTauTree");
+  TTree * tInput = (TTree*) file->Get("Ntuplizer_noTagAndProbe_multipleTaus_TagAndProbe");
   
   
   ULong64_t       EventNumber;
   Int_t           RunNumber;
   Int_t           lumi;
-  std::vector<int>     *particleType=0;
-  std::vector<float>   *daughters_px=0;
-  std::vector<float>   *daughters_py=0;
-  std::vector<float>   *daughters_pz=0;
-  std::vector<float>   *daughters_e=0;
-  std::vector<Long64_t> *tauID=0;
+  //  std::vector<int>     *particleType=0;
+  std::vector<float>   *tauPt=0;
+  std::vector<float>   *tauEta=0;
+  std::vector<float>   *tauPhi=0;
+  //  std::vector<Long64_t> *tauID=0; /////
   Int_t           JetsNumber;
   std::vector<float>   *jets_px=0;
   std::vector<float>   *jets_py=0;
@@ -203,24 +214,25 @@ int main(int argc, char** argv){
   TBranch        *b_EventNumber;   //!
   TBranch        *b_RunNumber;   //!
   TBranch        *b_lumi;   //!
-  TBranch        *b_particleType;   //!
-  TBranch        *b_daughters_px;   //!
-  TBranch        *b_daughters_py;   //!
-  TBranch        *b_daughters_pz;   //!
-  TBranch        *b_daughters_e;   //!
-  TBranch        *b_tauID;   //!
+  //  TBranch        *b_particleType;   //!
+  TBranch        *b_tauPt;   //!
+  TBranch        *b_tauPhi;   //!
+  TBranch        *b_tauEta;   //!
+
+  //  TBranch        *b_tauID;   //!
   TBranch        *b_JetsNumber;   //!
   TBranch        *b_jets_px;   //!
   TBranch        *b_jets_py;   //!
   TBranch        *b_jets_pz;   //!
   TBranch        *b_jets_e;   //!
-  TBranch *b_stage2_tauN ;
+
+  //  TBranch *b_stage2_tauN ;
   TBranch *b_stage2_tauEt;
   TBranch *b_stage2_tauEta;
   TBranch *b_stage2_tauPhi;
   TBranch *b_stage2_tauIso;
   
-  TBranch *b_stage2_jetN ;
+  //  TBranch *b_stage2_jetN ;
   TBranch *b_stage2_jetEt;
   TBranch *b_stage2_jetEta;
   TBranch *b_stage2_jetPhi;
@@ -229,27 +241,36 @@ int main(int argc, char** argv){
   tInput->SetBranchAddress("EventNumber", &EventNumber, &b_EventNumber);
   tInput->SetBranchAddress("RunNumber", &RunNumber, &b_RunNumber);
   tInput->SetBranchAddress("lumi", &lumi, &b_lumi);
-  tInput->SetBranchAddress("particleType", &particleType, &b_particleType);
-  tInput->SetBranchAddress("daughters_px", &daughters_px, &b_daughters_px);
-  tInput->SetBranchAddress("daughters_py", &daughters_py, &b_daughters_py);
-  tInput->SetBranchAddress("daughters_pz", &daughters_pz, &b_daughters_pz);
-  tInput->SetBranchAddress("daughters_e", &daughters_e, &b_daughters_e);
-  tInput->SetBranchAddress("tauID", &tauID, &b_tauID);
+  //  tInput->SetBranchAddress("particleType", &particleType, &b_particleType);
+  tInput->SetBranchAddress("tauPt", &tauPt, &b_tauPt);
+  tInput->SetBranchAddress("tauEta", &tauEta, &b_tauEta);
+
+  tInput->SetBranchAddress("tauPhi", &tauPhi, &b_tauPhi);
+  // tInput->SetBranchAddress("tauID", &tauID, &b_tauID);
   tInput->SetBranchAddress("JetsNumber", &JetsNumber, &b_JetsNumber);
   tInput->SetBranchAddress("jets_px", &jets_px, &b_jets_px);
   tInput->SetBranchAddress("jets_py", &jets_py, &b_jets_py);
   tInput->SetBranchAddress("jets_pz", &jets_pz, &b_jets_pz);
   tInput->SetBranchAddress("jets_e", &jets_e, &b_jets_e);
-  tInput ->SetBranchAddress("stage2_tauN", &stage2_tauN , &b_stage2_tauN );
-  tInput ->SetBranchAddress("stage2_tauEta", &stage2_tauEta, &b_stage2_tauEta);
-  tInput ->SetBranchAddress("stage2_tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
-  tInput ->SetBranchAddress("stage2_tauEt", &stage2_tauEt, &b_stage2_tauEt);
-  tInput ->SetBranchAddress("stage2_tauIso", &stage2_tauIso, &b_stage2_tauIso);
-  tInput ->SetBranchAddress("stage2_jetN", &stage2_jetN , &b_stage2_jetN);
-  tInput ->SetBranchAddress("stage2_jetEta", &stage2_jetEta, &b_stage2_jetEta);
-  tInput ->SetBranchAddress("stage2_jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
-  tInput ->SetBranchAddress("stage2_jetEt", &stage2_jetEt, &b_stage2_jetEt);   
-
+  // tInput ->SetBranchAddress("stage2_tauN", &stage2_tauN , &b_stage2_tauN );
+  if(emu){ 
+    
+    tInput ->SetBranchAddress("l1tEmuEta", &stage2_tauEta, &b_stage2_tauEta);
+    tInput ->SetBranchAddress("l1tEmuPhi", &stage2_tauPhi, &b_stage2_tauPhi);
+    tInput ->SetBranchAddress("l1tEmuPt", &stage2_tauEt, &b_stage2_tauEt);
+    tInput ->SetBranchAddress("l1tEmuIso", &stage2_tauIso, &b_stage2_tauIso);
+    tInput ->SetBranchAddress("l1tEmuEtaJet", &stage2_jetEta, &b_stage2_jetEta);
+    tInput ->SetBranchAddress("l1tEmuPhiJet", &stage2_jetPhi, &b_stage2_jetPhi);
+    tInput ->SetBranchAddress("l1tEmuPtJet", &stage2_jetEt, &b_stage2_jetEt);   
+  }else{
+    tInput ->SetBranchAddress("l1tEta", &stage2_tauEta, &b_stage2_tauEta);
+    tInput ->SetBranchAddress("l1tPhi", &stage2_tauPhi, &b_stage2_tauPhi);
+    tInput ->SetBranchAddress("l1tPt", &stage2_tauEt, &b_stage2_tauEt);
+    tInput ->SetBranchAddress("l1tIso", &stage2_tauIso, &b_stage2_tauIso);
+    tInput ->SetBranchAddress("l1tEtaJet", &stage2_jetEta, &b_stage2_jetEta);
+    tInput ->SetBranchAddress("l1tPhiJet", &stage2_jetPhi, &b_stage2_jetPhi);
+    tInput ->SetBranchAddress("l1tPtJet", &stage2_jetEt, &b_stage2_jetEt);   
+  }
   
   std::vector <TLorentzVector> OffTau;
   std::vector <TLorentzVector> OffJet;
@@ -279,7 +300,8 @@ int main(int argc, char** argv){
   bool L1_DoubleIsoTauYYer= false;
   bool L1_DoubleIsoTauXXer= false;
   bool L1_DoubleIsoTauXXer_PtTauTauYY = false;
-  bool L1_DoubleJet_90_30_Mj30j30_620 = false;
+  // bool L1_DoubleJet_90_30_Mj30j30_620 = false;
+ bool L1_DoubleJet_X_Y_MjYjY_Z = false;
   
   
   double N_selXtrigger = 0;
@@ -330,27 +352,29 @@ int main(int argc, char** argv){
     L1_DoubleIsoTau25er_Jet50= false;
     L1_DoubleIsoTauXXer= false;
     L1_DoubleIsoTauYYer= false;
-    L1_DoubleJet_90_30_Mj30j30_620 = false;
+    L1_DoubleJet_X_Y_MjYjY_Z = false;
 
 
     file->cd();
+
     tInput->GetEntry(iEv);
     if (iEv%1000 == 0) cout << iEv << " / " << nEvents << endl;
 
     
-    
-    
-    for(int i = 0; i<daughters_px->size(); i++ ){
-      if (particleType->at(i) ==2){
-	
+
+    stage2_tauN = stage2_tauEt->size();
+    stage2_jetN = stage2_jetEt->size();
+
+    for(int i = 0; i<tauPt->size(); i++ ){
+
+      //    cout<<"off pt "<<tauPt->at(i)<<" eta "<<tauEta->at(i)<<" phi "<<tauPhi->at(i)<<endl;	
 	TLorentzVector tlv_tau;
-	tlv_tau.SetPxPyPzE(
-			   daughters_px->at(i),
-			   daughters_py->at(i),
-			   daughters_pz->at(i),
-			   daughters_e->at(i)
-			   );
-	if(tlv_tau.Pt()>pt_tau_cut && fabs(tlv_tau.Eta())<2.1 && ((tauID->at(i)>>5)&1) && ((tauID->at(i)>>7)&1) && ((tauID->at(i)>>5)&11)){
+	tlv_tau.SetPtEtaPhiM(
+			   tauPt->at(i),
+			   tauEta->at(i),
+			   tauPhi->at(i),
+			   0.);
+	if(tlv_tau.Pt()>pt_tau_cut && fabs(tlv_tau.Eta())<2.1){// && ((tauID->at(i)>>5)&1) && ((tauID->at(i)>>7)&1) && ((tauID->at(i)>>5)&11)){
 	  for(int iTau=0; iTau<stage2_tauN; iTau++){//matching
 	    if(stage2_tauEt->at(iTau)>8){
 	      TLorentzVector tlv_L1tau;
@@ -366,7 +390,7 @@ int main(int argc, char** argv){
 	  }
 	  if (MatchingTau = true) OffTau.push_back(tlv_tau);
 	}
-      }
+     
     }
     std::sort(OffTau.begin(),OffTau.end(),SortByPt);
     if(OffTau.size()>=2){ //this holds for all the selections under study     
@@ -402,7 +426,7 @@ int main(int argc, char** argv){
       }
       std::sort(OffJetNoOverlap.begin(),OffJetNoOverlap.end(),SortByPt);
       std::sort(OffJet.begin(),OffJet.end(),SortByPt);
-    
+     
       ///// now all the offline vectors are filled
        
       //L1 objects
@@ -418,8 +442,16 @@ int main(int argc, char** argv){
       for (long int iL1 = 0; iL1 < stage2_jetN; iL1++){ //loop on jets
 	// selections
 	double jetPt  = (*stage2_jetEt)[iL1];
+	double jetEta  = (*stage2_jetEta)[iL1];
 	ptJet_pass.push_back (jetPt);
-	if(jetPt>35.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ; //CHECK
+	//	if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+	if(jetEta>2.7 && jetEta<3.0){
+	  if(jetPt>60.) jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+	}else{
+	  jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+	}
+
+
 	if(jetPt>30.)	jet30_sortByDeltaR.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
       }
 	
@@ -481,11 +513,11 @@ int main(int argc, char** argv){
 	std::sort(m_ditau_pass.begin(),m_ditau_pass.end());	       
       }
    
-
+     
       //VBF seed
       if (jet30.size() >= 2){
 	for (int iJet = 0; iJet <jet30.size(); iJet++){      
-	  for (int kJet = 0; kJet <jet30.size(); kJet++){      
+	  for (int kJet = iJet+1; kJet <jet30.size(); kJet++){      
 	    if (kJet!=iJet) {
 	      TLorentzVector ijet;
 	      ijet.SetPtEtaPhiM(
@@ -500,18 +532,17 @@ int main(int argc, char** argv){
 				jet30[kJet].Phi(),
 				0.);
 	      TLorentzVector jetPair = ijet+kjet;
-	      mjj_pass.push_back(make_tuple(jetPair.M(),iJet,kJet));
+	      if(jet30[kJet].Et()>VBF_OnlineETsubjetcut) mjj_pass.push_back(make_tuple(jetPair.M(),iJet,kJet));
 	    }
 	    
 	  }
 	  
 	}
 	std::sort(mjj_pass.begin(),mjj_pass.end());
-	//	if(std::get<0>(*(mjj_pass.rbegin()))>620 && jet30[0].Et()>90) L1_DoubleJet_90_30_Mj30j30_620 = true;
-	if(std::get<0>(*(mjj_pass.rbegin()))>630 && jet30[0].Et()>100) L1_DoubleJet_90_30_Mj30j30_620 = true;      //CHECK
+	if(std::get<0>(*(mjj_pass.rbegin()))>VBF_OnlineMjjcut && jet30[0].Et()>VBF_OnlineETleadjetcut) L1_DoubleJet_X_Y_MjYjY_Z = true;      
 
       }
-
+     
       //// all the L1 objects are filled
 
       if(tauNoOverlap.size()>=2){
@@ -571,7 +602,7 @@ int main(int argc, char** argv){
 				OffJetNoOverlap[kJet].M()
 				);
 	      TLorentzVector jetPair = ijet+kjet;
-	      mjj_off_passVBF.push_back(make_tuple(jetPair.M(),iJet,kJet));
+	      if(OffJetNoOverlap[kJet].Pt()>VBF_OffETsubjetcut)	      mjj_off_passVBF.push_back(make_tuple(jetPair.M(),iJet,kJet));
 	      if (OffJetNoOverlap[kJet].Pt()>DiTau_OffPTtaucut && OffJetNoOverlap[iJet].Pt()>DiTau_OffPTtaucut) mjj_off_passditau.push_back(make_tuple(jetPair.M(),iJet,kJet));
 	    }
 	    
@@ -579,20 +610,21 @@ int main(int argc, char** argv){
 	}
 	std::sort(mjj_off_passditau.begin(),mjj_off_passditau.end());
 	std::sort(mjj_off_passVBF.begin(),mjj_off_passVBF.end());
-	//for acceptance L1_DoubleJet_90_30_Mj30j30_620 //VBF
-
+	//for acceptance L1_DoubleJet_X_Y_MjYjY_Z //VBF
+	
 	if(OffJet.size()>1){
-	  // if(((OffJet[0].Pt()>100)||(OffTau[0].Pt()>100)) && OffJet[1].Pt()>30 &&  OffTau[1].Pt()>20){
-	     	  if(((OffJet[0].Pt()>110)||(OffTau[0].Pt()>110)) && OffJet[1].Pt()>35 &&  OffTau[1].Pt()>20){ //CHECK
+
+	  if(((OffJet[0].Pt()>VBF_OffETleadjetcut)||(OffTau[0].Pt()>VBF_OffETleadjetcut)) && OffJet[1].Pt()>VBF_OffETsubjetcut &&  OffTau[1].Pt()>20){
 	    selVBF = true;
-	    if( L1_DoubleJet_90_30_Mj30j30_620 ) {
+	    if( L1_DoubleJet_X_Y_MjYjY_Z ) {
+	  cout<<"before"<<endl;	
 	      Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
 	      PtTau_VBF->Fill(OffTau[1].Pt());
 	      DeltaEta_VBF->Fill(fabs(OffJet[0].Eta()-OffJet[1].Eta()));
 	    }
 	    if (L1_DoubleIsoTauXXer) Mjj_ditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	    
 	  }
-	  
+	  cout<<"check1"<<endl;
 	  if(mjj_off_passditau.size()>0){ 
 	    if(OffJet[1].Pt()>DiTau_OffPTtaucut && OffTau[1].Pt()>DiTau_OffPTtaucut && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
 	      selDiTau_forVBF = true;
@@ -600,7 +632,7 @@ int main(int argc, char** argv){
 		PtTau_ditau->Fill(OffTau[1].Pt());
 	      
 		Mjj_ditau ->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
-		if(!(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_90_30_Mj30j30_620 )){
+		if(!(std::get<0>(*(mjj_off_passVBF.rbegin()))>VBF_OffMjjcut && selVBF &&L1_DoubleJet_X_Y_MjYjY_Z )){
 		  N_selDiTau_noVBF += 1;	     
 		  Mjj_ditau_noVBF->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
 		  PtTau_ditau_noVBF->Fill(OffTau[1].Pt());
@@ -609,7 +641,7 @@ int main(int argc, char** argv){
 	      }	            
 	    }
 	  }
-	  if(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_90_30_Mj30j30_620){
+	  if(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_X_Y_MjYjY_Z){
 	    if(!(selDiTau_forVBF && L1_DoubleIsoTauXXer)){
 	      Mjj_noditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));
 	      PtTau_noditau_VBF->Fill(OffTau[1].Pt())	;
@@ -622,20 +654,20 @@ int main(int argc, char** argv){
 	    if(!L1_DoubleIsoTauXXer)      Mjj_noditau_VBFsel ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));
 	  }
 
-	  if((std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_90_30_Mj30j30_620) && (selDiTau_forVBF && L1_DoubleIsoTauXXer)){
+	  if((std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_X_Y_MjYjY_Z) && (selDiTau_forVBF && L1_DoubleIsoTauXXer)){
 	    N_selDiTau_VBF+=1;
 	    Mjj_and->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));
 	    PtTau_and->Fill(OffTau[1].Pt());
 	  }
-	  if((std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_90_30_Mj30j30_620) || (selDiTau_forVBF && L1_DoubleIsoTauXXer)){	 
-	    if((selDiTau_forVBF && L1_DoubleIsoTauXXer)&&!(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_90_30_Mj30j30_620)) {
+	  if((std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_X_Y_MjYjY_Z) || (selDiTau_forVBF && L1_DoubleIsoTauXXer)){	 
+	    if((selDiTau_forVBF && L1_DoubleIsoTauXXer)&&!(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF && L1_DoubleJet_X_Y_MjYjY_Z)) {
 	      Mjj_or->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
 	    }else{
 	      Mjj_or->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));
 	    }
 	    PtTau_or->Fill(OffTau[1].Pt());
 	  }
-
+ cout<<"after"<<endl;
           if(jet30_sortByDeltaR.size()>1 && OffJetNoOverlap.size()>1){
 	    TLorentzVector MatchL1jet1;
 	    MatchL1jet1.SetPtEtaPhiM(
@@ -661,7 +693,7 @@ int main(int argc, char** argv){
 	      if(((OffJet[0].Pt()>120)||(OffTau[0].Pt()>120)) && OffJet[1].Pt()>40 && OffTau[1].Pt()>20){
 		
 		Mjj_VBF_tot ->Fill(tlv_jetPair.M());
-		if( L1_DoubleJet_90_30_Mj30j30_620 ){
+		if( L1_DoubleJet_X_Y_MjYjY_Z ){
 		  Mjj_VBF_pass ->Fill(tlv_jetPair.M());
 		}
 		
@@ -912,7 +944,9 @@ int main(int argc, char** argv){
   cout<<"Only DiTau "<<N_selDiTau_noVBF<<endl;
   cout<<"DiTau and VFB "<<N_selDiTau_VBF<<endl;
   cout<<"Only VBF "<<N_noDiTau_VBF<<endl;
-   cout<<"Gain "<<N_noDiTau_VBF/(N_selDiTau_noVBF+N_selDiTau_VBF)<<endl;  
+  cout<<"Gain "<<N_noDiTau_VBF/(N_selDiTau_noVBF+N_selDiTau_VBF)<<endl;  
+
+
   cout<<endl;
   cout<<"DiTauPair"<<endl;
   cout<<"Only DiTau "<<N_DiTau_noDiTauPair<<endl;

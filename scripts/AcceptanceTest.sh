@@ -1,4 +1,4 @@
-
+make off
 ### seeds 14kHz at 18E34 wrt DoubleIsoTau30er
 #VBF signal
 # ./AcceptanceTest.py 25 70 --offptpair 80 --VBF --VBFtag
@@ -30,7 +30,7 @@
 
 ### seeds 14kHz at 2E34 wrt DoubleIsoTau31er
 #VBF signal
-# ./AcceptanceTest.py 25 70 --ditaupt 31 --offptpair 80 --VBF --VBFtag
+ ./AcceptanceTest.py 25 70 --ditaupt 31 --offptpair 80 --VBF --VBFtag
 # ./AcceptanceTest.py 25 49 --ditaupt 31 --VBF --VBFtag
 # ./AcceptanceTest.py 26 41 --ditaupt 31 --VBF --VBFtag
 # ./AcceptanceTest.py 27 31 --ditaupt 31 --VBF --VBFtag
@@ -92,7 +92,7 @@
 # ./AcceptanceTest.py 25 70 --ditauptOR 31 --ditaupt 29 --offptpair 80 --VBF --VBFtag
 # ./AcceptanceTest.py 25 70 --ditauptOR 31 --ditaupt 29 --offptpair 80 --ggH --boosted
 # ./AcceptanceTest.py 25 70 --ditauptOR 31 --ditaupt 29 --offptpair 80 --HHbbtt
- ./AcceptanceTest.py 25 70 --ditauptOR 31 --ditaupt 29 --offptpair 80 --Ztt
+# ./AcceptanceTest.py 25 70 --ditauptOR 31 --ditaupt 29 --offptpair 80 --Ztt
 
 
 

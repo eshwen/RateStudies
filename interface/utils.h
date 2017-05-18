@@ -14,3 +14,6 @@ void appendFromFileList (TChain* chain, TString filename)
     }
   return;
 }
+
+
+bool SortByPt(TLorentzVector a, TLorentzVector b) { return a.Pt() > b.Pt(); }
