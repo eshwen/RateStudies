@@ -57,6 +57,7 @@ optional arguments:
   --VBFsubL1 VBFSUBL1        subleading jet L1 cut for VBF seed
   --VBFleadL1 VBFLEADL1	     leading jet L1 cut for VBF seed
   --VBFMjjL1 VBFMJJL1        Mjj L1 cut for VBF seed
+  --emu                      bool: L1 emulated										
 signal sample (mandatory argument; exclusive group)
     --VBF                      VBF signal sample
     --ggH                      ggH signal sample
@@ -67,16 +68,9 @@ offline analyis selections (optional argument; exclusive group)
     --VBFtag                   offline selection: VBF-tag
     --boosted                  offline selection: 1jet boosted category
 
-    --emu                 bool: L1 emulated										
+
 
 ```
 
 
-positional arguments:
-  ptSingleL1            pt_tau L1 cut for boosted ditau seed
-    ptPairL1              pt_tautau L1 cut for boosted ditau seed
-
-optional arguments:
-  -h, --help            show this help message and exit
-   
    			
