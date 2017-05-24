@@ -139,14 +139,13 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void endJob();
   void Initialize();
-  int* FillStage2(const BXVector<l1t::Tau>* taus,const BXVector<l1t::Muon>* muons, const BXVector<l1t::Jet>* jets, const edm::Event& event);
+  int* FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Jet>* jets, const edm::Event& event);
   // ----------member data ---------------------------
   edm::InputTag trackTags_; //used to select what tracks to read from configuration file
   
   TTree *myTree;
   
   edm::EDGetTokenT<BXVector<l1t::Tau> > theStage2TauTag;
-  edm::EDGetTokenT<BXVector<l1t::Muons> > theStage2MuonTag;
   edm::EDGetTokenT<BXVector<l1t::Jet> > theStage2JetTag;
   
   Int_t *stage2objNumber; //0 = taus, 1 = eg, 2 = jets, 3 = muons  
@@ -160,13 +159,7 @@ class L1ntuples : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<Float_t> _stage2_tauPhi;
   std::vector<int> _stage2_tauIso;
 
-Int_t _stage2_muonN;
-  std::vector<Float_t> _stage2_muonEt;
-  std::vector<Float_t> _stage2_muonEta;
-  std::vector<Float_t> _stage2_muonPhi;
-  std::vector<int> _stage2_muonIso;
-
-  
+    
   Int_t _stage2_jetN;
   std::vector<Float_t> _stage2_jetEt;
   std::vector<Float_t> _stage2_jetEta;
@@ -188,7 +181,6 @@ Int_t _stage2_muonN;
 
 L1ntuples::L1ntuples(const edm::ParameterSet& pset) : 
   theStage2TauTag      (consumes<BXVector<l1t::Tau>>                     (pset.getParameter<edm::InputTag>("stage2TauCollection"))),
-  theStage2MuonTag      (consumes<BXVector<l1t::Muon>>                     (pset.getParameter<edm::InputTag>("stage2MuonCollection"))),
   theStage2JetTag      (consumes<BXVector<l1t::Jet>>                     (pset.getParameter<edm::InputTag>("stage2JetCollection")))
 {
    //now do what ever initialization is needed
@@ -222,20 +214,17 @@ L1ntuples::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   edm::Handle<BXVector<l1t::Jet>>stage2JetHandle; 
 
   event.getByToken(theStage2TauTag,stage2TauHandle);
-  event.getByToken(theStage2MuonTag,stage2MuonHandle);
   event.getByToken(theStage2JetTag,stage2JetHandle);
 
   const BXVector<l1t::Tau>* stage2Tau = stage2TauHandle.product();
-  const BXVector<l1t::Muon>* stage2Muon = stage2MuonHandle.product();
   const BXVector<l1t::Jet>* stage2Jet = stage2JetHandle.product(); 
   
   _indexevents = event.id().event();
   _runNumber = event.id().run();
   _lumi=event.luminosityBlock();
 
-  stage2objNumber=FillStage2(stage2Tau, stage2Muon, stage2Jet, event);
+  stage2objNumber=FillStage2(stage2Tau, stage2Jet, event);
   _stage2_tauN = stage2objNumber[0];
-  _stage2_muonN = stage2objNumber[3];
   _stage2_jetN = stage2objNumber[2];
   myTree->Fill();  
    
@@ -259,12 +248,6 @@ L1ntuples::beginJob()
   myTree->Branch("stage2_tauEta",&_stage2_tauEta);
   myTree->Branch("stage2_tauPhi",&_stage2_tauPhi);
   myTree->Branch("stage2_tauIso",&_stage2_tauIso);
-
-  myTree->Branch("stage2_muonN",&_stage2_muonN,"Stage2muonsNumber/I");
-  myTree->Branch("stage2_muonEt",&_stage2_muonEt);
-  myTree->Branch("stage2_muonEta",&_stage2_muonEta);
-  myTree->Branch("stage2_muonPhi",&_stage2_muonPhi);
-  myTree->Branch("stage2_muonIso",&_stage2_muonIso);
   
   myTree->Branch("stage2_jetN",&_stage2_jetN,"Stage2jetsNumber/I");
   myTree->Branch("stage2_jetEt",&_stage2_jetEt);
@@ -290,11 +273,7 @@ void L1ntuples::Initialize(){
   _stage2_tauEta.clear();
   _stage2_tauPhi.clear();
   _stage2_tauIso.clear();
-  _stage2_muonN = 0;
-  _stage2_muonEt.clear();
-  _stage2_muonEta.clear();
-  _stage2_muonPhi.clear();
-  _stage2_muonIso.clear();
+
   _stage2_jetN = 0;
   _stage2_jetEt.clear();
   _stage2_jetEta.clear();
@@ -302,7 +281,7 @@ void L1ntuples::Initialize(){
   
 }
 
-int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Muon>* muons, const BXVector<l1t::Jet>* jets, const edm::Event& event){
+int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::Jet>* jets, const edm::Event& event){
   static Int_t nObj[4];
   for(int ii =0; ii<4; ii++){
     nObj[ii]=0;
@@ -320,18 +299,7 @@ int* L1ntuples::FillStage2(const BXVector<l1t::Tau>* taus, const BXVector<l1t::M
 	
       }
     }
-  for (BXVector<l1t::Muon>::const_iterator it=muons->begin(ibx); it!=muons->end(ibx); it++)
-    {
-      if (it->pt() > 0){
-	nObj[3]++;
-	_stage2_muonEt.push_back(it->et());
-	_stage2_muonEta.push_back(it->eta());
-	_stage2_muonPhi.push_back(it->phi());
-	_stage2_muonIso.push_back(it->hwIso());
-	if (ibx != 0) cout<<"argh"<<endl;
-	
-      }
-    }
+
   
   for (BXVector<l1t::Jet>::const_iterator it=jets->begin(ibx); it!=jets->end(ibx); it++)
     {
