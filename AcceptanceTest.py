@@ -20,10 +20,14 @@ if __name__ == "__main__":
     selection.add_argument ('--VBFtag', dest='VBFtag' , help='offline selection: VBF-tag' , default=False,action="store_true" )
     selection.add_argument ('--boosted', dest='boosted' , help='offline selection: 1jet boosted category' , default=False,action="store_true")
     parser.add_argument ('--ditauptOR', dest='ptSingleL1ditauOR', type=int, help ='pt_tau L1 cut for ditau seed complementary to boosted', default = 30)
+    parser.add_argument ('--emu', dest='emu' , help='L1 emulated' , default=False,action="store_true")
+    parser.add_argument ('--VBFsubL1', dest = 'VBFsubL1',type=int, help ='subleading jet L1 cut for VBF seed',default = 30)
+    parser.add_argument ('--VBFleadL1',dest ='VBFleadL1', type=int, help ='leading jet L1 cut for VBF seed',default =90)
+    parser.add_argument ('--VBFMjjL1', dest = 'VBFMjjL1',type=int, help ='Mjj L1 cut for VBF seed',default = 620)
     args = parser.parse_args()
     
-
-line='./OfflineSelection '+str(args.ptSingleL1)+' '+str(args.ptPairL1)+' '+str(args.ptSingleL1ditau)
+####emu
+line='./OfflineSelectionL1 '+str(args.ptSingleL1)+' '+str(args.ptPairL1)+' '+str(args.ptSingleL1ditau)
 
 if (args.VBFSignal==True):
     line+=' 1'
@@ -60,6 +64,15 @@ else:
     line+=' 0'
 
 line+=' '+str(args.ptPairOffBoost)+' '+str(args.ptSingleL1ditauOR)
+
+#### new for emu
+
+if(args.emu==True):
+    line+=' 1'
+else: 
+    line+=' 0'
+
+line+=' '+str(args.VBFsubL1)+' '+str(args.VBFleadL1)+' '+str(args.VBFMjjL1)
     
 print '{0}'.format(line)
 
