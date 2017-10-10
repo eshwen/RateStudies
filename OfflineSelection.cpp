@@ -122,7 +122,7 @@ int main(int argc, char** argv){
   TH1D* Mjj_res = new TH1D ("Mjj_res", "", 50, -1, 1);
 
   TH1D* Mjj_VBF_pass = new TH1D ("Mjj_VBF_pass", "", 40, 400, 2000);
-  TH1D* Mjj_VBF = new TH1D ("Mjj_VBF", "", 40, 400, 2000);
+  TH1D* Mjj_VBF = new TH1D ("Mjj_VBF", "", 100, 0, 2000);
   TH1D* Mjj_VBFMatched_pass = new TH1D ("Mjj_VBFMatched_pass", "", 40, 400, 2000);
   TH1D* Mjj_VBF_tot = new TH1D ("Mjj_VBF_tot", "", 40, 400, 2000);
   TH1D* Mjj_ditau = new TH1D ("Mjj_DiTau", "",40 ,400, 2000);
@@ -419,7 +419,7 @@ int main(int argc, char** argv){
 	// selections
 	double jetPt  = (*stage2_jetEt)[iL1];
 	ptJet_pass.push_back (jetPt);
-	if(jetPt>35.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ; //CHECK
+	if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ; //CHECK
 	if(jetPt>30.)	jet30_sortByDeltaR.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
       }
 	
@@ -507,8 +507,8 @@ int main(int argc, char** argv){
 	  
 	}
 	std::sort(mjj_pass.begin(),mjj_pass.end());
-	//	if(std::get<0>(*(mjj_pass.rbegin()))>620 && jet30[0].Et()>90) L1_DoubleJet_90_30_Mj30j30_620 = true;
-	if(std::get<0>(*(mjj_pass.rbegin()))>630 && jet30[0].Et()>100) L1_DoubleJet_90_30_Mj30j30_620 = true;      //CHECK
+       if(std::get<0>(*(mjj_pass.rbegin()))>620 && jet30[0].Et()>90) L1_DoubleJet_90_30_Mj30j30_620 = true;
+       //	if(std::get<0>(*(mjj_pass.rbegin()))>630 && jet30[0].Et()>100) L1_DoubleJet_90_30_Mj30j30_620 = true;      //CHECK
 
       }
 
@@ -582,11 +582,12 @@ int main(int argc, char** argv){
 	//for acceptance L1_DoubleJet_90_30_Mj30j30_620 //VBF
 
 	if(OffJet.size()>1){
-	  // if(((OffJet[0].Pt()>100)||(OffTau[0].Pt()>100)) && OffJet[1].Pt()>30 &&  OffTau[1].Pt()>20){
-	     	  if(((OffJet[0].Pt()>110)||(OffTau[0].Pt()>110)) && OffJet[1].Pt()>35 &&  OffTau[1].Pt()>20){ //CHECK
-	    selVBF = true;
+	   if(((OffJet[0].Pt()>100)||(OffTau[0].Pt()>100)) && OffJet[1].Pt()>30 &&  OffTau[1].Pt()>20){
+	  //	     	  if(((OffJet[0].Pt()>110)||(OffTau[0].Pt()>110)) && OffJet[1].Pt()>35 &&  OffTau[1].Pt()>20){ //CHECK
+	     Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
+	     selVBF = true;
 	    if( L1_DoubleJet_90_30_Mj30j30_620 ) {
-	      Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
+	  
 	      PtTau_VBF->Fill(OffTau[1].Pt());
 	      DeltaEta_VBF->Fill(fabs(OffJet[0].Eta()-OffJet[1].Eta()));
 	    }

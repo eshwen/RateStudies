@@ -4,10 +4,12 @@ from array import *
 from math import fabs,sqrt
 
 DIR= '/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias6Feb2017HighPU_ibx0_-1Events/'
-FILEIN = 'L1total.root'
-FILEOUT = 'L1Plots.root'
 
-FILEIN = DIR+FILEIN
+#FILEIN = 'L1total.root'
+FILEOUT = 'L1Plots_tak.root'
+
+#FILEIN = DIR+FILEIN
+FILEIN = fileLists/
 FILEOUT = DIR+FILEOUT
 
 class Plots:

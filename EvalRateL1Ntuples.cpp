@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <regex>
 #include <tuple>
 #include <vector>
 #include <algorithm>
@@ -41,41 +42,68 @@ void appendFromFileList (TChain* chain, TString filename)
 
 int main(int argc, char** argv){
 
-  /*  float nbStudiedRun = 96;
-      float thisLumiRun = 7.6E32;
-      float scaleToLumi = 2.0E34;
-      float scale = 0.001*(nbStudiedRun*11245.6)*scaleToLumi/thisLumiRun;  */
+ 
+  //  2016
+  //   float nbStudiedRun = 224;
+  //2017
+  //float nbStudiedRun = 96;
+  //float scale = 0.001*(nbStudiedRun*11245.6);
 
-  float nbStudiedRun = 2592;
-  //  float nbStudiedRun = 2332;
+    float nbStudiedRun =96.;
+  float thisLumiRun = 1750E30;
+  float scaleToLumi = 2.E34;
+  float scale = 0.001*(nbStudiedRun*11245.6)*scaleToLumi/thisLumiRun;  
   
-  float scale = 0.001*(nbStudiedRun*11245.6);
-  
-  TString LumiTarget = "scaleToLumi20E33_tak";
-  
+  float add = 0;
 
+
+
+  TString LumiTarget = "scaleToLumi20E33";
+  TString year = "2017";
+  
   cout << "Scale factor: " << scale << endl;
   //ZeroBias sample L1
-    TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
+  //  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/ZeroBiasRun2017A/";
+  //2016
+  //    TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
+  //2017
+  //    TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill5824/";
+        TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6194/";
   //  TString directory = "/eos/user/c/camendol/local/";
-    //  TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
-  //Takashi's emulated
-  TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasBunchTrainsX.txt";
-   
+  //TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
+   //2016
+    //  TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasRun2016H_BunchTrainsX.txt";
+  //2017
+  //TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasFill5824.txt";
+	TString fileList = "fileLists/ZeroBias2017_HighPU.list";
+  
     
-  bool emulated  = true;
+    bool emulated  =false;
+  bool reweight = false;
 
+  //     ifstream PUFile("utils/PU_per_LS.txt"); //2016
+  //    ifstream PUFile("utils/PU_per_LS_fill5824_2017.txt"); //2017
+      ifstream PUFile("utils/PU_per_LS_fill6194_2017.txt"); //2017
+
+  
   TTree * tInput;
   TChain * cInput;
   TChain * lInput; 
 
+
+
+  
   if (emulated){
     cInput = new TChain ("l1UpgradeEmuTree/L1UpgradeTree");
     appendFromFileList(cInput, fileList);
     lInput = new TChain ("l1EventTree/L1EventTree");
     appendFromFileList(lInput, fileList);
   }else{
-    //    tInput = (TTree*) file->Get("L1Tree/L1Tree");
+    cInput= new TChain ("l1UpgradeTree/L1UpgradeTree");
+    appendFromFileList(cInput, fileList);
+    lInput = new TChain ("l1EventTree/L1EventTree");
+    appendFromFileList(lInput, fileList);
+
   }
 
   TString fOutNameVBF;
@@ -84,15 +112,15 @@ int main(int argc, char** argv){
   TString fOutNameTausBjet;
 
   if(emulated){
-    fOutNameVBF = directory+"Emu_rateL1_VBF_"+LumiTarget+".root";
-    fOutNameXtrigger = directory+"Emu_rateL1_xtrigger_"+LumiTarget+".root";
-    fOutNameTaus = directory+"Emu_rateL1_taus_"+LumiTarget+".root";
-    fOutNameTausBjet = directory+"Emu_rateL1_ditau_bjet_"+LumiTarget+".root";
+    fOutNameVBF = directory+"Emu_rateL1_VBF_"+LumiTarget+"_"+year+".root";
+    fOutNameXtrigger = directory+"Emu_rateL1_xtrigger_"+LumiTarget+"_"+year+".root";
+    fOutNameTaus = directory+"Emu_rateL1_taus_"+LumiTarget+"_"+year+".root";
+    fOutNameTausBjet = directory+"Emu_rateL1_ditau_bjet_"+LumiTarget+"_"+year+".root";
   }else{
-    fOutNameVBF = directory+"rateL1_VBF_"+LumiTarget+".root";
-    fOutNameXtrigger = directory+"rateL1_xtrigger_"+LumiTarget+".root";
-    fOutNameTaus = directory+"rateL1_taus_"+LumiTarget+".root";
-    fOutNameTausBjet = directory+"rateL1_ditau_bjet_"+LumiTarget+".root";
+    fOutNameVBF = directory+"rateL1_VBF_"+LumiTarget+"_"+year+".root";
+    fOutNameXtrigger = directory+"rateL1_xtrigger_"+LumiTarget+"_"+year+".root";
+    fOutNameTaus = directory+"rateL1_taus_"+LumiTarget+"_"+year+".root";
+    fOutNameTausBjet = directory+"rateL1_ditau_bjet_"+LumiTarget+"_"+year+".root";
   }
   
   
@@ -100,6 +128,7 @@ int main(int argc, char** argv){
   cInput->SetMakeClass(1);  
   
   Int_t lumi ;
+  UInt_t run ;
   UShort_t stage2_tauN ;
   std::vector<float> stage2_tauEt;
   std::vector<float> stage2_tauEta;
@@ -143,6 +172,7 @@ int main(int argc, char** argv){
   
   // set branch and variables
   TBranch *b_lumi ;
+  TBranch *b_run ;
 
   TBranch *b_stage2_tauN ;
   TBranch *b_stage2_tauEt;
@@ -164,8 +194,9 @@ int main(int argc, char** argv){
   
 
   
-  if(emulated){
+
     lInput ->SetBranchAddress("lumi", &lumi , &b_lumi );
+    lInput ->SetBranchAddress("run", &run , &b_run );
     cInput ->SetBranchAddress("nTaus", &stage2_tauN , &b_stage2_tauN );
     cInput ->SetBranchAddress("tauEta", &stage2_tauEta, &b_stage2_tauEta);
     cInput ->SetBranchAddress("tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
@@ -180,9 +211,7 @@ int main(int argc, char** argv){
     cInput ->SetBranchAddress("jetEta", &stage2_jetEta, &b_stage2_jetEta);
     cInput ->SetBranchAddress("jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
     cInput ->SetBranchAddress("jetEt", &stage2_jetEt, &b_stage2_jetEt);
-  }else{
-    
-  }
+
   
   ///////////////
   //// HISTO ////
@@ -254,8 +283,12 @@ int main(int argc, char** argv){
   TH2D* Ratio_Sub_DiJet2D_rej = new TH2D ("Ratio_Sub_DiJet2D_rej", "Ratio - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130);
   TH2D* Rate_Sub_DiJet2D_rej = new TH2D ("Rate_Sub_DiJet2D_rej", "Rate - 2 jets, E_{T} > 30 GeV ", 30, 30, 60, 100, 30, 130); 
   
-
+  TH1D* VBF_lead = new TH1D ("VBF_lead", "double jet const", 100,30, 130);
+  TH1D* Ratio_VBF_lead = new TH1D ("Ratio_VBF_lead", "double jet const", 100,30, 130);
+  TH1D* Rate_VBF_lead = new TH1D ("Rate_VBF_lead", "double jet const", 100,30, 130);
+  
   TH1D* Mjj30 = new TH1D ("Mjj30", "", 100, 0, 800);
+  TH1D* jetsRes = new TH1D ("jetsRes", "", 60, 0, 30);
   TH1D* Mjj35 = new TH1D ("Mjj35", "", 100, 0, 800);
   TH1D* Mjj40 = new TH1D ("Mjj40", "", 100, 0, 800);
   TH1D* Mjj45 = new TH1D ("Mjj45", "", 100, 0, 800);
@@ -291,22 +324,26 @@ int main(int argc, char** argv){
   TH2D* DiTauBJet2D_Pass = new TH2D ("DiTauJetB2D", "double tau + bjet", 100, 0, 100, 100,0, 100);
   TH2D* Ratio_DiTauBJet2D = new TH2D ("Ratio_DiTauBJet2D", "Ratio - 2 taus + bjet", 100, 0, 100, 100, 0, 100);
   TH2D* Rate_DiTauBJet2D = new TH2D ("Rate_DiTauBJet2D", "Rate - 2 taus + bjet ", 100, 0, 100, 100, 0, 100); 
-  ifstream PUFile("utils/PU_per_LS.txt");
+
 
   std::map<Int_t,Float_t> PU_per_LS;
   std::string str; 
   while (std::getline(PUFile, str))
     {
       TString temp(str);
-      temp.ReplaceAll("5412,283171,","");
+
+      //temp.ReplaceAll("5412,283171,",""); //2016
+
+             regex reg("6194,[0-9]+,");
+          temp = regex_replace(str, reg, "");
       int pos_coma = temp.First(",");
       TString LS_str(temp,pos_coma);
-      //cout<<LS_str<<endl;
+      // cout<<LS_str<<endl;
       TString Replacing = LS_str ;
       Replacing += ",";
       temp.ReplaceAll(Replacing.Data(),"");
       TString PU_str = temp;
-      //cout<<PU_str<<endl;
+      // cout<<PU_str<<endl;
       std::istringstream ss_LS(LS_str.Data());
       Int_t LS ;
       ss_LS >> LS;
@@ -353,8 +390,9 @@ int main(int argc, char** argv){
   
   int Nfill = 0;  
   
-  for (Long64_t iEv =  112000 ;true; ++iEv){
-    lumi =0;			   
+  for (Long64_t iEv =0 ;iEv<30000; ++iEv){
+    lumi = 0;			   
+    run = 0;
     stage2_tauN=0;		   
     stage2_tauEt.clear(); 
     stage2_tauEta.clear();
@@ -373,13 +411,16 @@ int main(int argc, char** argv){
     stage2_jetEta.clear();
     stage2_jetPhi.clear();
     int got = 0;
-    if(emulated){
+   
       lInput->GetEntry(iEv);
       got = cInput->GetEntry(iEv);
-    }else{
-
-    }
+    
     if (got == 0) break;
+
+   
+  
+    // if(lumi>781) continue;
+    //if(lumi>150) continue;
     
     if (iEv%1000 == 0) cout << iEv << " / " << nEvents << endl;
    
@@ -405,13 +446,20 @@ int main(int argc, char** argv){
     muon.clear();
 
 
-    //   cout<<"lumi "<<lumi<<endl;   
-    if(lumi<56 || lumi>69) continue;
-    //cout<<"LS 56 69"<<endl;
-    if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
-    Float_t weight = PU_per_LS[56]/PU_per_LS[lumi];
+    
+    //    if(lumi<56 || lumi>69) continue; //2016
 
-    weight = 1.;
+    if(run>302674) continue;
+     if(lumi<135 || lumi>264) continue; //2017
+     
+     if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
+     Float_t weight = 0;
+    if (reweight){
+      weight = PU_per_LS[56]/PU_per_LS[lumi];
+    }else{
+      weight =  1.;
+    }
+
     nEventsPass ++;
     L1_DoubleIsoTau25er_PtTauTau70 = false;
     L1_DoubleIsoTau25er_Jet50= false;
@@ -438,19 +486,22 @@ int main(int argc, char** argv){
 
       if(jetPt>30.) {
 	jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-	if(jetEta>2.7 && jetEta<3.0){
-	  if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-	}else{
-	  jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-	}
+	//	if(jetEta>2.7 && jetEta<3.0){
+	//  if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	
+	if(jetEta<3){
+	   jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	   //}else{
+	   // jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	  }
       }
 
     }
 
-    //    for (long int iL1 = 0; iL1 < stage2_muonN; iL1++){ //loop on muons
-    //  for (long int iL1 = 0; iL1 < stage2_muonEt.size(); iL1++){ //loop on muons
-    //   muon.push_back(object(stage2_muonEt.at(iL1),stage2_muonEta.at(iL1),stage2_muonPhi.at(iL1),stage2_muonIso.at(iL1))) ;
-    // }
+    ///    for (long int iL1 = 0; iL1 < stage2_muonN; iL1++){ //loop on muons
+      for (long int iL1 = 0; iL1 < stage2_muonEt.size(); iL1++){ //loop on muons
+	muon.push_back(object(stage2_muonEt.at(iL1),stage2_muonEta.at(iL1),stage2_muonPhi.at(iL1),stage2_muonIso.at(iL1))) ;
+ }
 
     std::sort (jet30.begin(),jet30.end());
     std::sort (jet30rej.begin(),jet30rej.end());
@@ -588,14 +639,17 @@ int main(int argc, char** argv){
 			      0.);
 	    TLorentzVector jetPair = ijet+kjet;
 	    mjj_pass.push_back(make_tuple(jetPair.M(),iJet,kJet));
-          if(jetPair.M()>=620) mjj_pass_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30[iJet].Et(),jet30[kJet].Et()));
-	  Mjj30->Fill(jetPair.M());
-	  if(jet30[kJet].Et()>35) Mjj35->Fill(jetPair.M());
-	  if(jet30[kJet].Et()>40) Mjj40->Fill(jetPair.M());
-	  if(jet30[kJet].Et()>45) Mjj45->Fill(jetPair.M());
-	  if(jet30[kJet].Et()>50) Mjj50->Fill(jetPair.M());
-	  if(jet30[kJet].Et()>55) Mjj55->Fill(jetPair.M());
-
+	    if(jetPair.M()>=620)    mjj_pass_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30[iJet].Et(),jet30[kJet].Et()));
+	    double jetDiff = jet30[iJet].Et()-jet30[kJet].Et();
+	    double jetSum  = jet30[iJet].Et()+jet30[kJet].Et();
+	    jetsRes->Fill(jetSum/jetDiff);
+	    Mjj30->Fill(jetPair.M());
+	    if(jet30[kJet].Et()>35) Mjj35->Fill(jetPair.M());
+	    if(jet30[kJet].Et()>40) Mjj40->Fill(jetPair.M());
+	    if(jet30[kJet].Et()>45) Mjj45->Fill(jetPair.M());
+	    if(jet30[kJet].Et()>50) Mjj50->Fill(jetPair.M());
+	    if(jet30[kJet].Et()>55) Mjj55->Fill(jetPair.M());
+	    
 	  }
 	  
 	}
@@ -604,11 +658,12 @@ int main(int argc, char** argv){
       std::sort(mjj_pass.begin(),mjj_pass.end());
       std::sort(mjj_pass_sortPt.begin(),mjj_pass_sortPt.end(),SortMjjByJetThreshold);
      
-      DiJet2D_Pass -> Fill ( std::get<0>(*(mjj_pass.rbegin())),jet30[0].Et(),weight);  
       
+      DiJet2D_Pass -> Fill ( std::get<0>(*(mjj_pass.rbegin())),jet30[0].Et(),weight);        
       if(mjj_pass_sortPt.size()>0) {
-	DiJet2D_Sub_Pass -> Fill ( std::get<4>(*(mjj_pass_sortPt.rbegin())),jet30[0].Et(),weight);  
-	
+
+	if (std::get<0>(*(mjj_pass_sortPt.rbegin()))>620) DiJet2D_Sub_Pass -> Fill ( std::get<4>(*(mjj_pass_sortPt.rbegin())),jet30[0].Et(),weight);  
+	if (std::get<4>(*(mjj_pass_sortPt.rbegin()))>35 && std::get<0>(*(mjj_pass.rbegin()))>620) VBF_lead->Fill(jet30[0].Et(),weight); 
       }else{
        DiJet2D_Sub_Pass->Fill(-1,-1);
       }
@@ -762,6 +817,7 @@ if (jet30rej.size() >= 2){
   for (int i = 1; i <= SubleadTauPt_Pass->GetNbinsX(); i++){
     double binDiTauSublead = 1.*(SubleadTauPt_Pass->Integral(i,SubleadTauPt_Pass->GetNbinsX()+1))/nEventsPass;
     Ratio_diTauSublead -> SetBinContent (i, binDiTauSublead);
+
     binDiTauSublead *=scale;
     Rate_diTauSublead -> SetBinContent (i, binDiTauSublead);
     binDiTauSublead = 1.*(SubleadTauPt_Boost20_Pass->Integral(i,SubleadTauPt_Boost20_Pass->GetNbinsX()+1))/nEventsPass;
@@ -790,28 +846,51 @@ if (jet30rej.size() >= 2){
   //VBF
   for (int i = 1; i <=DiJet2D_Pass->GetNbinsX(); i++){
     for (int j = 1; j<= DiJet2D_Pass->GetNbinsY();j++ ){
+
       double binDiJet2D = 1.*(DiJet2D_Pass->Integral(i, DiJet2D_Pass->GetNbinsX()+1,j,DiJet2D_Pass->GetNbinsY()+1))/nEventsPass;
       Ratio_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
+      double addTerm = 0.;
+     
       binDiJet2D *=scale;
       Rate_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
       //rej
       binDiJet2D = 1.*(DiJet2D_Pass_rej->Integral(i, DiJet2D_Pass_rej->GetNbinsX()+1,j,DiJet2D_Pass_rej->GetNbinsY()+1))/nEventsPass;
       Ratio_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
+      addTerm=binDiJet2D*add;
+      binDiJet2D =(binDiJet2D+addTerm)*scale;
       Rate_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
     }
   }
 
+    for (int j = 1; j<= VBF_lead->GetNbinsX();j++ ){
+      double addTerm = 0.;
+      double binDiJet = 1.*(VBF_lead->Integral(j, VBF_lead->GetNbinsX()+1))/nEventsPass;
+      Ratio_VBF_lead -> SetBinContent (j, binDiJet);        
+      addTerm=binDiJet*add;
+      binDiJet =(binDiJet+addTerm)*scale;
+
+      Rate_VBF_lead ->  SetBinContent (j, binDiJet);
+    }
+  
     for (int i = 1; i <=DiJet2D_Sub_Pass->GetNbinsX(); i++){
     for (int j = 1; j<= DiJet2D_Sub_Pass->GetNbinsY();j++ ){
+      double addTerm = 0.;
       double binDiJet2D = 1.*(DiJet2D_Sub_Pass->Integral(i, DiJet2D_Sub_Pass->GetNbinsX()+1,j,DiJet2D_Sub_Pass->GetNbinsY()+1))/nEventsPass;
       Ratio_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
+      addTerm=binDiJet2D*add;
+
+      binDiJet2D =(binDiJet2D+addTerm)*scale;
+
+      
       Rate_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
       //rej
-binDiJet2D = 1.*(DiJet2D_Sub_Pass_rej->Integral(i, DiJet2D_Sub_Pass_rej->GetNbinsX()+1,j,DiJet2D_Sub_Pass_rej->GetNbinsY()+1))/nEventsPass;
+      
+      binDiJet2D = 1.*(DiJet2D_Sub_Pass_rej->Integral(i, DiJet2D_Sub_Pass_rej->GetNbinsX()+1,j,DiJet2D_Sub_Pass_rej->GetNbinsY()+1))/nEventsPass;
       Ratio_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
+
+      addTerm=binDiJet2D*add;
+      binDiJet2D =(binDiJet2D+addTerm)*scale;
+
       Rate_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
     }
   }
@@ -888,8 +967,8 @@ binDiJet2D = 1.*(DiJet2D_Sub_Pass_rej->Integral(i, DiJet2D_Sub_Pass_rej->GetNbin
   
   cout<<"new "<<endl;
   xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(35.0);
-  ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(100.0);
-  cout<<" Rate VBFseed 100 35 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
+  ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(110.0);
+  cout<<" Rate VBFseed 110 35 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
   xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(30.0);
   ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(90.0);
   cout<<" Rate VBFseed 90 30 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 

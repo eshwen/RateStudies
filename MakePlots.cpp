@@ -28,11 +28,13 @@ int main(int argc, char** argv){
 
 
   //ZeroBias sample L1
-  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
+  //TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
+  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/";
   //TString directory = "/eos/user/c/camendol/local/";
 
   //Takashi's emulated
-  TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasBunchTrainsX.txt";
+  //  TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasBunchTrainsX.txt";
+  TString fileList = "fileLists/ZeroBias2017_fill6245.list";
    
     
 
@@ -48,12 +50,15 @@ int main(int argc, char** argv){
   appendFromFileList(unInput, fileList);
   lInput = new TChain ("l1EventTree/L1EventTree");
   appendFromFileList(lInput, fileList);
+
+
+
   
   TString fOutNameVBF;
   
   
   
-  fOutNameVBF = directory+"L1NTuplesTakPlots.root";
+  fOutNameVBF = directory+"L1NTuplesJetsPlots.root";
   
   
   
@@ -154,9 +159,9 @@ int main(int argc, char** argv){
   
   bool L1_DoubleJet_80_20_20j20_mjj400 = false;
   bool L1_DoubleJet_90_30_30j30_mjj620 = false;
-  
+
    
-  for (Long64_t iEv = 0 ;true ; ++iEv){
+  for (Long64_t iEv = 0 ;iEv < 100000 ; ++iEv){
     lumi =0;			   
      
     emu_jetN =0;		   
@@ -169,13 +174,13 @@ int main(int argc, char** argv){
     un_jetEta.clear();
     un_jetPhi.clear();
     int got = 0;
-     
-    got =  lInput->GetEntry(iEv);
+
+    got = lInput->GetEntry(iEv);
     emuInput->GetEntry(iEv);
     unInput->GetEntry(iEv);
-     
+    
     if (got == 0) break;
-     
+
     if (iEv%1000 == 0) cout << iEv << endl;
      
           
@@ -185,10 +190,10 @@ int main(int argc, char** argv){
     mj30j30_pass.clear();
     mj30j30_emu.clear();
      
-    if(lumi<56 || lumi>69) continue;
+    //    if(lumi<56 || lumi>69) continue;
    
     L1_DoubleJet_80_20_20j20_mjj400 = false;
-     L1_DoubleJet_90_30_30j30_mjj620 = false;
+    L1_DoubleJet_90_30_30j30_mjj620 = false;
      
      
      
@@ -196,7 +201,6 @@ int main(int argc, char** argv){
     for (long int iL1 = 0; iL1 < un_jetEt.size(); iL1++){ //loop on jets emulated
       // selections
       double jetPtUn  = un_jetEt.at(iL1);
-       
       if(jetPtUn>20.) jet20un.push_back(object(un_jetEt.at(iL1),un_jetEta.at(iL1),un_jetPhi.at(iL1),-999)) ;
     }
      

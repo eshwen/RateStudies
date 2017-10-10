@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <utility>
@@ -76,11 +75,11 @@ int main(int argc, char** argv){
   int pt_tau_cut = 20;
   int pt_jet_cut = 30;
   TString LLRdir;
-  if(VBFHSignal)          LLRdir = "/afs/cern.ch/work/c/camendol/private/EmuL1NTuples/VBFSignal/";
+  if(VBFHSignal)          LLRdir = "/data_CMS/cms/amendola/EmuL1Ntuples/VBFSignal/";
   if(ggHSignal)           LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggHToTauTau_-1Events_0Skipped/";
   if(HHbbTauTauSignal)    LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_ggRadionToHHTo2b2Tau_500_-1Events_0Skipped/";
   if(DYJetsToLLSignal)    LLRdir = "/data_CMS/cms/amendola/LLRHTauTauNtuples/HiggsTauTauOutput_DYJetsToLL_1500000Events_0Skipped/";
-  TFile *file = TFile::Open(Form("%sNtuple_VBF_L1_RECO_WithMay2017_Jets_MultipleTaus_16_05_17_0.root", LLRdir.Data()),"read");
+  TFile *file = TFile::Open(Form("%sNtuple_VBF_90X_L1_RECO_WithMay2017_Jets_MultipleTaus_22_06_17_0.root", LLRdir.Data()),"read");
   if (file == NULL) cout<<"File not found"<<endl;
   
   cout<<"Signal sample: "<<LLRdir<<endl;
@@ -117,14 +116,14 @@ int main(int argc, char** argv){
 
   TString fOut;
   TFile *fPlotsVBF;
-  if(VBFHSignal)       fOut= LLRdir+'VBFHTauTauSignal_VBFseed';
-  if(ggHSignal)        fOut= LLRdir+'ggHTauTauSignal_VBFseed';
-  if(DYJetsToLLSignal) fOut= LLRdir+'DYJetsToLL_VBFseed';
-  if(HHbbTauTauSignal) fOut= LLRdir+'HbbTauTauSignal_VBFseed';
+  if(VBFHSignal)       fOut= LLRdir+"VBFHTauTauSignal2017_VBFseed";
+  if(ggHSignal)        fOut= LLRdir+"ggHTauTauSignal_VBFseed";
+  if(DYJetsToLLSignal) fOut= LLRdir+"DYJetsToLL_VBFseed";
+  if(HHbbTauTauSignal) fOut= LLRdir+"HbbTauTauSignal_VBFseed";
  
-  if(emu) fOut += '_emu';
-  fOut +='.root';
-    fPlotsVBF = TFile::Open(Form("%s", fOut.Data()),"recreate");
+  if(emu) fOut += "_emu";
+  fOut +=".root";
+  fPlotsVBF = TFile::Open(Form("%s", fOut.Data()),"recreate");
   fPlotsVBF->cd() ;  
   
   TH1D* EtaJet1 = new TH1D ("EtaJet1", "", 50, -5, 5);
@@ -184,7 +183,7 @@ int main(int argc, char** argv){
   TH1D* Boost_PtTau_noDiTau_DiTauPair = new TH1D ("Boost_PtTau_noDiTau_DiTauPt", "",40, 20, 120);
 
   file->cd();
-  TTree * tInput = (TTree*) file->Get("Ntuplizer_noTagAndProbe_multipleTaus_TagAndProbe");
+  TTree * tInput = (TTree*) file->Get("Ntuplizer_noTagAndProbe_multipleTaus_AOD_TagAndProbe");
   
   
   ULong64_t       EventNumber;
@@ -237,8 +236,9 @@ int main(int argc, char** argv){
   TBranch *b_stage2_jetEta;
   TBranch *b_stage2_jetPhi;
 
-   
+  cout<<"daje"<<endl;   
   tInput->SetBranchAddress("EventNumber", &EventNumber, &b_EventNumber);
+  cout<<"daje event"<<endl;
   tInput->SetBranchAddress("RunNumber", &RunNumber, &b_RunNumber);
   tInput->SetBranchAddress("lumi", &lumi, &b_lumi);
   //  tInput->SetBranchAddress("particleType", &particleType, &b_particleType);
@@ -324,9 +324,10 @@ int main(int argc, char** argv){
   double N_noDiTau_OR = 0;
   double N_DiTau_OR = 0;
 
-
+  cout<<"mo prendo l'evento"<<endl;
+  
   long int nEvents = tInput->GetEntries(); 
-
+cout<<"daje preso"<<endl;
   for (long int iEv = 0; iEv < nEvents; iEv++){
     OffTau.clear();
     OffJetNoOverlap.clear();
@@ -376,19 +377,20 @@ int main(int argc, char** argv){
 			   0.);
 	if(tlv_tau.Pt()>pt_tau_cut && fabs(tlv_tau.Eta())<2.1){// && ((tauID->at(i)>>5)&1) && ((tauID->at(i)>>7)&1) && ((tauID->at(i)>>5)&11)){
 	  for(int iTau=0; iTau<stage2_tauN; iTau++){//matching
-	    if(stage2_tauEt->at(iTau)>8){
+	    if(stage2_tauEt->at(iTau)>15){
 	      TLorentzVector tlv_L1tau;
 	      tlv_L1tau.SetPtEtaPhiM(stage2_tauEt->at(iTau),
 				     stage2_tauEta->at(iTau),
 				     stage2_tauPhi->at(iTau),
 				     0.);        
-	      if(tlv_tau.DeltaR(tlv_L1tau)<0.3){
+	      if(tlv_tau.DeltaR(tlv_L1tau)<0.2){
 		MatchingTau = true;
 		break;	     
 	      }
 	    }	
 	  }
-	  if (MatchingTau = true) OffTau.push_back(tlv_tau);
+	  if (MatchingTau = true)
+	    OffTau.push_back(tlv_tau);
 	}
      
     }
@@ -405,22 +407,26 @@ int main(int argc, char** argv){
 			   ) ;
 	
 	if(tlv_jet.Pt()>pt_jet_cut){ 
-	  for(int iJet=0; iJet<stage2_jetN; iJet++){//matching with L1
-	    if(stage2_jetEt->at(iJet)>8){
+     	  for(int iJet=0; iJet<stage2_jetN; iJet++){//matching with L1
+	    if(stage2_jetEt->at(iJet)>15){
 	      TLorentzVector tlv_L1jet;
 	      tlv_L1jet.SetPtEtaPhiM(stage2_jetEt->at(iJet),
 				     stage2_jetEta->at(iJet),
 				     stage2_jetPhi->at(iJet),
 				     0.);        
-	      if(tlv_jet.DeltaR(tlv_L1jet)<0.3){
+	      if(tlv_jet.DeltaR(tlv_L1jet)<0.2){
 		MatchingJet = true;
 		break;	     
 	      }
 	    }	
-	  }
-	  if(MatchingJet) OffJet.push_back(tlv_jet);
+	    }
+	    if(MatchingJet)
+	    OffJet.push_back(tlv_jet);
 	  if(tlv_jet.DeltaR(OffTau[0])>0.3 && tlv_jet.DeltaR(OffTau[1])>0.3){ //overlap removal offline
-	    if (MatchingJet)  OffJetNoOverlap.push_back(tlv_jet);
+	   if (MatchingJet)
+	      OffJetNoOverlap.push_back(tlv_jet);
+
+	   
 	  }
 	}
       }
@@ -444,12 +450,12 @@ int main(int argc, char** argv){
 	double jetPt  = (*stage2_jetEt)[iL1];
 	double jetEta  = (*stage2_jetEta)[iL1];
 	ptJet_pass.push_back (jetPt);
-	//	if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
-	if(jetEta>2.7 && jetEta<3.0){
+           	if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+		/*if(jetEta>2.7 && jetEta<3.0){
 	  if(jetPt>60.) jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
 	}else{
 	  jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
-	}
+	  }*/
 
 
 	if(jetPt>30.)	jet30_sortByDeltaR.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
@@ -617,14 +623,14 @@ int main(int argc, char** argv){
 	  if(((OffJet[0].Pt()>VBF_OffETleadjetcut)||(OffTau[0].Pt()>VBF_OffETleadjetcut)) && OffJet[1].Pt()>VBF_OffETsubjetcut &&  OffTau[1].Pt()>20){
 	    selVBF = true;
 	    if( L1_DoubleJet_X_Y_MjYjY_Z ) {
-	  cout<<"before"<<endl;	
+	      //cout<<"before"<<endl;	
 	      Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
 	      PtTau_VBF->Fill(OffTau[1].Pt());
 	      DeltaEta_VBF->Fill(fabs(OffJet[0].Eta()-OffJet[1].Eta()));
 	    }
 	    if (L1_DoubleIsoTauXXer) Mjj_ditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	    
 	  }
-	  cout<<"check1"<<endl;
+	  // cout<<"check1"<<endl;
 	  if(mjj_off_passditau.size()>0){ 
 	    if(OffJet[1].Pt()>DiTau_OffPTtaucut && OffTau[1].Pt()>DiTau_OffPTtaucut && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
 	      selDiTau_forVBF = true;
@@ -667,7 +673,7 @@ int main(int argc, char** argv){
 	    }
 	    PtTau_or->Fill(OffTau[1].Pt());
 	  }
- cout<<"after"<<endl;
+	  // cout<<"after"<<endl;
           if(jet30_sortByDeltaR.size()>1 && OffJetNoOverlap.size()>1){
 	    TLorentzVector MatchL1jet1;
 	    MatchL1jet1.SetPtEtaPhiM(

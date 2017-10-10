@@ -21,30 +21,56 @@
 
 using namespace std;
 
-
+void appendFromFileList (TChain* chain, TString filename)
+{
+ 
+  std::ifstream infile(filename.Data());
+  std::string line;
+  while (std::getline(infile, line))
+    {
+      line = line.substr(0, line.find("#", 0)); // remove comments introduced by #
+      while (line.find(" ") != std::string::npos) line = line.erase(line.find(" "), 1); // remove white spaces
+      while (line.find("\n") != std::string::npos) line = line.erase(line.find("\n"), 1); // remove new line characters
+      while (line.find("\r") != std::string::npos) line = line.erase(line.find("\r"), 1); // remove carriage return characters
+      if (!line.empty()) // skip empty lines
+	chain->Add(line.c_str());
+    }
+  return;
+}
 
 
 int main(int argc, char** argv){
 
-  float nbStudiedRun = 96;
+   float nbStudiedRun = 96;
   float thisLumiRun = 7.6E32;
-  float scaleToLumi = 2.0E34;
+  float scaleToLumi = 2E34;
   float scale = 0.001*(nbStudiedRun*11245.6)*scaleToLumi/thisLumiRun;  
+
+  //  float nbStudiedRun = 2592;
+  //float scale = 0.001*(nbStudiedRun*11245.6);
+  
   TString LumiTarget = "scaleToLumi20E33";
   
 
   cout << "Scale factor: " << scale << endl;
   //ZeroBias sample L1
-   TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/";
-   //Takashi's emulated
-   /// TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOff_ZeroBias_BunchTrain0-5_2016H9Nov/";
+   TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain1-5_2016H9Nov_-1Events/";
    TFile *file = TFile::Open(Form("%sL1total.root", directory.Data()),"read");
-
+   //Takashi's emulated
+    TString fileList = "fileLists/L1NtuplesL1Menu2017ZeroBiasBunchTrainsX.txt";
+   
+    
   bool emulated  = false;
 
   TTree * tInput;
+  TChain * cInput;
+  TChain * lInput; 
+
   if (emulated){
-    tInput = (TTree*) file->Get("l1UpgradeEmuTree/l1UpgradeTree/L1Upgrade");
+    cInput = new TChain ("l1UpgradeEmuTree/L1UpgradeTree");
+    appendFromFileList(cInput, fileList);
+     lInput = new TChain ("l1EventTree/L1EventTree");
+    appendFromFileList(lInput, fileList);
   }else{
     tInput = (TTree*) file->Get("L1Tree/L1Tree");
   }
@@ -69,7 +95,7 @@ int main(int argc, char** argv){
   
   
   
-  Int_t lumi ;
+   Int_t lumi ;
   Int_t stage2_tauN ;
   std::vector<Float_t>* stage2_tauEt=0;
   std::vector<Float_t>* stage2_tauEta=0;
@@ -88,6 +114,27 @@ int main(int argc, char** argv){
   std::vector<Float_t> *stage2_jetEta=0;
   std::vector<Float_t> *stage2_jetPhi=0;
 
+  
+  /*
+  UInt_t lumi ;
+  UShort_t stage2_tauN ;
+  std::vector<float>* stage2_tauEt=0;
+  std::vector<float>* stage2_tauEta=0;
+  std::vector<float>* stage2_tauPhi=0;
+  std::vector<short> *stage2_tauIso=0;  
+
+
+  UShort_t stage2_muonN ;
+  std::vector<float>* stage2_muonEt=0;
+  std::vector<float>* stage2_muonEta=0;
+  std::vector<float>* stage2_muonPhi=0;
+  std::vector<short> *stage2_muonIso=0;  
+  
+  UShort_t stage2_jetN ;
+  std::vector<float> *stage2_jetEt=0;
+  std::vector<float> *stage2_jetEta=0;
+  std::vector<float> *stage2_jetPhi=0;
+  */
   
   // set branch and variables
   TBranch *b_lumi ;
@@ -108,22 +155,27 @@ int main(int argc, char** argv){
   TBranch *b_stage2_jetEt;
   TBranch *b_stage2_jetEta;
   TBranch *b_stage2_jetPhi;
+  
+  
+  //lInput->SetMakeClass(1);
+  //  cInput->SetMakeClass(1);
+  
   if(emulated){
-
-    tInput ->SetBranchAddress("stage2_nTaus", &stage2_tauN , &b_stage2_tauN );
-    tInput ->SetBranchAddress("stage2_tauEta", &stage2_tauEta, &b_stage2_tauEta);
-    tInput ->SetBranchAddress("stage2_tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
-    tInput ->SetBranchAddress("stage2_tauEt", &stage2_tauEt, &b_stage2_tauEt);
-    tInput ->SetBranchAddress("stage2_tauIso", &stage2_tauIso, &b_stage2_tauIso);
-    tInput ->SetBranchAddress("stage2_nMuons", &stage2_muonN , &b_stage2_muonN );
-    tInput ->SetBranchAddress("stage2_muonEta", &stage2_muonEta, &b_stage2_muonEta);
-    tInput ->SetBranchAddress("stage2_muonPhi", &stage2_muonPhi, &b_stage2_muonPhi);
-    tInput ->SetBranchAddress("stage2_muonEt", &stage2_muonEt, &b_stage2_muonEt);
-    tInput ->SetBranchAddress("stage2_muonIso", &stage2_muonIso, &b_stage2_muonIso);
-    tInput ->SetBranchAddress("stage2_nJets", &stage2_jetN , &b_stage2_jetN);
-    tInput ->SetBranchAddress("stage2_jetEta", &stage2_jetEta, &b_stage2_jetEta);
-    tInput ->SetBranchAddress("stage2_jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
-    tInput ->SetBranchAddress("stage2_jetEt", &stage2_jetEt, &b_stage2_jetEt);
+    lInput ->SetBranchAddress("lumi", &lumi , &b_lumi );
+    cInput ->SetBranchAddress("nTaus", &stage2_tauN , &b_stage2_tauN );
+    cInput ->SetBranchAddress("tauEta", &stage2_tauEta, &b_stage2_tauEta);
+    cInput ->SetBranchAddress("tauPhi", &stage2_tauPhi, &b_stage2_tauPhi);
+    cInput ->SetBranchAddress("tauEt", &stage2_tauEt, &b_stage2_tauEt);
+    cInput ->SetBranchAddress("tauIso", &stage2_tauIso, &b_stage2_tauIso);
+    cInput ->SetBranchAddress("nMuons", &stage2_muonN , &b_stage2_muonN );
+    cInput ->SetBranchAddress("muonEta", &stage2_muonEta, &b_stage2_muonEta);
+    cInput ->SetBranchAddress("muonPhi", &stage2_muonPhi, &b_stage2_muonPhi);
+    cInput ->SetBranchAddress("muonEt", &stage2_muonEt, &b_stage2_muonEt);
+    cInput ->SetBranchAddress("muonIso", &stage2_muonIso, &b_stage2_muonIso);
+    cInput ->SetBranchAddress("nJets", &stage2_jetN , &b_stage2_jetN);
+    cInput ->SetBranchAddress("jetEta", &stage2_jetEta, &b_stage2_jetEta);
+    cInput ->SetBranchAddress("jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
+    cInput ->SetBranchAddress("jetEt", &stage2_jetEt, &b_stage2_jetEt);
   }else{
     tInput ->SetBranchAddress("lumi", &lumi , &b_lumi );
     tInput ->SetBranchAddress("stage2_tauN", &stage2_tauN , &b_stage2_tauN );
@@ -254,7 +306,8 @@ int main(int argc, char** argv){
 
     }
   // analyze data    
-  long int nEvents = tInput->GetEntries(); 
+  long int nEvents = 0;
+  if(!emulated)  nEvents =  tInput->GetEntries(); 
   int nEventsPass = 0;
 
 
@@ -285,9 +338,17 @@ int main(int argc, char** argv){
   
   
   
-  for (long int iEv = 0; iEv < nEvents; iEv++){
-
-    tInput->GetEntry(iEv);   
+  //  for (Long64_t iEv = 0 ; iEv<10000 ; ++iEv){
+     for (long int iEv = 0; iEv < nEvents; iEv++){
+    int got = 0;
+    if(emulated){
+      lInput->GetEntry(iEv);
+      got = cInput->GetEntry(iEv);
+    }else{
+      got = tInput->GetEntry(iEv);
+    }
+    // if (got == 0) break;
+    
     if (iEv%1000 == 0) cout << iEv << " / " << nEvents << endl;
     
     jet30.clear();
@@ -300,12 +361,14 @@ int main(int argc, char** argv){
     m_ditau_pass.clear();
     tau.clear(); 
     muon.clear();
-      
-    if(lumi<56 || lumi>69) continue;
-    if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
-    Float_t weight = PU_per_LS[56]/PU_per_LS[lumi];
 
-    weight = 1.;
+
+    if(lumi<48 || lumi>221) continue;
+
+    if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
+    Float_t weight = PU_per_LS[48]/PU_per_LS[lumi];
+
+    //    weight = 1.;
     nEventsPass ++;
     L1_DoubleIsoTau25er_PtTauTau70 = false;
     L1_DoubleIsoTau25er_Jet50= false;
@@ -324,6 +387,8 @@ int main(int argc, char** argv){
       double jetPt  = (*stage2_jetEt)[iL1];
   
       if(jetPt>30.)	jet30.push_back(object(stage2_jetEt->at(iL1),stage2_jetEta->at(iL1),stage2_jetPhi->at(iL1),-999)) ;
+
+      // cout<<""<<stage2_jetEt->at(iL1)<<" "<<stage2_jetEta->at(iL1)<<" "<<stage2_jetPhi->at(iL1)<<endl;
     }
 
   for (long int iL1 = 0; iL1 < stage2_muonN; iL1++){ //loop on muons
@@ -342,7 +407,8 @@ int main(int argc, char** argv){
       if (tau[iTau].DeltaR(tau[0])>0.2 && tau[iTau].Et()>25) tau25noOverlap.push_back(object(tau[iTau].Et(),tau[iTau].Eta(),tau[iTau].Phi(),tau[iTau].Iso())) ;      
     }
     for (int iJet =0;iJet<jet30.size();iJet++){
-      if ((jet30[iJet].DeltaR(tau[0])>0.2)&&(jet30[iJet].DeltaR(tau[1])>0.2)) jet30noOverlap.push_back(object(jet30[iJet].Et(),jet30[iJet].Eta(),jet30[iJet].Phi(),-999)) ;      
+      if ((jet30[iJet].DeltaR(tau[0])>0.2)&&(jet30[iJet].DeltaR(tau[1])>0.2)) jet30noOverlap.push_back(object(jet30[iJet].Et(),jet30[iJet].Eta(),jet30[iJet].Phi(),-999)) ;
+        
     }
     
   

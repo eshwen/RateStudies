@@ -1,0 +1,11 @@
+*~
+*.root
+*.exe
+*.pyc
+*.o
+*.so
+*.eps
+!*/*.root
+*.png
+*.pdf
+*.log
