@@ -4,40 +4,48 @@ import math
 
 
 directory = '/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/';
-outputfile = 'VBF_620_110_35_PU_unVSemu'
-drawPU = False
-drawLS = True
-EmuVsUn = True
-#seeds = ['rateL1_VBF_620_110_40_2017_PU.root',
-#         'rateL1_VBF_620_110_35_2017_PU.root',
-#         'rateL1_VBF_620_90_30_2017_PU.root',
-#         'rateL1_VBF_620_100_30_2017_PU.root'
-#]
 
-seeds = ['rateL1_VBF_620_110_35_2017_PU_LS.root',
-         'Emu_rateL1_VBF_620_110_35_2017_PU_LS.root',
+outputfile = 'VBF_620_110_35_PU_Un_vs_uGT'
+drawPU = True
+drawLS = False
+EmuVsUn = False
+compareTrg = False
+seeds = ['rateL1_VBF_620_90_30_2017_PU.root',
+         'rateL1_VBF_620_100_35_2017_PU.root',
+         'rateL1_VBF_620_110_35_2017_PU.root',
+         'rateL1_VBF_620_115_35_2017_PU.root',
+         'rateL1_VBF_620_115_40_2017_PU.root'
 ]
 
-colors = [kBlue, kSpring, kMagenta, kRed]
+#seeds = ['rateL1_VBF_620_110_35_2017_PU.root',
+#         'Emu_rateL1_VBF_620_110_35_2017_PU_trg.root',
+#]
 
+colors = [kBlue, kMagenta, kSpring, kRed, kCyan]
 
 nBunches =1
-scale = 0.001*(nBunches*11245.6)
-unit = "kHz"
+scale = (nBunches*11245.6)
+unit = "Hz"
 
         
-def getTresholds(string):
+def getTresholds(string,trglabel):
     if EmuVsUn:
         if (not string.startswith('Emu')):
-            temp, proc, mjj , lead, sub,year, end, ls= string.split("_")
+            temp, proc, mjj , lead, sub,year, end= string.split("_")
             unpack = "Un"
             newstring = (proc,mjj,lead,sub,unpack)
         else:
-            emu, temp,proc, mjj , lead, sub,year, end,ls = string.split("_")
+            emu, temp,proc, mjj , lead, sub,year, end= string.split("_")
             newstring = (proc,mjj,lead,sub,emu)
     else:
         temp, proc, mjj , lead, sub,year, end = string.split("_")
         newstring = (proc,mjj,lead,sub)
+    if compareTrg and not trglabel:
+        unpack = "Un"
+        newstring = (proc,mjj,lead,sub,unpack)
+    if trglabel:
+        ugt = "uGT"
+        newstring = (proc,mjj,lead,sub,ugt)
     dash = "_"
     thresholds = dash.join(newstring)
     return thresholds
@@ -53,27 +61,36 @@ def DrawAll(ratePlots,canvas,ymin,ymax,pu,ls):
             if ls: ratePlots[i].GetXaxis().SetTitle("LS")
             ratePlots[i].GetYaxis().SetRangeUser(ymin, ymax)
             ratePlots[i].GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
-            ratePlots[i].GetYaxis().SetTitleOffset(1.3)
+#            ratePlots[i].GetYaxis().SetTitleOffset(1.)
         else:
             ratePlots[i].Draw("P")
             
         canvas.Update()
 
-def DrawRate(infile,pu,ls):
+def DrawRate(infile,pu,ls,trg):
     if pu:
-        VBF_Pass=infile.Get("VBF_Pass")
-        nEventsPass = infile.Get("nEventsPass") 
+        if trg:
+            VBF_Pass=infile.Get("VBF_PassTrg")
+        else:
+            VBF_Pass=infile.Get("VBF_Pass")
+        nEventsPass = infile.Get("nEventsPass")
     if ls:
-        VBF_Pass=infile.Get("VBF_PassLS")
+        if trg:
+            VBF_Pass=infile.Get("VBF_PassLSTrg")
+        else:
+            VBF_Pass=infile.Get("VBF_PassLS")
         nEventsPass = infile.Get("nEventsPassLS") 
-        
+    
+
     
     VBF_Pass.Sumw2(True)
     nEventsPass.Sumw2(True)
     VBF_Pass.SetBinContent(0,0)
     nEventsPass.SetBinContent(0,0)
-    VBF_Pass.Rebin(50)
-    nEventsPass.Rebin(50)
+    if ls:VBF_Pass.Rebin(100)
+    if ls and not trg:nEventsPass.Rebin(100)
+    if pu:VBF_Pass.Rebin(2)
+    if pu and not trg:nEventsPass.Rebin(2)
     plot = TGraphAsymmErrors()
     plot.Divide(VBF_Pass,nEventsPass)
     for point in range(0,plot.GetN()):
@@ -99,12 +116,16 @@ def Frame(gPad,width=2):
     l.DrawLine(gPad.GetUxmin(), gPad.GetUymin(), gPad.GetUxmin(), gPad.GetUymax())
     
 
-def MakePlot(pu,ls):
+def MakePlot(pu,ls,trg):
     ratePlots = []
     inFile = []
     canvas = TCanvas("canvas","canvas",600,600)
     legsize = 0.08*len(seeds)
-    leg = TLegend(0.11,0.89,0.5,0.9-legsize)
+    if pu:
+        coord_leg =[0.11,0.89,0.5,0.9-legsize]
+    else:
+        coord_leg =[0.5,0.89,0.89,0.9-legsize]
+    leg = TLegend(coord_leg[0],coord_leg[1],coord_leg[2],coord_leg[3])
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
     leg.SetBorderSize(0)
@@ -113,14 +134,20 @@ def MakePlot(pu,ls):
 
     for i, seed in enumerate(seeds):
         print seed
-        legentry = getTresholds(seed)    
+        legentry = getTresholds(seed,False)
+        if trg: legentrytrg = getTresholds(seed, True)
         inFile.append(TFile.Open(directory+seed))
         ratePlot = TGraphAsymmErrors()
-        ratePlot = DrawRate(inFile[i],pu,ls)
+        ratePlot = DrawRate(inFile[i],pu,ls,False)
         ratePlots.append(ratePlot)
-        leg.AddEntry(ratePlot, legentry, "p")    
+        leg.AddEntry(ratePlot, legentry, "p")
+        if trg and i==0:
+            ratePlot = DrawRate(inFile[i],pu,ls,True)
+            ratePlots.append(ratePlot)
+            leg.AddEntry(ratePlot, legentrytrg, "p")    
     ymax = max([plot.GetMaximum() for i,plot in enumerate(ratePlots)])
     ymin = min([plot.GetMinimum() for i,plot in enumerate(ratePlots)])    
+    TGaxis.SetMaxDigits(2);
     DrawAll(ratePlots,canvas,ymin,ymax,pu,ls)
 
     
@@ -154,5 +181,5 @@ def MakePlot(pu,ls):
 
 
 
-if drawPU: MakePlot(pu = True, ls = False)
-if drawLS: MakePlot(pu = False, ls = True)
+if drawPU: MakePlot(pu = True, ls = False, trg = compareTrg)
+if drawLS: MakePlot(pu = False, ls = True, trg = compareTrg)
