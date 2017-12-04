@@ -105,7 +105,7 @@ int main(int argc, char** argv){
   std::vector<float> stage2_jetEt;
   std::vector<float> stage2_jetEta;
   std::vector<float> stage2_jetPhi;
-
+  std::vector<short> stage2_jetBx;
   
   
 
@@ -119,6 +119,7 @@ int main(int argc, char** argv){
   TBranch *b_stage2_jetEt;
   TBranch *b_stage2_jetEta;
   TBranch *b_stage2_jetPhi;
+  TBranch *b_stage2_jetBx;
   
   
 
@@ -131,7 +132,8 @@ int main(int argc, char** argv){
     cInput ->SetBranchAddress("jetEta", &stage2_jetEta, &b_stage2_jetEta);
     cInput ->SetBranchAddress("jetPhi", &stage2_jetPhi, &b_stage2_jetPhi);
     cInput ->SetBranchAddress("jetEt", &stage2_jetEt, &b_stage2_jetEt);
-
+    cInput ->SetBranchAddress("jetBx", &stage2_jetBx, &b_stage2_jetBx);
+    
    
   TFile* fOutVBF = new TFile (Form("%s",fOutNameVBF.Data()), "recreate");
 
@@ -260,21 +262,22 @@ int main(int argc, char** argv){
 
 
     
-    
+   
     for (long int iL1 = 0; iL1 < stage2_jetEt.size(); iL1++){ //loop on jets
       // selections
       double jetPt  = stage2_jetEt.at(iL1);
       double jetEta  = fabs(stage2_jetEta.at(iL1));
-      
-      if(jetPt>30.) {
+      int jetBx = fabs(stage2_jetBx.at(iL1));
+     
+      if(jetPt>30. && jetBx == 0) {
 	jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-		
-	if(jetEta<3){
+	if(jetEta>2.7 && jetEta<3.0){
+	  if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	}else{
 	  jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
-	
 	}
       }
-
+      
     }
     
 
@@ -290,8 +293,7 @@ int main(int argc, char** argv){
       for (int iJet = 0; iJet <jet30.size(); iJet++){      
 	for (int kJet = iJet+1; kJet <jet30.size(); kJet++){      
 	  if (kJet!=iJet) {
-	    
-	    TLorentzVector ijet;
+	    	    TLorentzVector ijet;
 	    ijet.SetPtEtaPhiM(
 			      jet30[iJet].Et(),
 			      jet30[iJet].Eta(),
@@ -323,25 +325,23 @@ int main(int argc, char** argv){
       }
       std::sort(mjj_pass.begin(),mjj_pass.end());
       std::sort(mjj_pass_sortPt.begin(),mjj_pass_sortPt.end(),SortMjjByJetThreshold);
-     
-      double Mjj_max = std::get<0>(*(mjj_pass_sortPt.rbegin()));      
+      double Mjj_max = std::get<0>(*(mjj_pass.rbegin()));      
       DiJet2D_Pass -> Fill (Mjj_max,jet30[0].Et(),weight);        
       if(mjj_pass_sortPt.size()>0) {
-
-	if (Mjj_max>620) DiJet2D_Sub_Pass -> Fill (Mjj_max,jet30[0].Et(),weight);  
 	double subJet_min = std::get<4>(*(mjj_pass_sortPt.rbegin()));
+	if (Mjj_max>620) DiJet2D_Sub_Pass -> Fill (subJet_min,jet30[0].Et(),weight);  
 	if (subJet_min>35 && Mjj_max>620) VBF_lead->Fill(jet30[0].Et(),weight); 
       }else{
-       DiJet2D_Sub_Pass->Fill(-1,-1);
+	DiJet2D_Sub_Pass->Fill(-1,-1);
       }
-
-      
     } else {
       DiJet2D_Pass -> Fill (-1, -1);
       DiJet2D_Sub_Pass->Fill(-1,-1);
-   }
-    //VBF rejecting TT28
+    }
 
+
+    //VBF rejecting TT28
+    
     if (jet30rej.size() >= 2){
       for (int iJet = 0; iJet <jet30rej.size(); iJet++){      
 	for (int kJet = iJet+1; kJet <jet30rej.size(); kJet++){      
@@ -426,10 +426,10 @@ int main(int argc, char** argv){
  
   int xbin = Rate_DiJet2D->GetXaxis()->FindBin(620.0);
   int ybin = Rate_DiJet2D->GetYaxis()->FindBin(90.0);
-  cout<<" Rate VBFseed 90 35 620  "<<Rate_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
-  xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(35.0);
+  cout<<" Rate VBFseed 90 30 620  "<<Rate_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
+  xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(30.0);
   ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(90.0);
-  cout<<" Rate VBFseed 90 35 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+  cout<<" Rate VBFseed 90 30 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
   fOutVBF->cd();
   fOutVBF -> Write();
   cout <<"Output saved in "<<fOutNameVBF<<endl;
