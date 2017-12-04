@@ -8,7 +8,10 @@ all:
 
 off:
 
-	$(CC) -lm -o OfflineSelectionL1 OfflineSelectionL1.cpp `root-config --glibs --cflags`
+	$(CC) -lm -o test/OfflineSelectionL1 test/OfflineSelectionL1.cpp `root-config --glibs --cflags`
+offbbtt:
+
+	$(CC) -lm -o test/OfflineSelectionL1_bbtt test/OfflineSelectionL1_bbtt.cpp `root-config --glibs --cflags`
 
 eval:
 	$(CC) -lm -o EvalRate EvalRate.cpp `root-config --glibs --cflags`
@@ -21,4 +24,6 @@ pl:
 evaltak:
 	$(CC) -lm -o EvalRateL1 EvalRateL1Ntuples.cpp `root-config --glibs --cflags`
 ratepu:
-	$(CC) -lm -o test/EvalRatePU test/EvalRatePU.cpp `root-config --glibs --cflags`
+	$(CC) -lm -o EvalRatePU test/EvalRatePU.cpp `root-config --glibs --cflags`
+VBF:
+	$(CC) -lm -o EvalRateVBF test/EvalRateVBF.cpp `root-config --glibs --cflags`
