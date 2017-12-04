@@ -370,7 +370,7 @@ int main(int argc, char** argv){
       double Mjj_max =  std::get<0>(*(mjj_rej.rbegin()));
       DiJet2D_Pass_rej -> Fill ( Mjj_max,jet30rej[0].Et(),weight);  
       if(mjj_rej_sortPt.size()>0) {
-	double subJet_min =  std::get<4>(*(mjj_rej_sortPt.rbegin());
+	double subJet_min =  std::get<4>(*(mjj_rej_sortPt.rbegin()));
 	DiJet2D_Sub_Pass_rej -> Fill (subJet_min,jet30rej[0].Et(),weight);  
       }else{
 	DiJet2D_Sub_Pass_rej->Fill(-1,-1);
