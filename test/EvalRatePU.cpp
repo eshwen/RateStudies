@@ -52,21 +52,22 @@ int main(int argc, char** argv){
   std::stringstream subleadjet_ss;
   subleadjet_ss << subleadjet_cut;
   string subleadjet_str = subleadjet_ss.str();
-  TString year = argv[4];
-  TString directory = argv[5];
-  TString fileList  = argv[6];
-  TString PUperLumiFile = argv[7];
+  TString directory = argv[4];
+  TString fileList  = argv[5];
+  TString PUperLumiFile = argv[6];
   ifstream PUFile(PUperLumiFile);
-  int trigger_ID = atoi(argv[8]);
+  int trigger_ID = atoi(argv[7]);
   bool emulated  =false;
-  if(atoi(argv[9])==1) emulated = true; 
-  int Run = atoi(argv[10]);
-  int Fill = atoi(argv[11]);
-  int maxevents = atoi(argv[12]);
+  if(atoi(argv[8])==1) emulated = true; 
+  int Run = atoi(argv[9]);
+  int Fill = atoi(argv[10]);
+  int maxevents = atoi(argv[11]);
   std::stringstream max_ss;
   max_ss << maxevents;
   TString max_str = max_ss.str();
 
+  int njob = atoi(argv[12]);
+    
   TChain * cInput;
   TChain * lInput;
   TChain * ugtInput; 
@@ -84,17 +85,13 @@ int main(int argc, char** argv){
   ugtInput = new TChain ("l1uGTTree/L1uGTTree");
   appendFromFileList(ugtInput, fileList);
   
-  TString fOutNameVBF;
-      
+  TString fOutNameVBF = "VBF_ratePU" ;
 
-  if(emulated){
-    fOutNameVBF = directory+"Emu_rateL1_VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_"+year+"_PU";
-  }else{
-    fOutNameVBF = directory+"rateL1_VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_"+year+"_PU";
-  }
-  if (maxevents > 0)  fOutNameVBF+= "_"+max_str+"Events";
-  fOutNameVBF +=".root";
-  cout<<"hellooo"<<endl;      
+  fOutNameVBF += Form("_%d",njob);
+  fOutNameVBF += ".root";
+
+
+
   lInput->SetMakeClass(1);
   cInput->SetMakeClass(1);
   ugtInput->SetMakeClass(1);  
@@ -154,7 +151,7 @@ int main(int argc, char** argv){
   //// HISTO ////
   ///////////////
   
-  TFile* fOutVBF = new TFile (Form("%s",fOutNameVBF.Data()), "recreate");
+  TFile* fOutVBF = new TFile (Form("%s/%s",directory.Data(),fOutNameVBF.Data()), "recreate");
 
   fOutVBF->cd(); 
   //VBF
@@ -199,12 +196,12 @@ int main(int argc, char** argv){
       temp = regex_replace(str, reg, "");
       int pos_coma = temp.First(",");
       TString LS_str(temp,pos_coma);
-      cout<<LS_str<<endl;
+      //cout<<LS_str<<endl;
       TString Replacing = LS_str ;
       Replacing += ",";
       temp.ReplaceAll(Replacing.Data(),"");
       TString PU_str = temp;
-      cout<<PU_str<<endl;
+      //cout<<PU_str<<endl;
       std::istringstream ss_LS(LS_str.Data());
       Int_t LS ;
       ss_LS >> LS;
@@ -268,27 +265,6 @@ int main(int argc, char** argv){
     mjj_rej.clear();
     mjj_rej_sortPt.clear();
 
-   
-    /*if (lumi ==53) continue;
-    if (lumi ==54) continue;
-    if (lumi ==131) continue;
-    if (lumi ==132) continue;
-    if (lumi ==177) continue;
-    if (lumi ==283) continue;
-    if (lumi ==284) continue;
-    if (lumi ==319) continue;
-    if (lumi ==320) continue;
-    if (lumi ==389) continue;
-    if (lumi ==390) continue;
-    if (lumi ==457) continue;
-    if (lumi ==458) continue;
-    if (lumi ==463) continue;
-    if (lumi ==464) continue;
-    if (lumi ==465) continue;
-    if (lumi >559 && lumi<569) continue;
-    if (lumi >1678 && lumi<1725) continue;
-    */
-    //  if(lumi<56 || lumi>69) continue; //2016
 
      if(run!=Run) continue;
     
@@ -317,7 +293,7 @@ int main(int argc, char** argv){
       if(jetPt>30. && jetBx == 0) {
 	jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	if(jetEta>2.7 && jetEta<3.0){
-	 if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	  //if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	}else{
 	  jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	}
@@ -455,10 +431,10 @@ int main(int argc, char** argv){
     VBF_Ratio_rej -> SetBinContent (i, bin);        
   }
 
-
+  cout<< "Output saved in "<<directory<<"/"<<fOutNameVBF<<endl;
 
 fOutVBF->cd();
 fOutVBF -> Write();
-
 }
+
 

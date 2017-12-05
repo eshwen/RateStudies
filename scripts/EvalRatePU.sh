@@ -1,13 +1,6 @@
-#2017
-#emulated
-#../test/EvalRatePU 620 110 35 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 279 1
-#unpacked
-#../test/EvalRatePU 620 90 30 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 276 0 303948 6245 -999
-#../test/EvalRatePU 620 100 35 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 278 0 303948 6245 -999
-#../test/EvalRatePU 620 110 35 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 279 0 303948 6245 -999
-#../test/EvalRatePU 620 115 35 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 281 0 303948 6245 -999
-../test/EvalRatePU 620 115 40 2017 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6245/ ../fileLists/ZeroBias2017_fill6245.list ../utils/PU_per_LS_fill6245_2017.txt 282 0 303948 6245 -999
-
-##########################
-#2016
-#../test/EvalRatePU 620 110 35 2016 /data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesOutput_ZeroBias26Apr2017HighPU_ibx0_BunchTrain0-5_2016H9Nov_-1Events/ ../fileLists/L1NtuplesL1Menu2017ZeroBiasRun2016H_BunchTrainsX.txt ../utils/PU_per_LS.txt -999
+### unpacked
+scripts/submitEvalRateVBF_PU.py --njobs 100 --mjj 620 --lead 90 --sub 30 --filelist fileLists/ZeroBias2017_fill6245.list -o /data_CMS/cms/amendola/Rate2017_VBF/HighPUFill --run 303948 --fill 6245 --trID 276 --tag VBF --pu utils/PU_per_LS_fill6245_2017.txt
+#scripts/submitEvalRateVBF_PU.py --njobs 100 --mjj 620 --lead 100 --sub 35 --filelist fileLists/ZeroBias2017_fill6245.list -o /data_CMS/cms/amendola/Rate2017_VBF/HighPUFill --run 303948 --fill 6245 --trID 278 --tag VBF --pu utils/PU_per_LS_fill6245_2017.txt
+#scripts/submitEvalRateVBF_PU.py --njobs 100 --mjj 620 --lead 110 --sub 35 --filelist fileLists/ZeroBias2017_fill6245.list -o /data_CMS/cms/amendola/Rate2017_VBF/HighPUFill --run 303948 --fill 6245 --trID 279 --tag VBF --pu utils/PU_per_LS_fill6245_2017.txt
+#scripts/submitEvalRateVBF_PU.py --njobs 100 --mjj 620 --lead 115 --sub 35 --filelist fileLists/ZeroBias2017_fill6245.list -o /data_CMS/cms/amendola/Rate2017_VBF/HighPUFill --run 303948 --fill 6245 --trID 281 --tag VBF --pu utils/PU_per_LS_fill6245_2017.txt
+#scripts/submitEvalRateVBF_PU.py --njobs 100 --mjj 620 --lead 115 --sub 40 --filelist fileLists/ZeroBias2017_fill6245.list -o /data_CMS/cms/amendola/Rate2017_VBF/HighPUFill --run 303948 --fill 6245 --trID 282 --tag VBF --pu utils/PU_per_LS_fill6245_2017.txt
