@@ -1,4 +1,36 @@
+### tests VBF seed on VBFHH2B2Taus signal wrt DoubleIsoTau31e
+./AcceptanceTest.py 25 70 --ditaupt 32 --VBFHH --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 620
 
+# tests on VBF seeds @ 2E34 wrt DoubleIsoTau31er (emu)
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 90 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 100 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 100 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 115 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 110 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 110 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 115 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 50 --VBFleadL1 115 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 120 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 120 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 630
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 115 --VBFMjjL1 630
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 120 --VBFMjjL1 630
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 640
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 115 --VBFMjjL1 640
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 120 --VBFMjjL1 640
+#for rej
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 115 --VBFMjjL1 620
+
+
+# tests on VBF seeds @ 2E34 wrt DoubleIsoTau31er (unpack)
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 90 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 100 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 35 --VBFleadL1 100 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 40 --VBFleadL1 115 --VBFMjjL1 620
+#for rej
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 620
+#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 115 --VBFMjjL1 620           
 ### seeds 14kHz at 18E34 wrt DoubleIsoTau30er
 #VBF signal
 # ./AcceptanceTest.py 25 70 --offptpair 80 --VBF --VBFtag
@@ -126,33 +158,4 @@
 # ./AcceptanceTest.py 28 84 --ditauptOR 32 --ditaupt 31 --HHbbtt
 
 
-# tests on VBF seeds @ 2E34 wrt DoubleIsoTau31er (emu)
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 90 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 100 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 100 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 115 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 110 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 110 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 115 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 50 --VBFleadL1 115 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 40 --VBFleadL1 120 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 45 --VBFleadL1 120 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 630
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 115 --VBFMjjL1 630
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 120 --VBFMjjL1 630
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 640
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 115 --VBFMjjL1 640
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 120 --VBFMjjL1 640
-#for rej
-./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --emu --VBFsubL1 30 --VBFleadL1 115 --VBFMjjL1 620
 
-
-# tests on VBF seeds @ 2E34 wrt DoubleIsoTau31er (unpack)
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 90 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 100 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 35 --VBFleadL1 100 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 40 --VBFleadL1 115 --VBFMjjL1 620
-#for rej
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 35 --VBFleadL1 110 --VBFMjjL1 620
-#./AcceptanceTest.py 25 70 --ditaupt 31 --VBF --VBFsubL1 30 --VBFleadL1 115 --VBFMjjL1 620           

@@ -99,9 +99,18 @@ std::ostream & operator << (std::ostream &out, const object &object)
 
 
 
-
+//0: mjj; 1: index jet1; 2: index jet2; 3: pt jet1; 4: pt jet2
 bool SortMjjByJetThreshold(const std::tuple<double,int,int,double,double> &mjj_a, const std::tuple<double,int,int,double,double> &mjj_b){
     float min_a = std::min(std::get<3>(mjj_a),std::get<4>(mjj_a));
     float min_b = std::min(std::get<3>(mjj_b),std::get<4>(mjj_b));
     return min_a<min_b;
+}
+
+
+//0: index; 1: CSV score //decreasing order
+bool SortJetByCSV(const std::pair<int,float> &jet_a, const std::pair<int,float> &jet_b){
+  double CSV_jet_a  = jet_a.second;
+  double CSV_jet_b  = jet_b.second;
+  return CSV_jet_a > CSV_jet_b;
+  
 }

@@ -30,7 +30,8 @@ int main(int argc, char** argv){
 
 
   //ZeroBias sample L1
-  TString directory = "/data_CMS/cms/amendola/EmuL1Ntuples/VBFSignal/";
+   TString directory = "/data_CMS/cms/amendola/EmuL1Ntuples/VBFSignal/";
+   
 
 
 
@@ -39,8 +40,10 @@ int main(int argc, char** argv){
   
   
   
-  fOutNameVBF = directory+"VBFSignal_L1Plots_emu.root";
+  fOutNameVBF = directory+"VBFSignal_L1Plots.root";
   TFile *file = TFile::Open(Form("%sNtuple_VBF_L1_RECO_WithMay2017_Jets_MultipleTaus_17_05_17_0.root",directory.Data()),"read");
+
+
   
   TTree * tInput = (TTree*) file->Get("Ntuplizer_noTagAndProbe_multipleTaus_TagAndProbe");
   
@@ -157,6 +160,10 @@ int main(int argc, char** argv){
   TH1D* SubJetMjj620_OffMatchEmu = new TH1D ("SubJetMjj620_OffMatchEmu", "", 100,25,125);
   TH1D* SubJetMjj620_Emu = new TH1D ("SubJetMjj620_Emu", "", 100,20,120);
   TH1D* SubJetMjj620_Un = new TH1D ("SubJetMjj620_Un", "", 100,20,120);
+
+
+  TH1D* DeltaEta = new TH1D ("DeltaEta", "", 50,0,10);
+  TH1D* Eta = new TH1D ("Eta", "", 50,-5,5);
 
   TH1D* Eta_OffMatchEmu = new TH1D ("Eta_OffMatchEmu", "", 50,-5,5);
   TH1D* Eta_OffMatchUn = new TH1D ("Eta_OffMatchUn", "", 50,-5,5);
@@ -441,6 +448,7 @@ int main(int argc, char** argv){
 	    if (jetOff[kJet].Pt()>45){
 	      mjj40_off.push_back(make_tuple(jetPair.M(),iJet,kJet));
 	      mjj40_off_sortbyPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jetOff[iJet].Pt(),jetOff[kJet].Pt()));
+	      
 	    }
 	  }
 
@@ -448,7 +456,11 @@ int main(int argc, char** argv){
       }
       std::sort(mjj40_off.begin(),mjj40_off.end());
       std::sort(mjj40_off_sortbyPt.begin(),mjj40_off_sortbyPt.end(),SortMjjByJetThreshold);
-Mjj_Off->Fill(std::get<0>(*(mjj40_off.rbegin())));
+      if(std::get<0>(*(mjj40_off.rbegin()))>200){ Mjj_Off->Fill(std::get<0>(*(mjj40_off.rbegin())));
+	DeltaEta->Fill(fabs(jetOff[std::get<1>(*(mjj40_off.rbegin()))].Eta()-jetOff[std::get<2>(*(mjj40_off.rbegin()))].Eta()));
+	Eta->Fill(jetOff[std::get<1>(*(mjj40_off.rbegin()))].Eta());
+
+      }
     }
     for(int ijet = 0; ijet<jetOff_matchEmu.size();ijet++){
       Eta_OffMatchEmu->Fill(jetOff_matchEmu[ijet].Eta());

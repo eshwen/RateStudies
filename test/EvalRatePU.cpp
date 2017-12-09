@@ -170,12 +170,16 @@ int main(int argc, char** argv){
   TH1D* VBF_Ratio       = new TH1D ("VBF_Ratio", "VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
   TH1D* VBF_Pass_rej    = new TH1D ("VBF_Pass_rej", "rejVBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
   TH1D* VBF_Ratio_rej   = new TH1D ("VBF_Ratio_rej", "rejVBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
+    TH1D* VBF_Pass_rej60    = new TH1D ("VBF_Pass_rej60", "rej60VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
+  TH1D* VBF_Ratio_rej60   = new TH1D ("VBF_Ratio_rej60", "rej60VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
   //LS
   TH1D* nEventsPassLS   = new TH1D ("nEventsPassLS", "Events per LS", nbinsLS, lowLS, highLS);
   TH1D* VBF_PassLS      = new TH1D ("VBF_PassLS", "VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
   TH1D* VBF_RatioLS     = new TH1D ("VBF_RatioLS", "VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
   TH1D* VBF_Pass_rejLS  = new TH1D ("VBF_Pass_rejLS", "rejVBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
   TH1D* VBF_Ratio_rejLS = new TH1D ("VBF_Ratio_rejLs", "rejVBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
+    TH1D* VBF_Pass_rej60LS  = new TH1D ("VBF_Pass_rej60LS", "rej60VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
+  TH1D* VBF_Ratio_rej60LS = new TH1D ("VBF_Ratio_rej60Ls", "rej60VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str+"_LS", nbinsLS, lowLS, highLS);
 
   //PU (trigger)
   TH1D* VBF_PassTrg        = new TH1D ("VBF_PassTrg", "VBF_"+Mjj_str+"_"+leadjet_str+"_"+subleadjet_str, nbins, low, high);
@@ -214,8 +218,9 @@ int main(int argc, char** argv){
   // analyze data    
   long int nEvents = 0;
  
-  std::vector<object> jet30;   
-  std::vector<object> jet30rej;   
+  std::vector<object> jet30;  
+   std::vector<object> jet30rej;
+     std::vector<object> jet30rej60;   
  
 
 
@@ -223,6 +228,9 @@ int main(int argc, char** argv){
   std::vector< std::tuple<double,int,int,double, double> > mjj_pass_sortPt; //VBF
   std::vector< std::tuple<double,int,int> > mjj_rej; //VBF
   std::vector< std::tuple<double,int,int,double, double> > mjj_rej_sortPt; //VBF
+
+    std::vector< std::tuple<double,int,int> > mjj_rej60; //VBF
+  std::vector< std::tuple<double,int,int,double, double> > mjj_rej60_sortPt; //VBF
 
 
 
@@ -259,11 +267,14 @@ int main(int argc, char** argv){
     cInput->GetEntry(iEv);
     ugtInput->GetEntry(iEv);
     jet30.clear();
-    jet30rej.clear();;
+    jet30rej.clear();
+    jet30rej60.clear();
     mjj_pass.clear();
     mjj_pass_sortPt.clear();
     mjj_rej.clear();
     mjj_rej_sortPt.clear();
+        mjj_rej60.clear();
+    mjj_rej60_sortPt.clear();
 
 
      if(run!=Run) continue;
@@ -293,9 +304,11 @@ int main(int argc, char** argv){
       if(jetPt>30. && jetBx == 0) {
 	jet30.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	if(jetEta>2.7 && jetEta<3.0){
-	  //if(jetPt>60.) jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+
+	  if(jetPt>60.) jet30rej60.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	}else{
 	  jet30rej.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
+	  jet30rej60.push_back(object(stage2_jetEt.at(iL1),stage2_jetEta.at(iL1),stage2_jetPhi.at(iL1),-999)) ;
 	}
       }
       
@@ -304,6 +317,7 @@ int main(int argc, char** argv){
  
     std::sort (jet30.begin(),jet30.end());
     std::sort (jet30rej.begin(),jet30rej.end());
+    std::sort (jet30rej60.begin(),jet30rej60.end());
    
 
     //trigger decision
@@ -415,6 +429,52 @@ int main(int argc, char** argv){
     } else {
       VBF_Pass_rej->Fill(-1);
       VBF_Pass_rejLS->Fill(-1);
+    }
+
+
+
+        //VBF rejecting TT28 if pt > 60
+
+    if (jet30rej60.size() >= 2){
+      for (int iJet = 0; iJet <jet30rej60.size(); iJet++){      
+	for (int kJet = iJet+1; kJet <jet30rej60.size(); kJet++){      
+	  if (kJet!=iJet) {
+	    TLorentzVector ijet;
+	    ijet.SetPtEtaPhiM(
+			      jet30rej60[iJet].Et(),
+			      jet30rej60[iJet].Eta(),
+			      jet30rej60[iJet].Phi(),
+			      0.);
+	    TLorentzVector kjet;
+	    kjet.SetPtEtaPhiM(
+			      jet30rej60[kJet].Et(),
+			      jet30rej60[kJet].Eta(),
+			      jet30rej60[kJet].Phi(),
+			      0.);
+	    TLorentzVector jetPair = ijet+kjet;
+	    mjj_rej60.push_back(make_tuple(jetPair.M(),iJet,kJet));
+	    if(jetPair.M()>=Mjj_cut) mjj_rej60_sortPt.push_back(make_tuple(jetPair.M(),iJet,kJet,jet30rej60[iJet].Et(),jet30rej60[kJet].Et()));
+	  }
+	}
+      }
+      std::sort(mjj_rej60.begin(),mjj_rej60.end());
+      std::sort(mjj_rej60_sortPt.begin(),mjj_rej60_sortPt.end(),SortMjjByJetThreshold);
+
+      if(mjj_rej60_sortPt.size()>0) {
+	if (std::get<0>(*(mjj_rej60.rbegin()))>Mjj_cut && std::get<4>(*(mjj_pass_sortPt.rbegin()))>subleadjet_cut && jet30rej60[0].Et() > leadjet_cut){
+	  VBF_Pass_rej60->Fill(PU_per_LS[lumi]);
+	   VBF_Pass_rej60LS->Fill(lumi);
+	}else{
+	VBF_Pass_rej60->Fill(-1);
+	VBF_Pass_rej60LS->Fill(-1);
+	}
+      }else{
+	VBF_Pass_rej60->Fill(-1);
+	VBF_Pass_rej60LS->Fill(-1);
+      }
+    } else {
+      VBF_Pass_rej60->Fill(-1);
+      VBF_Pass_rej60LS->Fill(-1);
     }  
   }
   
@@ -428,7 +488,10 @@ int main(int argc, char** argv){
     VBF_Ratio -> SetBinContent (i, bin);        
     //rej
     bin = 1.*(VBF_Pass_rej->GetBinContent(i))/nEventsPass->GetBinContent(i);
-    VBF_Ratio_rej -> SetBinContent (i, bin);        
+    VBF_Ratio_rej -> SetBinContent (i, bin);
+    //rej60
+    bin = 1.*(VBF_Pass_rej60->GetBinContent(i))/nEventsPass->GetBinContent(i);
+    VBF_Ratio_rej60 -> SetBinContent (i, bin);        
   }
 
   cout<< "Output saved in "<<directory<<"/"<<fOutNameVBF<<endl;

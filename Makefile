@@ -25,5 +25,7 @@ evaltak:
 	$(CC) -lm -o EvalRateL1 EvalRateL1Ntuples.cpp `root-config --glibs --cflags`
 ratepu:
 	$(CC) -lm -o EvalRatePU test/EvalRatePU.cpp `root-config --glibs --cflags`
+	$(CC) -lm -o EvalRatePU_tau test/EvalRatePU_tau.cpp `root-config --glibs --cflags`
+
 VBF:
 	$(CC) -lm -o EvalRateVBF test/EvalRateVBF.cpp `root-config --glibs --cflags`

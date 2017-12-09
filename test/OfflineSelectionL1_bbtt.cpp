@@ -128,7 +128,7 @@ int main(int argc, char** argv){
   if(ggHSignal)        fOut= LLRdir+"ggHTauTauSignal_VBFseed";
   if(DYJetsToLLSignal) fOut= LLRdir+"DYJetsToLL_VBFseed";
   //  if(HHbbTauTauSignal) fOut= LLRdir+"HbbTauTauSignal_VBFseed";
-  if(VBFHHbbTauTauSignal) fOut= LLRdir+(Form("VBFHHbbTauTauSignal_bbTauTauSel_VBFseed_%.0lf_%.0lf_%.0lf",VBF_OnlineETleadjetcut,VBF_OnlineETsubjetcut,VBF_OnlineMjjcut));
+  if(VBFHHbbTauTauSignal) fOut= LLRdir+(Form("VBFHHbbTauTauSignal_bbTauTauSel_VBFseed_%.0lf_%.0lf_%.0lf_bNoOverlap",VBF_OnlineETleadjetcut,VBF_OnlineETsubjetcut,VBF_OnlineMjjcut));
  
   if(emu) fOut += "_emu";
   fOut +=".root";
@@ -141,27 +141,27 @@ int main(int argc, char** argv){
   TH2D* Mjj_corr = new TH2D ("Mjj_corr", "", 50, 0, 800,50,0,800);
   TH1D* Mjj_res = new TH1D ("Mjj_res", "", 50, -1, 1);
 
-  TH1D* Mjj_VBF_pass = new TH1D ("Mjj_VBF_pass", "", 40, 400, 2200);
-  TH1D* Mjj_VBF = new TH1D ("Mjj_VBF", "", 40, 400, 2200);
-  TH1D* Mjj_VBFMatched_pass = new TH1D ("Mjj_VBFMatched_pass", "", 40, 400, 2200);
-  TH1D* Mjj_VBF_tot = new TH1D ("Mjj_VBF_tot", "",40, 400, 2200);
-  TH1D* Mjj_ditau = new TH1D ("Mjj_DiTau", "",40, 400, 2200);
-  TH1D* Mjj_ditau_VBF = new TH1D ("Mjj_DiTau_VBF", "",40, 400, 2200);
-  TH1D* Mjj_ditau_noVBF = new TH1D ("Mjj_DiTau_noVBF", "",40, 400, 2200);
-  TH1D* Mjj_noditau_VBF = new TH1D ("Mjj_noDiTau_VBF", "",40, 400, 2200);
-  TH1D* Mjj_noditau_VBFbySeed = new TH1D ("Mjj_noDiTau_NewbySeed", "",40, 400, 2200);
-  TH1D* Mjj_noditau_VBFbySel = new TH1D ("Mjj_noDiTau_NewbySel", "",40, 400, 2200);
-  TH1D* Mjj_noditau_VBFbyBoth = new TH1D ("Mjj_noDiTau_NewbyBoth", "",40, 400, 2200);
-  TH1D* Mjj_noditau_VBFsel = new TH1D ("Mjj_noDiTau_VBFsel", "",40, 400, 2200);
-  TH1D* Mjj_or = new TH1D ("Mjj_or", "",40,400, 2200);
-  TH1D* Mjj_and = new TH1D ("Mjj_and", "",40,400, 2200);
+  TH1D* Mjj_VBF_pass = new TH1D ("Mjj_VBF_pass", "", 16, 400, 2000);
+  TH1D* Mjj_VBF = new TH1D ("Mjj_VBF", "", 16, 400, 2000);
+  TH1D* Mjj_VBFMatched_pass = new TH1D ("Mjj_VBFMatched_pass", "", 16, 400, 2000);
+  TH1D* Mjj_VBF_tot = new TH1D ("Mjj_VBF_tot", "",16, 400, 2000);
+  TH1D* Mjj_ditau = new TH1D ("Mjj_DiTau", "",16, 400, 2000);
+  TH1D* Mjj_ditau_VBF = new TH1D ("Mjj_DiTau_VBF", "",16, 400, 2000);
+  TH1D* Mjj_ditau_noVBF = new TH1D ("Mjj_DiTau_noVBF", "",16, 400, 2000);
+  TH1D* Mjj_noditau_VBF = new TH1D ("Mjj_noDiTau_VBF", "",16, 400, 2000);
+  TH1D* Mjj_noditau_VBFbySeed = new TH1D ("Mjj_noDiTau_NewbySeed", "",16, 400, 2000);
+  TH1D* Mjj_noditau_VBFbySel = new TH1D ("Mjj_noDiTau_NewbySel", "",16, 400, 2000);
+  TH1D* Mjj_noditau_VBFbyBoth = new TH1D ("Mjj_noDiTau_NewbyBoth", "",16, 400, 2000);
+  TH1D* Mjj_noditau_VBFsel = new TH1D ("Mjj_noDiTau_VBFsel", "",16, 400, 2000);
+  TH1D* Mjj_or = new TH1D ("Mjj_or", "",16,400, 2000);
+  TH1D* Mjj_and = new TH1D ("Mjj_and", "",16,400, 2000);
   
-  TH1D* PtTau_VBF = new TH1D ("PtTau_VBF", "", 50, 20, 120);
-  TH1D* PtTau_ditau = new TH1D ("PtTau_DiTau", "", 50, 20, 120);
-  TH1D* PtTau_or = new TH1D ("PtTau_DiTau_VBF", "",50, 20, 120);
-  TH1D* PtTau_and = new TH1D ("PtTau_and", "",50, 20, 120);
-  TH1D* PtTau_ditau_noVBF = new TH1D ("PtTau_DiTau_noVBF", "",50, 20, 120);
-  TH1D* PtTau_noditau_VBF = new TH1D ("PtTau_noDiTau_VBF", "",50, 20, 120);
+  TH1D* PtTau_VBF = new TH1D ("PtTau_VBF", "", 40, 20, 120);
+  TH1D* PtTau_ditau = new TH1D ("PtTau_DiTau", "", 40, 20, 120);
+  TH1D* PtTau_or = new TH1D ("PtTau_DiTau_VBF", "",40, 20, 120);
+  TH1D* PtTau_and = new TH1D ("PtTau_and", "",40, 20, 120);
+  TH1D* PtTau_ditau_noVBF = new TH1D ("PtTau_DiTau_noVBF", "",40, 20, 120);
+  TH1D* PtTau_noditau_VBF = new TH1D ("PtTau_noDiTau_VBF", "",40, 20, 120);
 
   TGraphAsymmErrors* Mjj_TurnOn = new  TGraphAsymmErrors();  
   Mjj_TurnOn->SetName("Mjj_TurnOn_VBF");
@@ -396,8 +396,12 @@ int main(int argc, char** argv){
     OffTau.clear();
     OffJetNoOverlap.clear();
     OffJet.clear();
-    OffBJetNoOverlap.clear();
+    OffBJet.clear();
+    OffBJetNoOverlap_VBF.clear();
+    OffBJetNoOverlap_DiTau.clear();
     bjet_CSV.clear();
+    bjet_CSV_VBF.clear();
+    bjet_CSV_DiTau.clear();
     jet30.clear();
     jet30_sortByDeltaR.clear();
     jet30noOverlap.clear();
@@ -497,7 +501,6 @@ int main(int argc, char** argv){
 	  }
 	  if(MatchingJet)	    OffJet.push_back(tlv_jet);
 	  if(tlv_jet.DeltaR(OffTau[0])>0.3 && tlv_jet.DeltaR(OffTau[1])>0.3){ //overlap removal offline
-	    //if (MatchingJet)
 	    OffJetNoOverlap.push_back(tlv_jet);
 	  }
 
@@ -506,7 +509,8 @@ int main(int argc, char** argv){
 
 	  if(tlv_jet.DeltaR(OffTau[0])>0.5 && tlv_jet.DeltaR(OffTau[1])>0.5 && fabs(tlv_jet.Eta())<2.4){ 
 	    
-	    OffBJetNoOverlap.push_back(tlv_jet);
+
+	    OffBJet.push_back(tlv_jet);
 	    bjet_CSV.push_back(make_pair(bJet,bCSVscore->at(bJet)));
 	    bJet++;
 	  }
@@ -704,45 +708,104 @@ int main(int argc, char** argv){
 	std::sort(mjj_off_passVBF.begin(),mjj_off_passVBF.end());
 	//for acceptance L1_DoubleJet_X_Y_MjYjY_Z //VBF
 	//remove overlap between VBF jets and H->bb jets
-	if (std::get<0>(*(mjj_off_passVBF.rbegin()))>700){}
-
+	for(int bJet = 0; bJet<bjet_CSV.size(); bJet ++){
+	if (std::get<0>(*(mjj_off_passVBF.rbegin()))>700){
+	  TLorentzVector VBFjet1;
+	  int VBFjet1_idx = std::get<1>(*(mjj_off_passVBF.rbegin()));
+	  VBFjet1.SetPtEtaPhiM(
+			       OffJetNoOverlap[VBFjet1_idx].Pt(),
+			       OffJetNoOverlap[VBFjet1_idx].Eta(),
+			       OffJetNoOverlap[VBFjet1_idx].Phi(),
+			       OffJetNoOverlap[VBFjet1_idx].M()
+			       );
+	  TLorentzVector VBFjet2;
+	  int VBFjet2_idx = std::get<2>(*(mjj_off_passVBF.rbegin()));
+	  VBFjet2.SetPtEtaPhiM(
+			       OffJetNoOverlap[VBFjet2_idx].Pt(),
+			       OffJetNoOverlap[VBFjet2_idx].Eta(),
+			       OffJetNoOverlap[VBFjet2_idx].Phi(),
+			       OffJetNoOverlap[VBFjet2_idx].M()
+			       );
+	  
+	  if (OffBJet[bJet].DeltaR(VBFjet1)>0.01 && OffBJet[bJet].DeltaR(VBFjet2)>0.01){
+	    OffBJetNoOverlap_VBF.push_back(OffBJet[bJet]);
+	    bjet_CSV_VBF.push_back(make_pair(bJet,bjet_CSV.at(bJet).second));
+	  }
+	}else{
+	  OffBJetNoOverlap_VBF.push_back(OffBJet[bJet]);
+	  bjet_CSV_VBF.push_back(make_pair(bJet,bjet_CSV.at(bJet).second));
+	}
+	if (std::get<0>(*(mjj_off_passditau.rbegin()))>400){
+	  TLorentzVector DiTaujet1;
+	  int DiTaujet1_idx = std::get<1>(*(mjj_off_passditau.rbegin()));
+	  DiTaujet1.SetPtEtaPhiM(
+			       OffJetNoOverlap[DiTaujet1_idx].Pt(),
+			       OffJetNoOverlap[DiTaujet1_idx].Eta(),
+			       OffJetNoOverlap[DiTaujet1_idx].Phi(),
+			       OffJetNoOverlap[DiTaujet1_idx].M()
+			       );
+	  TLorentzVector DiTaujet2;
+	  int DiTaujet2_idx = std::get<2>(*(mjj_off_passditau.rbegin()));
+	  DiTaujet2.SetPtEtaPhiM(
+			       OffJetNoOverlap[DiTaujet2_idx].Pt(),
+			       OffJetNoOverlap[DiTaujet2_idx].Eta(),
+			       OffJetNoOverlap[DiTaujet2_idx].Phi(),
+			       OffJetNoOverlap[DiTaujet2_idx].M()
+			       );
+	  
+	  if (OffBJet[bJet].DeltaR(DiTaujet1)>0.01 && OffBJet[bJet].DeltaR(DiTaujet2)>0.01){
+	    OffBJetNoOverlap_DiTau.push_back(OffBJet[bJet]);
+	    bjet_CSV_DiTau.push_back(make_pair(bJet,bjet_CSV.at(bJet).second));
+	  }
+	}else{
+	  OffBJetNoOverlap_DiTau.push_back(OffBJet[bJet]);
+	  bjet_CSV_DiTau.push_back(make_pair(bJet,bjet_CSV.at(bJet).second));
+	}
+	}
 	  if(OffJet.size()>1){
-	  if(OffBJetNoOverlap.size()>2){
-	    if(bjet_CSV.at(0).second>0.8484) {
+	    //  if(OffBJetNoOverlap.size()>2){
+	      // if(bjet_CSV.at(0).second>0.8484) {
 	      if(((OffJet[0].Pt()>VBF_OffETleadjetcut)||(OffTau[0].Pt()>VBF_OffETleadjetcut)) && OffJet[1].Pt()>VBF_OffETsubjetcut &&  OffTau[1].Pt()>20){
-		selVBF = true;
-		if( L1_DoubleJet_X_Y_MjYjY_Z ) {
-		  //cout<<"before"<<endl;	
-		  Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
-		  PtTau_VBF->Fill(OffTau[1].Pt());
-		  DeltaEta_VBF->Fill(fabs(OffJet[0].Eta()-OffJet[1].Eta()));
-		}
-		if (L1_DoubleIsoTauXXer) Mjj_ditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	    
-	      }
-	      // cout<<"check1"<<endl;
-	      if(mjj_off_passditau.size()>0){ 
-		if(OffJet[1].Pt()>DiTau_OffPTtaucut && OffTau[1].Pt()>DiTau_OffPTtaucut && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
-	      
-		  selDiTau_forVBF = true;
-	      
-	      
-	      
-		  if(L1_DoubleIsoTauXXer ){
-		    PtTau_ditau->Fill(OffTau[1].Pt());
-		    
-		    Mjj_ditau ->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
-		    if(!(std::get<0>(*(mjj_off_passVBF.rbegin()))>VBF_OffMjjcut && selVBF &&L1_DoubleJet_X_Y_MjYjY_Z )){
-		      N_selDiTau_noVBF += 1;	     
-		      Mjj_ditau_noVBF->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
-		      PtTau_ditau_noVBF->Fill(OffTau[1].Pt());
-		      
-		      
-		    }	            
+		if(OffBJetNoOverlap_VBF.size()>2){
+		  if(bjet_CSV_VBF.at(0).second>0.8484) {	
+		    selVBF = true;
+		    if( L1_DoubleJet_X_Y_MjYjY_Z ) {
+		      //cout<<"before"<<endl;	
+		      Mjj_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	
+		      PtTau_VBF->Fill(OffTau[1].Pt());
+		      DeltaEta_VBF->Fill(fabs(OffJet[0].Eta()-OffJet[1].Eta()));
+		    }
+		    if (L1_DoubleIsoTauXXer) Mjj_ditau_VBF ->Fill(std::get<0>(*(mjj_off_passVBF.rbegin())));	    
 		  }
 		}
 	      }
+	      // cout<<"check1"<<endl;
+		  if(mjj_off_passditau.size()>0){ 
+		    if(OffJet[1].Pt()>DiTau_OffPTtaucut && OffTau[1].Pt()>DiTau_OffPTtaucut && std::get<0>(*(mjj_off_passditau.rbegin()))>400){
+		      if(OffBJetNoOverlap_DiTau.size()>2){
+			if(bjet_CSV_DiTau.at(0).second>0.8484) {   
+		      selDiTau_forVBF = true;
+		      
+		      
+		      
+		      if(L1_DoubleIsoTauXXer ){
+			PtTau_ditau->Fill(OffTau[1].Pt());
+			
+			Mjj_ditau ->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
+			if(!(std::get<0>(*(mjj_off_passVBF.rbegin()))>VBF_OffMjjcut && selVBF &&L1_DoubleJet_X_Y_MjYjY_Z )){
+			  N_selDiTau_noVBF += 1;	     
+			  Mjj_ditau_noVBF->Fill(std::get<0>(*(mjj_off_passditau.rbegin())));
+			  PtTau_ditau_noVBF->Fill(OffTau[1].Pt());
+			  
+			  
+			}	            
+		      }
+			}
+		      }
+		    }
+		// }
+		// }
 	    }
-	  }
 	
 	if(std::get<0>(*(mjj_off_passVBF.rbegin()))>700 && selVBF &&L1_DoubleJet_X_Y_MjYjY_Z){
 	  if(!(selDiTau_forVBF && L1_DoubleIsoTauXXer)){

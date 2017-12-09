@@ -14,7 +14,7 @@
 #include "TTree.h"
 #include "TFile.h"
 #include "TChain.h"
-#include "interface/object.h"
+#include "../interface/object.h"
 
 
 using namespace std;
@@ -350,7 +350,7 @@ int main(int argc, char** argv){
 			   daughters_pz->at(i),
 			   daughters_e->at(i)
 			   );
-	if(tlv_tau.Pt()>pt_tau_cut && fabs(tlv_tau.Eta())<2.1 && ((tauID->at(i)>>5)&1) && ((tauID->at(i)>>7)&1) && ((tauID->at(i)>>5)&11)){
+	if(tlv_tau.Pt()>pt_tau_cut && fabs(tlv_tau.Eta())<2.1 && ((tauID->at(i)>>5)&1) && ((tuID->at(i)>>7)&1) && ((tauID->at(i)>>5)&11)){
 	  for(int iTau=0; iTau<stage2_tauN; iTau++){//matching
 	    if(stage2_tauEt->at(iTau)>8){
 	      TLorentzVector tlv_L1tau;
