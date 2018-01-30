@@ -42,28 +42,36 @@ void appendFromFileList (TChain* chain, TString filename)
 
 int main(int argc, char** argv){
 
- 
-  float nbStudiedRun =96.;
-  float thisLumiRun = 1750E30;
-  float scaleToLumi = 2.E34;
-  float scale = 0.001*(nbStudiedRun*11245.6)*scaleToLumi/thisLumiRun;  
- 
-
-  TString LumiTarget = "scaleToLumi20E33";
-  TString year = "2017";
-  
-  cout << "Scale factor: " << scale << endl;
- 
-  TString directory = "/data_CMS/cms/amendola/RateStudiesL1Ntuples/L1NtuplesHighPU_2017_fill6194/";
-  TString fileList = "fileLists/ZeroBias2017_HighPU.list";
+  int Mjj_cut = atoi(argv[1]); //for 1-d plots
+  int leadjet_cut = atoi(argv[2]); //for 1-d plots
+  int subleadjet_cut = atoi(argv[3]); //for 1-d plots
+  TString directory = argv[4];
+  TString fileList  = argv[5];
+  TString PUperLumiFile = argv[6];
+  ifstream PUFile(PUperLumiFile);
+  int trigger_ID = atoi(argv[7]);
   bool emulated  =false;
+  if(atoi(argv[8])==1) emulated = true; 
+  int Run = atoi(argv[9]);
+  int Fill = atoi(argv[10]);
+  int maxevents = atoi(argv[11]);
+  int lumimin = atoi(argv[12]);
+  int lumimax = atoi(argv[13]);
+  std::stringstream max_ss;
+  max_ss << maxevents;
+  TString max_str = max_ss.str();
+
+  int njob = atoi(argv[14]);
+
   bool reweight = false;
   
   
-  ifstream PUFile("utils/PU_per_LS_fill6194_2017.txt"); //2017
+
 
   
   TTree * tInput;
+
+
   TChain * cInput;
   TChain * lInput; 
 
@@ -83,16 +91,12 @@ int main(int argc, char** argv){
 
   }
 
-  TString fOutNameVBF;
 
 
-  if(emulated){
-    fOutNameVBF = directory+"Emu_rateL1_VBF_"+LumiTarget+"_"+year+".root";
-
-  }else{
-    fOutNameVBF = directory+"rateL1_VBF_"+LumiTarget+"_"+year+"test.root";
-
-  }
+  TString fOutNameVBF = "VBF_rate" ;
+  if(emulated) fOutNameVBF = "_emu";
+  fOutNameVBF += Form("_%d",njob);
+  fOutNameVBF += ".root";
   
   
   lInput->SetMakeClass(1);
@@ -135,30 +139,34 @@ int main(int argc, char** argv){
     cInput ->SetBranchAddress("jetBx", &stage2_jetBx, &b_stage2_jetBx);
     
    
-  TFile* fOutVBF = new TFile (Form("%s",fOutNameVBF.Data()), "recreate");
+  TFile* fOutVBF = new TFile (Form("%s/%s",directory.Data(),fOutNameVBF.Data()), "recreate");
 
    fOutVBF->cd(); 
   //VBF
 
   TH2D* DiJet2D_Pass = new TH2D ("DiJet2D", "events firing, 2-dim (lead, mjj)", 800, 0, 800, 100,30, 130);
   TH2D* Ratio_DiJet2D = new TH2D ("Ratio_DiJet2D", "VBF 2-dim ratio", 800, 0, 800, 100, 30, 130);
-  TH2D* Rate_DiJet2D = new TH2D ("Rate_DiJet2D", "VBF 2-dim rate", 800, 0, 800, 100, 30, 130);
+
 
   TH2D* DiJet2D_Sub_Pass = new TH2D ("DiJet2D_Sub", "events firing, 2-dim (lead, sublead)", 30, 30, 60, 100,30, 130);
   TH2D* Ratio_Sub_DiJet2D = new TH2D ("Ratio_Sub_DiJet2D", "VBF 2-dim ratio", 30, 30, 60, 100, 30, 130);
-  TH2D* Rate_Sub_DiJet2D = new TH2D ("Rate_Sub_DiJet2D", "VBF 2-dim rate", 30, 30, 60, 100, 30, 130); 
+
 
   TH2D* DiJet2D_Pass_rej = new TH2D ("DiJet2D_rej", "events firing, 2-dim (lead, mjj), no TT28", 800, 0, 800, 100,30, 130);
   TH2D* Ratio_DiJet2D_rej = new TH2D ("Ratio_DiJet2D_rej", "VBF 2-dim ratio", 800, 0, 800, 100, 30, 130);
-  TH2D* Rate_DiJet2D_rej = new TH2D ("Rate_DiJet2D_rej", "VBF 2-dim rate", 800, 0, 800, 100, 30, 130);
+
 
   TH2D* DiJet2D_Sub_Pass_rej = new TH2D ("DiJet2D_Sub_rej", "events firing, 2-dim (lead, sublead), no TT28", 30, 30, 60, 100,30, 130);
   TH2D* Ratio_Sub_DiJet2D_rej = new TH2D ("Ratio_Sub_DiJet2D_rej", "VBF 2-dim ratio", 30, 30, 60, 100, 30, 130);
-  TH2D* Rate_Sub_DiJet2D_rej = new TH2D ("Rate_Sub_DiJet2D_rej", "VBF 2-dim rate", 30, 30, 60, 100, 30, 130); 
+
   
   TH1D* VBF_lead = new TH1D ("VBF_lead", "events firing, 1-dim (lead jet)", 100,30, 130);
   TH1D* Ratio_VBF_lead = new TH1D ("Ratio_VBF_lead", "VBF 1-dim ratio", 100,30, 130);
-  TH1D* Rate_VBF_lead = new TH1D ("Rate_VBF_lead", "VBF 1-dim rate", 100,30, 130);
+
+  
+  TH1D* VBF_mjj = new TH1D ("VBF_mjj", "events firing, 1-dim (mjj)", 800, 0, 800);
+  TH1D* Ratio_VBF_mjj = new TH1D ("Ratio_VBF_mjj", "VBF 1-dim ratio", 800, 0, 800);
+
   
   TH1D* Mjj30 = new TH1D ("Mjj30", "", 100, 0, 800);
   TH1D* jetsRes = new TH1D ("jetsRes", "", 60, 0, 30);
@@ -176,18 +184,16 @@ int main(int argc, char** argv){
     {
       TString temp(str);
 
-      //temp.ReplaceAll("5412,283171,",""); //2016
-
-             regex reg("6194,[0-9]+,");
-          temp = regex_replace(str, reg, "");
+      regex reg(Form("%d,%d,",Fill,Run));
+      temp = regex_replace(str, reg, "");
       int pos_coma = temp.First(",");
       TString LS_str(temp,pos_coma);
-      // cout<<LS_str<<endl;
+      cout<<LS_str<<endl;
       TString Replacing = LS_str ;
       Replacing += ",";
       temp.ReplaceAll(Replacing.Data(),"");
       TString PU_str = temp;
-      // cout<<PU_str<<endl;
+      cout<<PU_str<<endl;
       std::istringstream ss_LS(LS_str.Data());
       Int_t LS ;
       ss_LS >> LS;
@@ -195,7 +201,7 @@ int main(int argc, char** argv){
       Float_t PU ;
       ss_PU >> PU;     
       PU_per_LS.insert(std::pair<Int_t,Float_t>(LS , PU ));
-
+      
     }
   // analyze data    
   long int nEvents = 0;
@@ -216,7 +222,7 @@ int main(int argc, char** argv){
 
 
   
-  for (Long64_t iEv =0 ;iEv<30000; ++iEv){
+  for (Long64_t iEv =0 ; true ; ++iEv){
     lumi = 0;			   
     run = 0;
     
@@ -246,8 +252,8 @@ int main(int argc, char** argv){
 
     
 
-    if(run>302674) continue;
-    if(lumi<135 || lumi>264) continue; 
+
+    if(lumi<lumimin || lumi>lumimax) continue; 
     
     if(PU_per_LS.find(lumi)==PU_per_LS.end()) continue;
     Float_t weight = 0;
@@ -329,8 +335,9 @@ int main(int argc, char** argv){
       DiJet2D_Pass -> Fill (Mjj_max,jet30[0].Et(),weight);        
       if(mjj_pass_sortPt.size()>0) {
 	double subJet_min = std::get<4>(*(mjj_pass_sortPt.rbegin()));
-	if (Mjj_max>620) DiJet2D_Sub_Pass -> Fill (subJet_min,jet30[0].Et(),weight);  
-	if (subJet_min>35 && Mjj_max>620) VBF_lead->Fill(jet30[0].Et(),weight); 
+	if (Mjj_max>Mjj_cut) DiJet2D_Sub_Pass -> Fill (subJet_min,jet30[0].Et(),weight);  
+	if (subJet_min>subleadjet_cut && Mjj_max>Mjj_cut) VBF_lead->Fill(jet30[0].Et(),weight); 
+  if (subJet_min>subleadjet_cut && jet30[0].Et()>leadjet_cut) VBF_mjj->Fill(Mjj_max,weight); 
       }else{
 	DiJet2D_Sub_Pass->Fill(-1,-1);
       }
@@ -382,54 +389,43 @@ int main(int argc, char** argv){
       
   }
 
-  // compute rate plots
+  // compute ratio plots
+  //scaling to be made afterwards!
 
   cout << endl;
-  cout << "Computing rates..." << endl; 
+  cout << "Computing ratio..." << endl; 
 
   //VBF
   for (int i = 1; i <=DiJet2D_Pass->GetNbinsX(); i++){
     for (int j = 1; j<= DiJet2D_Pass->GetNbinsY();j++ ){
       double binDiJet2D = 1.*(DiJet2D_Pass->Integral(i, DiJet2D_Pass->GetNbinsX()+1,j,DiJet2D_Pass->GetNbinsY()+1))/nEventsPass;
       Ratio_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
-      Rate_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
+            
       //rej
       binDiJet2D = 1.*(DiJet2D_Pass_rej->Integral(i, DiJet2D_Pass_rej->GetNbinsX()+1,j,DiJet2D_Pass_rej->GetNbinsY()+1))/nEventsPass;
       Ratio_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
-      Rate_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
+           
     }
   }
   
   for (int j = 1; j<= VBF_lead->GetNbinsX();j++ ){
       double binDiJet = 1.*(VBF_lead->Integral(j, VBF_lead->GetNbinsX()+1))/nEventsPass;
-      Ratio_VBF_lead -> SetBinContent (j, binDiJet);        
-      binDiJet *=scale;
-      Rate_VBF_lead ->  SetBinContent (j, binDiJet);
+      Ratio_VBF_lead -> SetBinContent (j, binDiJet);
   }
-  
+   for (int j = 1; j<= VBF_mjj->GetNbinsX();j++ ){
+      double binDiJet = 1.*(VBF_mjj->Integral(j, VBF_mjj->GetNbinsX()+1))/nEventsPass;
+      Ratio_VBF_mjj -> SetBinContent (j, binDiJet);        
+  }
   for (int i = 1; i <=DiJet2D_Sub_Pass->GetNbinsX(); i++){
     for (int j = 1; j<= DiJet2D_Sub_Pass->GetNbinsY();j++ ){
-      
       double binDiJet2D = 1.*(DiJet2D_Sub_Pass->Integral(i, DiJet2D_Sub_Pass->GetNbinsX()+1,j,DiJet2D_Sub_Pass->GetNbinsY()+1))/nEventsPass;
       Ratio_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
-      Rate_Sub_DiJet2D -> SetBinContent (i, j, binDiJet2D);        
       //rej
       binDiJet2D = 1.*(DiJet2D_Sub_Pass_rej->Integral(i, DiJet2D_Sub_Pass_rej->GetNbinsX()+1,j,DiJet2D_Sub_Pass_rej->GetNbinsY()+1))/nEventsPass;
       Ratio_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
-      binDiJet2D *=scale;
-      Rate_Sub_DiJet2D_rej -> SetBinContent (i, j, binDiJet2D);        
     }
   }
- 
-  int xbin = Rate_DiJet2D->GetXaxis()->FindBin(620.0);
-  int ybin = Rate_DiJet2D->GetYaxis()->FindBin(90.0);
-  cout<<" Rate VBFseed 90 30 620  "<<Rate_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl;
-  xbin = Rate_Sub_DiJet2D->GetXaxis()->FindBin(30.0);
-  ybin = Rate_Sub_DiJet2D->GetYaxis()->FindBin(90.0);
-  cout<<" Rate VBFseed 90 30 620  "<<Rate_Sub_DiJet2D->GetBinContent(xbin,ybin)<<" kHz"<<endl; 
+  
   fOutVBF->cd();
   fOutVBF -> Write();
   cout <<"Output saved in "<<fOutNameVBF<<endl;
