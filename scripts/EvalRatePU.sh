@@ -1,7 +1,9 @@
 #fill 6245 triggersID: https://cmswbm.cern.ch/cmsdb/servlet/L1Summary?RUN=303948&KEY=l1_trg_collisions2017/v99
 
 #### JETS
-python ./scripts/submitEvalRateVBF_PU.py --njobs 12 --mjj 0 --lead 40 --sub 0 --filelist fileLists/ZeroBias2017_fill6255.list -o /afs/cern.ch/work/e/ebhal/RateJetPU_TEST --run 304144 --fill 6255 --tag Jet_TEST --pu utils/JetMET_PU_per_LS_fill6255_2017.txt --VBFincl
+python ./scripts/submitEvalRateVBF_PU.py --njobs 346 --mjj 0 --lead 40 --sub 0 --filelist fileLists/ZeroBias2017_fill6255.list -o /afs/cern.ch/work/e/ebhal/RateJetPU_TEST --run 304144 --fill 6255 --tag Jet_TEST --pu utils/JetMET_PU_per_LS_fill6255_2017.txt --VBFincl
+
+#python ./scripts/submitEvalRateVBF_PU.py --njobs 200 --mjj 620 --lead 90 --sub 30 --filelist fileLists/ZeroBias2017_fill6245.list -o /afs/cern.ch/work/e/ebhal/RateTEST_OTHER --run 303948 --fill 6245 --trID 276 --tag OTHER_TEST --pu utils/PU_per_LS_fill6245_2017.txt --VBFincl
 
 
 #### VBF INCLUSIVE
