@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 import datetime
-
+from subprocess import call
 
 
 def parseInputFileList (fileName) :
@@ -83,12 +83,13 @@ for listname in inputlists:
     scriptName = proto + str(nj) + '.sh'
     logName    = logproto + str(nj) + '.txt'
     scriptFile = open (outDir + '/' + scriptName, 'w')
-    scriptFile.write ('#!/bin/bash\n')
-    scriptFile.write ('export X509_USER_PROXY=~/.t3/proxy.cert\n')
-    scriptFile.write ('source /cvmfs/cms.cern.ch/cmsset_default.sh\n')
-    scriptFile.write ('cd %s\n' % here)
-    scriptFile.write ('export SCRAM_ARCH=slc6_amd64_gcc491\n')
-    scriptFile.write ('eval `scram r -sh`\n')
+    scriptFile.write ("""#!/bin/bash
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cd {0}
+export SCRAM_ARCH=slc6_amd64_gcc491
+eval `scramv1 runtime -sh`
+""".format(here) )
+    #scriptFile.write ('export X509_USER_PROXY=~/.t3/proxy.cert\n')
     if (args.VBFincl):
         command = program + ' ' +str(args.mjj) + ' ' +str(args.lead) + ' ' + str(args.sub)
     elif(args.VBFtau):
@@ -97,10 +98,32 @@ for listname in inputlists:
     command = command + ' ' + str(nj) + ' ' + str(args.njobs) + ' 2>&1 | tee ' + outDir + '/' + logName
     scriptFile.write(command)
     scriptFile.close()
-    
+
+    condor_path = os.path.join(outDir, proto + str(nj)) + "_submit.job"
+    condor_file = open(condor_path, "w")
+    condor_file.write("""# HTCondor submission script                                                                                                                                            
+Universe = vanilla
+executable = {0}
+Log = {1}.log
+Output = {1}.output
+Error = {1}.error
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+# Resource requests (disk storage in kB, memory in MB)
+request_cpus = 1
+request_disk = 100000
+request_memory = 2500
++MaxRuntime = 7200
+queue 1
+""".format(os.path.join(outDir, scriptName), os.path.join(outDir, "condor_" + str(nj)) )
+                      )
+    condor_file.close()
+
     os.system ('chmod u+rwx ' + outDir + '/' + scriptName)
-    launchcommand = ('/opt/exp_soft/cms/t3/t3submit -short \'' + outDir + '/' + scriptName +"\'")
+#    launchcommand = ('/opt/exp_soft/cms/t3/t3submit -short \'' + outDir + '/' + scriptName +"\'")
+    launchcommand = ('condor_submit ' + condor_path)
     print launchcommand
-    os.system (launchcommand)
+#    os.system (launchcommand)
+    call("condor_submit {0}".format(condor_path), shell = True)
     nj = nj + 1
    # command = '/opt/exp_soft/cms/t3/t3submit -short ' + outDir + '/' + proto + str (nj) + '.sh'

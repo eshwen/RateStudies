@@ -3,8 +3,8 @@
 The package contains a framework to produce ntuples with L1 information out of miniAOD events and codes for rate studies of L1 trigger seeds.
 
 ```
-cmsrel CMSSW_8_0_20
-cd CMSSW_8_0_20/src
+cmsrel CMSSW_9_4_0_pre3
+cd CMSSW_9_4_0_pre3/src
 cmsenv
 git clone https://github.com/camendola/RateStudies
 cd RateStudies

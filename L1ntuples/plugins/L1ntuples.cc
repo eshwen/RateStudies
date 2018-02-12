@@ -94,7 +94,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 #include <CommonTools/UtilAlgos/interface/TFileService.h>
 
-#include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
+// Compilation error occurs when following line is uncommented
+// #include <Muon/MuonAnalysisTools/interface/MuonEffectiveArea.h>
 
 
 #include "Geometry/Records/interface/HcalParametersRcd.h"

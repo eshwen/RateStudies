@@ -298,6 +298,7 @@ int main(int argc, char** argv){
     for (long int iL1 = 0; iL1 < stage2_jetEt.size(); iL1++){ //loop on jets
       // selections
       double jetPt  = stage2_jetEt.at(iL1);
+      if ( fabs(stage2_jetEta.at(iL1)) > 3.0 ) continue; // Need |eta| < 3.0
       double jetEta  = fabs(stage2_jetEta.at(iL1));
       int jetBx  = fabs(stage2_jetBx.at(iL1));
 
@@ -484,7 +485,7 @@ int main(int argc, char** argv){
   //VBF
   for (int i = 0; i <VBF_Pass->GetNbinsX(); i++){
     double bin = 0;
-    if(nEventsPass->GetBinContent(i)>0)   bin = 1.*(VBF_Pass->GetBinContent(i))/nEventsPass->GetBinContent(i);
+    if(nEventsPass->GetBinContent(i)>0)   bin = 1.*(VBF_Pass->GetBinContent(i)); // /nEventsPass->GetBinContent(i);
     VBF_Ratio -> SetBinContent (i, bin);        
     //rej
     bin = 1.*(VBF_Pass_rej->GetBinContent(i))/nEventsPass->GetBinContent(i);
