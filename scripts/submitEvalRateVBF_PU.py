@@ -86,7 +86,7 @@ for listname in inputlists:
     scriptFile.write ("""#!/bin/bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd {0}
-export SCRAM_ARCH=slc6_amd64_gcc491
+export SCRAM_ARCH=slc6_amd64_gcc630
 eval `scramv1 runtime -sh`
 """.format(here) )
     #scriptFile.write ('export X509_USER_PROXY=~/.t3/proxy.cert\n')
